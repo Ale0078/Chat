@@ -1,0 +1,53 @@
+﻿<Window x:Class="Chat.Client.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Chat.Client"
+        xmlns:chat="clr-namespace:Chat.Client.View"
+        xmlns:model="clr-namespace:Chat.Client.ViewModel"
+        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800"
+        Name="Window">
+    <Window.DataContext>
+        <model:MainWindowViewModel/>
+    </Window.DataContext>
+
+    <Window.Resources>
+        <Style x:Key="FullChat" TargetType="ContentControl">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsLogin}"
+                             Value="True">
+                    <Setter Property="ContentTemplate">
+                        <Setter.Value>
+                            <DataTemplate>
+                                <chat:ChatUserControl DataContext="{Binding ElementName=Window, Path=DataContext}"/>
+                            </DataTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding IsLogin}"
+                             Value="False">
+                    <Setter Property="ContentTemplate">
+                        <Setter.Value>
+                            <DataTemplate>
+                                <chat:LoginUserControl DataContext="{Binding ElementName=Window, Path=DataContext}"/>
+                            </DataTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Closing">
+            <i:InvokeCommandAction Command="{Binding Logout}"/>
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
+    
+    <Grid>
+        <ContentControl Style="{StaticResource FullChat}"/>
+    </Grid>
+</Window>
