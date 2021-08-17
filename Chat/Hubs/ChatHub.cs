@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Collections.Concurrent;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.AspNetCore.Authorization;
 
 using Chat.Interfaces;
 using Chat.Models;
 
 namespace Chat.Server.Hubs
 {
+    [Authorize]
     public class ChatHub : Hub<IChat>
     {
         private static readonly ConcurrentDictionary<string, User> _users;
@@ -32,7 +34,7 @@ namespace Chat.Server.Hubs
             {
                 return null;
             }
-            
+
             List<User> users = new(_users.Values);
 
             User newUser = new()

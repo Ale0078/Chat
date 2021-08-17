@@ -42,6 +42,9 @@
     </Window.Resources>
 
     <i:Interaction.Triggers>
+        <i:EventTrigger>
+            <i:InvokeCommandAction Command="{Binding Connect}"/>
+        </i:EventTrigger>
         <i:EventTrigger EventName="Closing">
             <i:InvokeCommandAction Command="{Binding Logout}"/>
         </i:EventTrigger>

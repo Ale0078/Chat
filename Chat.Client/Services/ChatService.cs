@@ -21,7 +21,10 @@ namespace Chat.Client.Services
         public ChatService()
         {
             _connection = new HubConnectionBuilder()
-                .WithUrl(URL)
+                .WithUrl(URL, options => 
+                {
+                    options.AccessTokenProvider = () => Task.FromResult("Alex");
+                })
                 .Build();
 
             _connection.On<User>(nameof(IChat.Login), user => Login?.Invoke(user));

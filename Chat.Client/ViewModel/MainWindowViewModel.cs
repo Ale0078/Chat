@@ -23,6 +23,7 @@ namespace Chat.Client.ViewModel
         private ICommand _login;
         private ICommand _logout;
         private ICommand _reciveMessage;
+        private ICommand _connect;
 
         public MainWindowViewModel()
         {
@@ -32,8 +33,6 @@ namespace Chat.Client.ViewModel
             _service.Login += LoginEvenHandler;
             _service.Logout += LogoutEventHandler;
             _service.ReciveMessage += ReciveMessageEventHandler;
-
-            _service.Connect();
         }
 
         public string UserName 
@@ -80,6 +79,8 @@ namespace Chat.Client.ViewModel
             }
         }
 
+        public ICommand Connect => _connect ?? (_connect = new RelayCommandAsync(ConnectExecute));
+
         public ICommand Login => _login ?? (_login = new RelayCommandAsync(
             execute: LoginExecute,
             canExecute: LoginCanExecute));
@@ -87,6 +88,9 @@ namespace Chat.Client.ViewModel
         public ICommand Logout => _logout ?? (_logout = new RelayCommandAsync(LogoutExecute));
 
         public ICommand ReciveMessage => _reciveMessage ?? (_reciveMessage = new RelayCommandAsync(ReciveMessageExecute));
+
+        private async Task ConnectExecute(object parameter) =>
+            await _service.Connect();
 
         private async Task LoginExecute(object userName) 
         {
