@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using Microsoft.AspNetCore.SignalR.Client;
 
 using Chat.Client.Services;
 using Chat.Client.Commands;
@@ -12,8 +13,9 @@ namespace Chat.Client.ViewModel
     public class MainWindowViewModel : ViewModelBase
     {
         private const int MIN_USER_NAME_LENGTH = 3;
+        private string _tokenName = "Alex"; //ToDo: delete test
 
-        private readonly ChatService _service;
+        private ChatService _service;
 
         private string _userName;
         private bool _isLogin;
@@ -25,14 +27,14 @@ namespace Chat.Client.ViewModel
         private ICommand _reciveMessage;
         private ICommand _connect;
 
-        public MainWindowViewModel()
+        public MainWindowViewModel()// ToDo: delete test
         {
-            _service = new ChatService();
+            //_service = new ChatService();
             _otherUsers = new ObservableCollection<User>();
 
-            _service.Login += LoginEvenHandler;
-            _service.Logout += LogoutEventHandler;
-            _service.ReciveMessage += ReciveMessageEventHandler;
+            //_service.Login += LoginEvenHandler;
+            //_service.Logout += LogoutEventHandler;
+            //_service.ReciveMessage += ReciveMessageEventHandler;
         }
 
         public string UserName 
@@ -89,8 +91,29 @@ namespace Chat.Client.ViewModel
 
         public ICommand ReciveMessage => _reciveMessage ?? (_reciveMessage = new RelayCommandAsync(ReciveMessageExecute));
 
-        private async Task ConnectExecute(object parameter) =>
+        private async Task ConnectExecute(object parameter) //ToDo: delete test
+        {
+            HubConnection tokenConnection = new HubConnectionBuilder()
+                .WithUrl("http://localhost:5000/chat_register")
+                .Build();
+
+            await tokenConnection.StartAsync();
+
+
+
+            _service = new ChatService(await tokenConnection.InvokeAsync<string>("Login", _tokenName, null));
+
+
+            _service.Login += LoginEvenHandler;
+            _service.Logout += LogoutEventHandler;
+            _service.ReciveMessage += ReciveMessageEventHandler;
+
             await _service.Connect();
+
+            await tokenConnection.DisposeAsync();
+
+        }
+
 
         private async Task LoginExecute(object userName) 
         {

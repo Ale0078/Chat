@@ -12,18 +12,20 @@ namespace Chat.Client.Services
     {
         private const string URL = "http://localhost:5000/chat";
 
+        private readonly string _token;
         private readonly HubConnection _connection;
 
         public event Action<User> Login;
         public event Action<User> Logout;
         public event Action<ChatMessage> ReciveMessage;
 
-        public ChatService()
+        public ChatService(string token = null)
         {
+            _token = token;
             _connection = new HubConnectionBuilder()
                 .WithUrl(URL, options => 
                 {
-                    options.AccessTokenProvider = () => Task.FromResult("Alex");
+                    options.AccessTokenProvider = () => Task.FromResult(_token);
                 })
                 .Build();
 

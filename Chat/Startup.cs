@@ -15,6 +15,7 @@ namespace Chat.Server
     public class Startup
     {
         private const string MAP_HUB = "/chat";
+        private const string MAP_HUB_REGISTER = "/chat_register";
 
         public void ConfigureServices(IServiceCollection services)
         {
@@ -54,6 +55,7 @@ namespace Chat.Server
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapHub<ChatHub>(MAP_HUB);
+                endpoints.MapHub<ChatRegistrationHub>(MAP_HUB_REGISTER);
             });
         }
     }
