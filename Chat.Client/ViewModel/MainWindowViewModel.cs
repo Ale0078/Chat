@@ -19,6 +19,7 @@ namespace Chat.Client.ViewModel
 
         private string _userName;
         private bool _isLogin;
+        private UserState _state;
         private User _selectedUser;
         private ObservableCollection<User> _otherUsers;
         
@@ -32,6 +33,7 @@ namespace Chat.Client.ViewModel
             //_service = new ChatService();
             _otherUsers = new ObservableCollection<User>();
 
+            _state = UserState.NoRegistered;
             //_service.Login += LoginEvenHandler;
             //_service.Logout += LogoutEventHandler;
             //_service.ReciveMessage += ReciveMessageEventHandler;
@@ -65,6 +67,17 @@ namespace Chat.Client.ViewModel
             set 
             {
                 _isLogin = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        public UserState State 
+        {
+            get => _state;
+            set 
+            {
+                _state = value;
 
                 OnPropertyChanged();
             }

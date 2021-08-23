@@ -6,6 +6,7 @@
         xmlns:local="clr-namespace:Chat.Client"
         xmlns:chat="clr-namespace:Chat.Client.View"
         xmlns:model="clr-namespace:Chat.Client.ViewModel"
+        xmlns:userState="clr-namespace:Chat.Models;assembly=Chat.Models"
         xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800"
@@ -17,8 +18,8 @@
     <Window.Resources>
         <Style x:Key="FullChat" TargetType="ContentControl">
             <Style.Triggers>
-                <DataTrigger Binding="{Binding IsLogin}"
-                             Value="True">
+                <DataTrigger Binding="{Binding State}"
+                             Value="2">
                     <Setter Property="ContentTemplate">
                         <Setter.Value>
                             <DataTemplate>
@@ -27,12 +28,22 @@
                         </Setter.Value>
                     </Setter>
                 </DataTrigger>
-                <DataTrigger Binding="{Binding IsLogin}"
-                             Value="False">
+                <DataTrigger Binding="{Binding State}"
+                             Value="1">
                     <Setter Property="ContentTemplate">
                         <Setter.Value>
                             <DataTemplate>
                                 <chat:LoginUserControl DataContext="{Binding ElementName=Window, Path=DataContext}"/>
+                            </DataTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding State}"
+                             Value="0">
+                    <Setter Property="ContentTemplate">
+                        <Setter.Value>
+                            <DataTemplate>
+                                <chat:RegistrationUserControl DataContext="{Binding ElementName=Window, Path=DataContext}"/>
                             </DataTemplate>
                         </Setter.Value>
                     </Setter>
