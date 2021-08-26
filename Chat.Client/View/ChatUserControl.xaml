@@ -98,7 +98,7 @@
         </Style>
 
         <DataTemplate x:Key="UsersTemplate"
-                      DataType="{x:Type user:User}">
+                      DataType="{x:Type user:UserModel}">
             <Grid>
                 <TextBlock Text="{Binding Name}"
                            FontSize="24"

@@ -15,8 +15,8 @@ namespace Chat.Client.Services
         private readonly string _token;
         private readonly HubConnection _connection;
 
-        public event Action<User> Login;
-        public event Action<User> Logout;
+        public event Action<UserModel> Login;
+        public event Action<UserModel> Logout;
         public event Action<ChatMessage> ReciveMessage;
 
         public ChatService(string token = null)
@@ -29,8 +29,8 @@ namespace Chat.Client.Services
                 })
                 .Build();
 
-            _connection.On<User>(nameof(IChat.Login), user => Login?.Invoke(user));
-            _connection.On<User>(nameof(IChat.Logout), user => Logout?.Invoke(user));
+            _connection.On<UserModel>(nameof(IChat.Login), user => Login?.Invoke(user));
+            _connection.On<UserModel>(nameof(IChat.Logout), user => Logout?.Invoke(user));
             _connection.On<ChatMessage>(nameof(IChat.ReciveMessage), message => ReciveMessage?.Invoke(message));
         }
 
@@ -39,17 +39,17 @@ namespace Chat.Client.Services
             await _connection.StartAsync();
         }
 
-        public async Task<IEnumerable<User>> UserLogin(string userName) 
+        public async Task<IEnumerable<UserModel>> LoginUser(string userName) 
         {
-            return await _connection.InvokeAsync<IEnumerable<User>>("Login", userName);
+            return await _connection.InvokeAsync<IEnumerable<UserModel>>("Login", userName);
         }
 
-        public async Task UserLogout(string userName) 
+        public async Task LogoutUser(string userName) 
         {
             await _connection.InvokeAsync("Logout", userName);
         }
 
-        public async Task<ChatMessage> UserReciveMessage(string fromUserName, string toUserId, string message) 
+        public async Task<ChatMessage> ReciveMessageUser(string fromUserName, string toUserId, string message) 
         {
             return await _connection.InvokeAsync<ChatMessage>("ReciveMessage", fromUserName, toUserId, message);
         }

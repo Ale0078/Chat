@@ -6,7 +6,7 @@ namespace Chat.Interfaces
 {
     public interface IChatRegistration
     {
-        Task RegisterUser(User newUser);
-        Task LoginUser(User newUser);
+        Task RegisterUser(UserModel newUser);
+        Task LoginUser(UserModel newUser);
     }
 }

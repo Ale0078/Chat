@@ -5,8 +5,8 @@ namespace Chat.Interfaces
 {
     public interface IChat
     {
-        Task Login(User newUser);
-        Task Logout(User oldUser);
+        Task Login(UserModel newUser);
+        Task Logout(UserModel oldUser);
         Task ReciveMessage(ChatMessage message);
     }
 }

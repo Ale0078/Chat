@@ -20,8 +20,8 @@ namespace Chat.Client.ViewModel
         private string _userName;
         private bool _isLogin;
         private UserState _state;
-        private User _selectedUser;
-        private ObservableCollection<User> _otherUsers;
+        private UserModel _selectedUser;
+        private ObservableCollection<UserModel> _otherUsers;
         
         private ICommand _login;
         private ICommand _logout;
@@ -31,7 +31,7 @@ namespace Chat.Client.ViewModel
         public MainWindowViewModel()// ToDo: delete test
         {
             //_service = new ChatService();
-            _otherUsers = new ObservableCollection<User>();
+            _otherUsers = new ObservableCollection<UserModel>();
 
             _state = UserState.NoRegistered;
             //_service.Login += LoginEvenHandler;
@@ -50,7 +50,7 @@ namespace Chat.Client.ViewModel
             }
         }
 
-        public User SelectedUser 
+        public UserModel SelectedUser 
         {
             get => _selectedUser;
             set 
@@ -83,7 +83,7 @@ namespace Chat.Client.ViewModel
             }
         }
 
-        public ObservableCollection<User> OtherUsers
+        public ObservableCollection<UserModel> OtherUsers
         {
             get => _otherUsers;
             set
@@ -130,13 +130,13 @@ namespace Chat.Client.ViewModel
 
         private async Task LoginExecute(object userName) 
         {
-            var users = await _service.UserLogin((string)userName);
+            var users = await _service.LoginUser((string)userName);
 
             if (users is not null)
             {
-                foreach (User user in users)
+                foreach (UserModel user in users)
                 {
-                    User addedUser = new()
+                    UserModel addedUser = new()
                     {
                         Id = user.Id,
                         IsAdmin = user.IsAdmin,
@@ -157,7 +157,7 @@ namespace Chat.Client.ViewModel
 
         private async Task LogoutExecute(object parametr) 
         {
-            await _service.UserLogout(UserName);
+            await _service.LogoutUser(UserName);
         }
 
         private async Task ReciveMessageExecute(object parametr) 
@@ -167,7 +167,7 @@ namespace Chat.Client.ViewModel
                 return;
             }
 
-            ChatMessage sendedMessage = await _service.UserReciveMessage(
+            ChatMessage sendedMessage = await _service.ReciveMessageUser(
                 fromUserName: UserName,
                 toUserId: SelectedUser.Id,
                 message: (string)parametr);
@@ -177,9 +177,9 @@ namespace Chat.Client.ViewModel
             SelectedUser.Messages.Add(sendedMessage);
         }
 
-        private void LoginEvenHandler(User newUser) 
+        private void LoginEvenHandler(UserModel newUser) 
         {
-            User addedUser = OtherUsers
+            UserModel addedUser = OtherUsers
                 .Where(user => user.Name == newUser.Name)
                 .FirstOrDefault();
 
@@ -188,7 +188,7 @@ namespace Chat.Client.ViewModel
                 return;
             }
 
-            addedUser = new User
+            addedUser = new UserModel
             {
                 Id = newUser.Id,
                 IsAdmin = newUser.IsAdmin,
@@ -199,9 +199,9 @@ namespace Chat.Client.ViewModel
             OtherUsers.Add(addedUser);
         }
 
-        private void LogoutEventHandler(User oldUser) 
+        private void LogoutEventHandler(UserModel oldUser) 
         {
-            User removedUser = OtherUsers
+            UserModel removedUser = OtherUsers
                 .Where(user => user.Name == oldUser.Name)
                 .FirstOrDefault();
 
@@ -215,7 +215,7 @@ namespace Chat.Client.ViewModel
 
         private void ReciveMessageEventHandler(ChatMessage message) 
         {
-            User sender = OtherUsers
+            UserModel sender = OtherUsers
                 .Where(user => user.Id == message.FromUserId)
                 .FirstOrDefault();
 

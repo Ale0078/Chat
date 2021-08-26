@@ -2,7 +2,7 @@
 
 namespace Chat.Models
 {
-    public class User
+    public class UserModel
     {
         public string Id { get; set; }
         public string Name { get; set; }
@@ -10,7 +10,7 @@ namespace Chat.Models
         public bool IsAdmin { get; set; }
         public bool IsLogin { get; set; }
 
-        public User()
+        public UserModel()
         {
             Messages = new ObservableCollection<ChatMessage>();
         }

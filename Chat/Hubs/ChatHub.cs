@@ -13,7 +13,7 @@ namespace Chat.Server.Hubs
     [Authorize]
     public class ChatHub : Hub<IChat>
     {
-        private static readonly ConcurrentDictionary<string, User> _users;
+        private static readonly ConcurrentDictionary<string, UserModel> _users;
 
         private const string ADMIN = "admin";
 
@@ -22,22 +22,22 @@ namespace Chat.Server.Hubs
 
         static ChatHub()
         {
-            _users = new ConcurrentDictionary<string, User>();
+            _users = new ConcurrentDictionary<string, UserModel>();
             
             _nextChatId = 0;
             _nextMessageId = 0;
         }
 
-        public async Task<IEnumerable<User>> Login(string userName) 
+        public async Task<IEnumerable<UserModel>> Login(string userName) 
         {
             if (_users.ContainsKey(userName))
             {
                 return null;
             }
 
-            List<User> users = new(_users.Values);
+            List<UserModel> users = new(_users.Values);
 
-            User newUser = new()
+            UserModel newUser = new()
             {
                 Id = Context.ConnectionId,
                 Name = userName
@@ -62,7 +62,7 @@ namespace Chat.Server.Hubs
 
         public void Logout(string userName) 
         {
-            _users.TryRemove(userName, out User removedUser);
+            _users.TryRemove(userName, out UserModel removedUser);
 
             Clients.Others.Logout(removedUser);
         }

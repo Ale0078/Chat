@@ -60,7 +60,8 @@
                     Margin="0, 10, 0, 0"
                     FontSize="12"
                     Content="Send"
-                    IsEnabled="{Binding Validator.IsValid}"/>
+                    IsEnabled="{Binding Validator.IsValid}"
+                    Command="{Binding RegisterUser}"/>
         </StackPanel>
     </Grid>
 </UserControl>
