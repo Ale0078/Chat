@@ -46,7 +46,7 @@ namespace Chat.Server
                 options.Password.RequireNonAlphanumeric = false;
                 options.Password.RequireUppercase = false;
             })
-                .AddEntityFrameworkStores<ApplicationContext>();
+            .AddEntityFrameworkStores<ApplicationContext>();
 
             services.AddAuthentication(options =>
             {

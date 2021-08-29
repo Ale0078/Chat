@@ -28,7 +28,7 @@ namespace Chat.Client.Services
                     options.AccessTokenProvider = () => Task.FromResult(_token);
                 })
                 .Build();
-
+            
             _connection.On<UserModel>(nameof(IChat.Login), user => Login?.Invoke(user));
             _connection.On<UserModel>(nameof(IChat.Logout), user => Logout?.Invoke(user));
             _connection.On<ChatMessage>(nameof(IChat.ReciveMessage), message => ReciveMessage?.Invoke(message));

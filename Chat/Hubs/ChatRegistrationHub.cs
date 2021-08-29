@@ -23,7 +23,7 @@ namespace Chat.Server.Hubs
 
         public async Task Register(RegisterUserModel model)
         {
-            var a = await _userManager.CreateAsync(
+            await _userManager.CreateAsync(
                 user: new User { UserName = model.UserName },
                 password: model.Password);
         }
