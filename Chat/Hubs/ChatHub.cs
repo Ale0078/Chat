@@ -67,9 +67,9 @@ namespace Chat.Server.Hubs
             Clients.Others.Logout(removedUser);
         }
 
-        public ChatMessage ReciveMessage(string fromUserName, string toUserId, string message) 
+        public ChatMessageModel ReciveMessage(string fromUserName, string toUserId, string message) 
         {
-            ChatMessage chatMessage = new()
+            ChatMessageModel chatMessage = new()
             {
                 Id = _nextMessageId,
                 FromUserId = _users[fromUserName].Id,

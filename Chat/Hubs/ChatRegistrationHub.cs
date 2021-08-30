@@ -2,30 +2,26 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.SignalR;
 
-using Chat.Interfaces;
+using Chat.Server.Services.Interfaces;
 using Chat.Models;
 using Chat.Entities;
-using Chat.Entities.Contexts;
 
 namespace Chat.Server.Hubs
 {
     public class ChatRegistrationHub : Hub
     {
-        private readonly UserManager<User> _userManager;
+        private readonly IUserService _userService;
 
-        public ChatRegistrationHub(UserManager<User> userManager)
+        public ChatRegistrationHub(IUserService userService)
         {
-            _userManager = userManager;
+            _userService = userService;
         }
 
         public async Task Register(RegisterUserModel model)
         {
-            await _userManager.CreateAsync(
-                user: new User { UserName = model.UserName },
-                password: model.Password);
+            await _userService.AddUserAsync(model);
         }
 
         public async Task<string> Login(string name, string password)

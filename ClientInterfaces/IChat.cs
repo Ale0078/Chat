@@ -7,6 +7,6 @@ namespace Chat.Interfaces
     {
         Task Login(UserModel newUser);
         Task Logout(UserModel oldUser);
-        Task ReciveMessage(ChatMessage message);
+        Task ReciveMessage(ChatMessageModel message);
     }
 }

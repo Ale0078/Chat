@@ -17,7 +17,7 @@ namespace Chat.Client.Services
 
         public event Action<UserModel> Login;
         public event Action<UserModel> Logout;
-        public event Action<ChatMessage> ReciveMessage;
+        public event Action<ChatMessageModel> ReciveMessage;
 
         public ChatService(string token = null)
         {
@@ -31,7 +31,7 @@ namespace Chat.Client.Services
             
             _connection.On<UserModel>(nameof(IChat.Login), user => Login?.Invoke(user));
             _connection.On<UserModel>(nameof(IChat.Logout), user => Logout?.Invoke(user));
-            _connection.On<ChatMessage>(nameof(IChat.ReciveMessage), message => ReciveMessage?.Invoke(message));
+            _connection.On<ChatMessageModel>(nameof(IChat.ReciveMessage), message => ReciveMessage?.Invoke(message));
         }
 
         public async Task Connect() 
@@ -49,9 +49,9 @@ namespace Chat.Client.Services
             await _connection.InvokeAsync("Logout", userName);
         }
 
-        public async Task<ChatMessage> ReciveMessageUser(string fromUserName, string toUserId, string message) 
+        public async Task<ChatMessageModel> ReciveMessageUser(string fromUserName, string toUserId, string message) 
         {
-            return await _connection.InvokeAsync<ChatMessage>("ReciveMessage", fromUserName, toUserId, message);
+            return await _connection.InvokeAsync<ChatMessageModel>("ReciveMessage", fromUserName, toUserId, message);
         }
     }
 }

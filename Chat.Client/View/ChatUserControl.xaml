@@ -53,7 +53,7 @@
         </Style>
 
         <DataTemplate x:Key="MessagesTemplate"
-                      DataType="{x:Type user:ChatMessage}">
+                      DataType="{x:Type user:ChatMessageModel}">
             <Border Style="{StaticResource MessageTemplate}">
                 <Grid>
                     <Grid.RowDefinitions>

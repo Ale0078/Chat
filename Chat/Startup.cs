@@ -11,6 +11,8 @@ using Microsoft.EntityFrameworkCore;
 
 using Chat.Server.Hubs;
 using Chat.Server.Authentication;
+using Chat.Server.Services;
+using Chat.Server.Services.Interfaces;
 using Chat.Entities;
 using Chat.Entities.Contexts;
 
@@ -67,6 +69,7 @@ namespace Chat.Server
             });
 
             services.AddSignalR();
+            services.AddTransient<IUserService, UserService>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

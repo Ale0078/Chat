@@ -167,7 +167,7 @@ namespace Chat.Client.ViewModel
                 return;
             }
 
-            ChatMessage sendedMessage = await _service.ReciveMessageUser(
+            ChatMessageModel sendedMessage = await _service.ReciveMessageUser(
                 fromUserName: UserName,
                 toUserId: SelectedUser.Id,
                 message: (string)parametr);
@@ -213,7 +213,7 @@ namespace Chat.Client.ViewModel
             OtherUsers.Remove(removedUser);
         }
 
-        private void ReciveMessageEventHandler(ChatMessage message) 
+        private void ReciveMessageEventHandler(ChatMessageModel message) 
         {
             UserModel sender = OtherUsers
                 .Where(user => user.Id == message.FromUserId)
