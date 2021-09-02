@@ -12,6 +12,8 @@
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Accent/MaterialDesignColor.Lime.xaml" />
 
                 <ResourceDictionary Source="pack://application:,,,/ReactiveValidation;component/WPF/Themes/Generic.xaml"/>
+
+                <ResourceDictionary Source="Resources/FormStyles.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>

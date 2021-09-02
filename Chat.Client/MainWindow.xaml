@@ -23,7 +23,7 @@
                     <Setter Property="ContentTemplate">
                         <Setter.Value>
                             <DataTemplate>
-                                <chat:ChatUserControl DataContext="{Binding ElementName=Window, Path=DataContext}"/>
+                                <chat:ChatUserControl DataContext="{Binding ElementName=Window, Path=DataContext.Chat}"/>
                             </DataTemplate>
                         </Setter.Value>
                     </Setter>
@@ -33,7 +33,7 @@
                     <Setter Property="ContentTemplate">
                         <Setter.Value>
                             <DataTemplate>
-                                <chat:LoginUserControl DataContext="{Binding ElementName=Window, Path=DataContext}"/>
+                                <chat:LoginUserControl DataContext="{Binding ElementName=Window, Path=DataContext.Login}"/>
                             </DataTemplate>
                         </Setter.Value>
                     </Setter>
@@ -43,7 +43,7 @@
                     <Setter Property="ContentTemplate">
                         <Setter.Value>
                             <DataTemplate>
-                                <chat:RegistrationUserControl DataContext="{Binding ElementName=Window, Path=DataContext}"/>
+                                <chat:RegistrationUserControl DataContext="{Binding ElementName=Window, Path=DataContext.Registaration}"/>
                             </DataTemplate>
                         </Setter.Value>
                     </Setter>
@@ -54,10 +54,7 @@
 
     <i:Interaction.Triggers>
         <i:EventTrigger>
-            <i:InvokeCommandAction Command="{Binding Connect}"/>
-        </i:EventTrigger>
-        <i:EventTrigger EventName="Closing">
-            <i:InvokeCommandAction Command="{Binding Logout}"/>
+            <i:InvokeCommandAction Command="{Binding ConnectRegistrationChatService}"/>
         </i:EventTrigger>
     </i:Interaction.Triggers>
     

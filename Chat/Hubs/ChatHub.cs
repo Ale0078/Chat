@@ -1,10 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
-using System.Collections.Concurrent;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.AspNetCore.Authorization;
 
+using Chat.Server.Services.Interfaces;
 using Chat.Interfaces;
 using Chat.Models;
 
@@ -13,74 +12,46 @@ namespace Chat.Server.Hubs
     [Authorize]
     public class ChatHub : Hub<IChat>
     {
-        private static readonly ConcurrentDictionary<string, UserModel> _users;
+        private readonly IUserService _userService;
 
-        private const string ADMIN = "admin";
-
-        private static int _nextChatId;
-        private static int _nextMessageId;
-
-        static ChatHub()
+        public ChatHub(IUserService userService)
         {
-            _users = new ConcurrentDictionary<string, UserModel>();
+            _userService = userService;
+        }
+
+        public override async Task OnConnectedAsync()
+        {
+            await base.OnConnectedAsync();
             
-            _nextChatId = 0;
-            _nextMessageId = 0;
+            await Clients.Others.Connect(
+                userName: Context.User.Identity.Name,
+                connectionId: Context.ConnectionId);
         }
 
-        public async Task<IEnumerable<UserModel>> Login(string userName) 
+        public override async Task OnDisconnectedAsync(Exception exception)
         {
-            if (_users.ContainsKey(userName))
-            {
-                return null;
-            }
+            await Clients.Others.Logout(Context.User.Identity.Name);
 
-            List<UserModel> users = new(_users.Values);
-
-            UserModel newUser = new()
-            {
-                Id = Context.ConnectionId,
-                Name = userName
-            };
-
-            if (userName == ADMIN)
-            {
-                newUser.IsAdmin = true;
-            }
-
-            if (!_users.TryAdd(userName, newUser))
-            {
-                return null;
-            }
-
-            _nextChatId++;
-
-            await Clients.Others.Login(newUser);
-
-            return users;
+            await base.OnDisconnectedAsync(exception);
         }
 
-        public void Logout(string userName) 
-        {
-            _users.TryRemove(userName, out UserModel removedUser);
-
-            Clients.Others.Logout(removedUser);
-        }
-
-        public ChatMessageModel ReciveMessage(string fromUserName, string toUserId, string message) 
+        public async Task<ChatMessageModel> ReciveMessage(Guid chatId, string fromUserId, string toUserId, string message, string connectionId) 
         {
             ChatMessageModel chatMessage = new()
             {
-                Id = _nextMessageId,
-                FromUserId = _users[fromUserName].Id,
+                ChatId = chatId,
+                FromUserId = fromUserId,
                 ToUserId = toUserId,
                 Message = message,
                 SendingTime = DateTime.Now
             };
 
-            _nextMessageId++;
+            await _userService.AddChatMessageAsync(chatMessage);
 
-            Clients.Client(toUserId).ReciveMessage(chatMessage);
+            if (connectionId is not null || connectionId == string.Empty)
+            {
+                await Clients.Client(connectionId).ReciveMessage(chatMessage);
+            }
 
             return chatMessage;
         }

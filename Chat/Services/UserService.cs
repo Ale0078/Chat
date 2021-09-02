@@ -1,19 +1,19 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Microsoft.EntityFrameworkCore;
 
 using Chat.Models;
 using Chat.Entities;
 using Chat.Entities.Contexts;
 using Chat.Server.Services.Interfaces;
 
-namespace Chat.Server.Services
+namespace Chat.Server.Services//ToDo: use include to all entities
 {
-    internal class UserService : IUserService
+    internal class UserService : IUserService//ToDo: auto map to models
     {
         private ApplicationContext _dbContext;
         private UserManager<User> _userManager;
@@ -45,9 +45,10 @@ namespace Chat.Server.Services
             return true;
         }
 
-        public async Task<bool> AddUserAsync(RegisterUserModel userModel)
+        public async Task<bool> AddUserAsync(RegisterUserModel userModel)//ToDo: change chat generation
         {
-            if (userModel is null)
+            if (userModel is null || 
+                await _userManager.FindByNameAsync(userModel.UserName) is not null)
             {
                 return false;
             }
@@ -89,33 +90,99 @@ namespace Chat.Server.Services
             return true;
         }
 
-        public async Task<bool> CanLoginUserAsync(string userName)
+        public async Task<bool> CanLoginUserAsync(string userName, string password)
         {
-            return await _userManager.FindByNameAsync(userName) is null;
+            User userToCheckPassword = (await _userManager.FindByNameAsync(userName));
+
+            return userToCheckPassword is null
+                ? false
+                : await _userManager.CheckPasswordAsync(
+                    user: userToCheckPassword,
+                    password: password);
         }
 
-        public async Task<UserModel> GetUserAsync(string userName)
+        public async Task<FullUserModel> GetUserAsync(string userName)
         {
             User dbUser = await _userManager.FindByNameAsync(userName);
 
-            return new UserModel
+            FullUserModel userModel = new() 
             {
                 Id = dbUser.Id,
                 Name = dbUser.UserName
             };
+
+            foreach (Chatter chatter in dbUser.Chatters)
+            {
+                List<ChatMessageModel> messageModels = new(chatter.Chat.ChatMessages.Count);
+
+                foreach (ChatMessage message in chatter.Chat.ChatMessages)
+                {
+                    messageModels.Add(new ChatMessageModel
+                    {
+                        Id = message.Id,
+                        ChatId = message.ChatId,
+                        FromUserId = message.SenderId,
+                        ToUserId = message.ReceiverId,
+                        Message = message.Message,
+                        SendingTime = message.Time,
+                        IsFromCurrentUser = dbUser.Id.Equals(message.SenderId)
+                    });
+                }
+
+                userModel.Chats.Add(new ChatModel
+                {
+                    Id = chatter.ChatId,
+                    FirstUserId = chatter.Chat.FirstUserId,
+                    SecondUserId = chatter.Chat.SecondUserId,
+                    Messages = messageModels
+                });
+            }
+
+            return userModel;
         }
 
-        public async Task<IEnumerable<UserModel>> GetUsersAsync(string exceptUserName = null)
+        public async Task<IEnumerable<UserModel>> GetUsersAsync(string userName)
         {
-            IQueryable<User> users = _userManager.Users.Where(user => user.UserName != exceptUserName);
+            List<User> users = _userManager.Users
+                .Where(user => user.UserName != userName)
+                .ToList();
+
             List<UserModel> userModels = new(users.Count());
+            User currentUser = await _userManager.FindByNameAsync(userName);
 
             foreach (User user in users)
             {
+                Chatter chat = user.Chatters
+                    .Find(chatter =>
+                    {
+                        return chatter.Chat.FirstUserId == currentUser.Id ||
+                            chatter.Chat.SecondUserId == currentUser.Id;
+                    });
+
+                List<ChatMessage> messages = chat.Chat.ChatMessages;
+
+                ObservableCollection<ChatMessageModel> messageModels = new();
+
+                foreach (ChatMessage message in messages)
+                {
+                    messageModels.Add(new ChatMessageModel
+                    {
+                        Id = message.Id,
+                        ChatId = message.ChatId,
+                        FromUserId = message.SenderId,
+                        ToUserId = message.ReceiverId,
+                        Message = message.Message,
+                        SendingTime = message.Time,
+                        IsFromCurrentUser = currentUser.Id.Equals(message.SenderId)
+                    });
+                }
+
                 userModels.Add(new UserModel
                 {
                     Id = user.Id,
-                    Name = user.UserName
+                    Name = user.UserName,
+                    Messages = messageModels,
+                    ChatId = chat.ChatId
                 });
             }
 

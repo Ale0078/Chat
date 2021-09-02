@@ -20,6 +20,6 @@ namespace Chat.Entities
         [ForeignKey(nameof(SecondUserId))]
         public virtual User SecondUser { get; set; }
 
-        public List<ChatMessage> ChatMessages { get; set; }
+        public virtual List<ChatMessage> ChatMessages { get; set; }
     }
 }

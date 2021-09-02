@@ -9,12 +9,12 @@ namespace Chat.Server.Services.Interfaces
     {
         Task<bool> AddUserAsync(RegisterUserModel userModel);
 
-        Task<bool> CanLoginUserAsync(string userName);
+        Task<bool> CanLoginUserAsync(string userName, string password);
 
         Task<bool> AddChatMessageAsync(ChatMessageModel message);
 
-        Task<IEnumerable<UserModel>> GetUsersAsync(string exceptUserName = null);
+        Task<IEnumerable<UserModel>> GetUsersAsync(string userName);
 
-        Task<UserModel> GetUserAsync(string userName);
+        Task<FullUserModel> GetUserAsync(string userName);
     }
 }

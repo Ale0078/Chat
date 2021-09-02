@@ -4,28 +4,14 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-             xmlns:local="clr-namespace:Chat.Client.View"
              xmlns:model="clr-namespace:Chat.Client.ViewModel"
-             xmlns:validation="clr-namespace:ReactiveValidation.WPF.Behaviors;assembly=ReactiveValidation"
              xmlns:password="clr-namespace:Chat.Client.AttachedProperties"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
-    <UserControl.DataContext>
-        <model:RegistarationViewModel/>
-    </UserControl.DataContext>
-    
-    <Grid Background="#DCE6E6">
-        <StackPanel Orientation="Vertical"
-                    Height="310"
-                    Width="200"
-                    Background="#FFFFFF">
-            <StackPanel.Effect>
-                <DropShadowEffect Color="#9C9C9C"
-                                  Opacity="0.5"
-                                  Direction="300"
-                                  BlurRadius="20"/>
-            </StackPanel.Effect>
-
+             d:DesignHeight="450" d:DesignWidth="800"
+             Name="RegistrationControl">
+    <Grid Background="#DCE6E6"
+          DataContext="{Binding ElementName=RegistrationControl, Path=DataContext}">
+        <StackPanel Style="{StaticResource StyleToForm}">
             <materialDesign:PackIcon Kind="AccountCircle"
                                      HorizontalAlignment="Center"
                                      VerticalAlignment="Center"
@@ -33,34 +19,19 @@
                                      Width="120"
                                      Margin="0, 5, 0, 0"/>
 
-            <TextBox Margin="5"
-                     Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+            <TextBox Style="{StaticResource ValidateTextBox}"
                      Text="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                     materialDesign:HintAssist.Hint="Name"
-                     validation:ReactiveValidation.AutoRefreshErrorTemplate="True"
-                     validation:ReactiveValidation.ErrorTemplate="{StaticResource ValidationErrorTemplate}"/>
+                     materialDesign:HintAssist.Hint="Name"/>
 
-            <PasswordBox Margin="5"
+            <PasswordBox Style="{StaticResource ValidatePasswordBox}"
                          password:PasswordExtention.Password="{Binding Password, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                         Style="{StaticResource MaterialDesignFloatingHintPasswordBox}"
-                         materialDesign:HintAssist.Hint="Password"
-                         validation:ReactiveValidation.AutoRefreshErrorTemplate="True"
-                         validation:ReactiveValidation.ErrorTemplate="{StaticResource ValidationErrorTemplate}"/>
+                         materialDesign:HintAssist.Hint="Password"/>
 
-            <PasswordBox Margin="5"
+            <PasswordBox Style="{StaticResource ValidatePasswordBox}"
                          password:PasswordExtention.Password="{Binding ConfirmPassword, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                         Style="{StaticResource MaterialDesignFloatingHintPasswordBox}"
-                         materialDesign:HintAssist.Hint="Confirm password"
-                         validation:ReactiveValidation.AutoRefreshErrorTemplate="True"
-                         validation:ReactiveValidation.ErrorTemplate="{StaticResource ValidationErrorTemplate}"/>
+                         materialDesign:HintAssist.Hint="Confirm password"/>
 
-            <Button Style="{StaticResource MaterialDesignFlatLightBgButton}"
-                    Height="25"
-                    Width="80"
-                    Margin="0, 10, 0, 0"
-                    FontSize="12"
-                    Content="Send"
-                    IsEnabled="{Binding Validator.IsValid}"
+            <Button Style="{StaticResource ValidateButton}"
                     Command="{Binding RegisterUser}"/>
         </StackPanel>
     </Grid>

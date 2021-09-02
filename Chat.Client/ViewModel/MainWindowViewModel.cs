@@ -12,70 +12,35 @@ namespace Chat.Client.ViewModel
 {
     public class MainWindowViewModel : ViewModelBase
     {
-        private const int MIN_USER_NAME_LENGTH = 3;
-        private string _tokenName = "Alex"; //ToDo: delete test
+        private readonly RegistrationChatService _registrationChatService;
+        private readonly ChatService _chatService;
 
-        private ChatService _service;
-
-        private string _userName;
-        private bool _isLogin;
         private UserState _state;
-        private UserModel _selectedUser;
-        private ObservableCollection<UserModel> _otherUsers;
-        
-        private ICommand _login;
-        private ICommand _logout;
-        private ICommand _reciveMessage;
-        private ICommand _connect;
 
-        public MainWindowViewModel()// ToDo: delete test
+        private ICommand _connectRegistrationChatService;
+
+        public MainWindowViewModel()
         {
-            //_service = new ChatService();
-            _otherUsers = new ObservableCollection<UserModel>();
+            _chatService = new ChatService();
+            _registrationChatService = new RegistrationChatService();
 
-            _state = UserState.NoRegistered;
-            //_service.Login += LoginEvenHandler;
-            //_service.Logout += LogoutEventHandler;
-            //_service.ReciveMessage += ReciveMessageEventHandler;
+            Registaration = new RegistarationViewModel(_registrationChatService);
+            Login = new LoginViewModel(_registrationChatService);
+            Chat = new ChatViewModel(_chatService, _registrationChatService);
+
+            State = UserState.NoLogin;
+
+            SetEvents();
         }
 
-        public string UserName 
-        {
-            get => _userName;
-            set 
-            {
-                _userName = value;
-
-                OnPropertyChanged();
-            }
-        }
-
-        public UserModel SelectedUser 
-        {
-            get => _selectedUser;
-            set 
-            {
-                _selectedUser = value;
-
-                OnPropertyChanged();
-            }
-        }
-
-        public bool IsLogin 
-        {
-            get => _isLogin;
-            set 
-            {
-                _isLogin = value;
-
-                OnPropertyChanged();
-            }
-        }
+        public RegistarationViewModel Registaration { get; }
+        public LoginViewModel Login { get; }
+        public ChatViewModel Chat { get; }
 
         public UserState State 
         {
             get => _state;
-            set 
+            set
             {
                 _state = value;
 
@@ -83,148 +48,28 @@ namespace Chat.Client.ViewModel
             }
         }
 
-        public ObservableCollection<UserModel> OtherUsers
-        {
-            get => _otherUsers;
-            set
-            {
-                _otherUsers = value;
+        public ICommand ConnectRegistrationChatService => _connectRegistrationChatService ?? (_connectRegistrationChatService = new RelayCommandAsync(
+            execute: ConnectRegistrationChatServiceEventHandler));
 
-                OnPropertyChanged();
-            }
+        private async Task ConnectRegistrationChatServiceEventHandler(object parametr)
+        {
+            await _registrationChatService.Connect();
         }
 
-        public ICommand Connect => _connect ?? (_connect = new RelayCommandAsync(ConnectExecute));
-
-        public ICommand Login => _login ?? (_login = new RelayCommandAsync(
-            execute: LoginExecute,
-            canExecute: LoginCanExecute));
-
-        public ICommand Logout => _logout ?? (_logout = new RelayCommandAsync(LogoutExecute));
-
-        public ICommand ReciveMessage => _reciveMessage ?? (_reciveMessage = new RelayCommandAsync(ReciveMessageExecute));
-
-        private async Task ConnectExecute(object parameter) //ToDo: delete test
+        private void SetEvents() 
         {
-            HubConnection tokenConnection = new HubConnectionBuilder()
-                .WithUrl("http://localhost:5000/chat_register")
-                .Build();
-
-            await tokenConnection.StartAsync();
-
-
-
-            _service = new ChatService(await tokenConnection.InvokeAsync<string>("Login", _tokenName, null));
-
-
-            _service.Login += LoginEvenHandler;
-            _service.Logout += LogoutEventHandler;
-            _service.ReciveMessage += ReciveMessageEventHandler;
-
-            await _service.Connect();
-
-            await tokenConnection.DisposeAsync();
-
+            _registrationChatService.SendTokenToCallerServerHandler += SendTokenEventHandler;
+            _registrationChatService.SendUserStateToCallerServerHandler += SendUserStateEventHandler;
         }
 
-
-        private async Task LoginExecute(object userName) 
+        private void SendTokenEventHandler(string token) 
         {
-            var users = await _service.LoginUser((string)userName);
-
-            if (users is not null)
-            {
-                foreach (UserModel user in users)
-                {
-                    UserModel addedUser = new()
-                    {
-                        Id = user.Id,
-                        IsAdmin = user.IsAdmin,
-                        IsLogin = user.IsLogin,
-                        Name = user.Name
-                    };
-
-                    OtherUsers.Add(addedUser);
-                }
-
-                UserName = (string)userName;
-                IsLogin = true;
-            }
+            _chatService.Token = token;
         }
 
-        private bool LoginCanExecute(object parametr) =>
-            !string.IsNullOrEmpty((string)parametr) && ((string)parametr).Length > MIN_USER_NAME_LENGTH;
-
-        private async Task LogoutExecute(object parametr) 
+        private void SendUserStateEventHandler(UserState state) 
         {
-            await _service.LogoutUser(UserName);
-        }
-
-        private async Task ReciveMessageExecute(object parametr) 
-        {
-            if (SelectedUser is null)
-            {
-                return;
-            }
-
-            ChatMessageModel sendedMessage = await _service.ReciveMessageUser(
-                fromUserName: UserName,
-                toUserId: SelectedUser.Id,
-                message: (string)parametr);
-
-            sendedMessage.IsFromCurrentUser = true;
-
-            SelectedUser.Messages.Add(sendedMessage);
-        }
-
-        private void LoginEvenHandler(UserModel newUser) 
-        {
-            UserModel addedUser = OtherUsers
-                .Where(user => user.Name == newUser.Name)
-                .FirstOrDefault();
-
-            if (addedUser is not null)
-            {
-                return;
-            }
-
-            addedUser = new UserModel
-            {
-                Id = newUser.Id,
-                IsAdmin = newUser.IsAdmin,
-                IsLogin = newUser.IsLogin,
-                Name = newUser.Name
-            };
-
-            OtherUsers.Add(addedUser);
-        }
-
-        private void LogoutEventHandler(UserModel oldUser) 
-        {
-            UserModel removedUser = OtherUsers
-                .Where(user => user.Name == oldUser.Name)
-                .FirstOrDefault();
-
-            if (removedUser is null)
-            {
-                return;
-            }
-
-            OtherUsers.Remove(removedUser);
-        }
-
-        private void ReciveMessageEventHandler(ChatMessageModel message) 
-        {
-            UserModel sender = OtherUsers
-                .Where(user => user.Id == message.FromUserId)
-                .FirstOrDefault();
-
-            if (sender is null)
-            {
-                return;
-            }
-
-            sender.Messages.Add(message);
+            State = state;
         }
     }
 }

@@ -22,9 +22,9 @@ namespace Chat.Client.ViewModel
 
         private ICommand _registerUser;
 
-        public RegistarationViewModel()
+        public RegistarationViewModel(RegistrationChatService registrationChatService)
         {
-            _registrationService = new RegistrationChatService();
+            _registrationService = registrationChatService;
 
             Validator = GetValidator();
         }
@@ -94,8 +94,6 @@ namespace Chat.Client.ViewModel
 
         private async Task ExecuteRegistrationUser(object parameters) 
         {
-            await _registrationService.Connect();
-
             await _registrationService.RegisterUser(new RegisterUserModel
             {
                 UserName = Name,

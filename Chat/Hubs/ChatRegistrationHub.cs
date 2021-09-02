@@ -1,16 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
 
 using Chat.Server.Services.Interfaces;
 using Chat.Models;
-using Chat.Entities;
+using Chat.Interfaces;
 
 namespace Chat.Server.Hubs
 {
-    public class ChatRegistrationHub : Hub
+    public class ChatRegistrationHub : Hub<IChatRegistration>
     {
         private readonly IUserService _userService;
 
@@ -19,14 +16,38 @@ namespace Chat.Server.Hubs
             _userService = userService;
         }
 
-        public async Task Register(RegisterUserModel model)
+        public async Task<bool> Register(RegisterUserModel model)
         {
-            await _userService.AddUserAsync(model);
+            if (!await _userService.AddUserAsync(model))
+            {
+                return false;
+            }
+
+            await Clients.Others.RegisterUserToOthers(await _userService.GetUserAsync(model.UserName));
+            await Clients.Caller.SendUserStateToCaller(UserState.NoLogin);
+
+            return true;
         }
 
-        public async Task<string> Login(string name, string password)
+        public async Task<LoginResult> Login(string name, string password)
         {
-            return await Task.FromResult(name);
+            if (!await _userService.CanLoginUserAsync(name, password))
+            {
+                return new LoginResult();
+            }
+
+            //await Clients.Others.LoginUserToOthers(name);
+            await Clients.Caller.SendTokenToClaller(name);
+            await Clients.Caller.SendCurrentUserToCaller(await _userService.GetUserAsync(name));
+            await Clients.Caller.SendListOfUsersToCaller(await _userService.GetUsersAsync(name));
+            await Clients.Caller.SendUserStateToCaller(UserState.Login);
+
+            return new LoginResult
+            {
+                Token = name,
+                CurrentUser = await _userService.GetUserAsync(name),
+                Users = await _userService.GetUsersAsync(name)
+            };
         }
     }
-}
+}   

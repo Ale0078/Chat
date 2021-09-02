@@ -14,6 +14,6 @@ namespace Chat.Entities
         public Guid ChatId { get; set; }
 
         [ForeignKey(nameof(ChatId))]
-        public Chat Chat { get; set; }
+        public virtual Chat Chat { get; set; }
     }
 }

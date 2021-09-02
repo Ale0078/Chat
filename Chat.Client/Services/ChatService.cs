@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Threading.Tasks;
-using System.Collections.Generic;
 using Microsoft.AspNetCore.SignalR.Client;
 
 using Chat.Models;
@@ -12,46 +11,36 @@ namespace Chat.Client.Services
     {
         private const string URL = "http://localhost:5000/chat";
 
-        private readonly string _token;
         private readonly HubConnection _connection;
 
-        public event Action<UserModel> Login;
-        public event Action<UserModel> Logout;
+        public event Action<string, string> ConnectUser;
+        public event Action<string> Logout;
         public event Action<ChatMessageModel> ReciveMessage;
 
-        public ChatService(string token = null)
+        public ChatService()
         {
-            _token = token;
             _connection = new HubConnectionBuilder()
                 .WithUrl(URL, options => 
                 {
-                    options.AccessTokenProvider = () => Task.FromResult(_token);
+                    options.AccessTokenProvider = () => Task.FromResult(Token);
                 })
                 .Build();
             
-            _connection.On<UserModel>(nameof(IChat.Login), user => Login?.Invoke(user));
-            _connection.On<UserModel>(nameof(IChat.Logout), user => Logout?.Invoke(user));
+            _connection.On<string, string>(nameof(IChat.Connect), (userName, connectionId) => ConnectUser?.Invoke(userName, connectionId));
+            _connection.On<string>(nameof(IChat.Logout), userName => Logout?.Invoke(userName));
             _connection.On<ChatMessageModel>(nameof(IChat.ReciveMessage), message => ReciveMessage?.Invoke(message));
         }
+
+        public string Token { get; set; }
 
         public async Task Connect() 
         {
             await _connection.StartAsync();
         }
 
-        public async Task<IEnumerable<UserModel>> LoginUser(string userName) 
+        public async Task<ChatMessageModel> ReciveMessageUser(Guid chatId, string fromUserId, string toUserId, string message, string connectionId) 
         {
-            return await _connection.InvokeAsync<IEnumerable<UserModel>>("Login", userName);
-        }
-
-        public async Task LogoutUser(string userName) 
-        {
-            await _connection.InvokeAsync("Logout", userName);
-        }
-
-        public async Task<ChatMessageModel> ReciveMessageUser(string fromUserName, string toUserId, string message) 
-        {
-            return await _connection.InvokeAsync<ChatMessageModel>("ReciveMessage", fromUserName, toUserId, message);
+            return await _connection.InvokeAsync<ChatMessageModel>("ReciveMessage", chatId, fromUserId, toUserId, message, connectionId);
         }
     }
 }

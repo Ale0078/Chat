@@ -22,9 +22,9 @@ namespace Chat.Entities
         public DateTime Time { get; set; }
 
         [ForeignKey(nameof(ReceiverId))]
-        public User Receiver { get; set; }
+        public virtual User Receiver { get; set; }
 
         [ForeignKey(nameof(SenderId))]
-        public User Sender { get; set; }
+        public virtual User Sender { get; set; }
     }
 }
