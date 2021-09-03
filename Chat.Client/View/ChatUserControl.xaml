@@ -162,7 +162,7 @@
         <ListBox Grid.Column="0"
                  Padding="0"
                  Margin="0"
-                 ItemsSource="{Binding Users}"
+                 ItemsSource="{Binding Users, UpdateSourceTrigger=PropertyChanged}"
                  SelectedItem="{Binding CurrentUser, Mode=TwoWay}"
                  ItemTemplate="{StaticResource UsersTemplate}"
                  ItemContainerStyle="{StaticResource ListBoxItemTemplate}"
@@ -191,7 +191,7 @@
             <TextBox Grid.Row="1"
                      Grid.Column="0"
                      Margin="10"
-                     Text="{Binding Message, Mode=TwoWay}"
+                     Text="{Binding Message, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                      Name="Message"
                      Style="{StaticResource ControlVisabilityByTrigger}"/>
 

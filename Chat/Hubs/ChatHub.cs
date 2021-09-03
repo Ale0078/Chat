@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.AspNetCore.Authorization;
 
@@ -12,7 +13,14 @@ namespace Chat.Server.Hubs
     [Authorize]
     public class ChatHub : Hub<IChat>
     {
+        private static List<UserConnection> _connections;
+
         private readonly IUserService _userService;
+
+        static ChatHub()
+        {
+            _connections = new List<UserConnection>();
+        }
 
         public ChatHub(IUserService userService)
         {
@@ -22,15 +30,28 @@ namespace Chat.Server.Hubs
         public override async Task OnConnectedAsync()
         {
             await base.OnConnectedAsync();
-            
+
             await Clients.Others.Connect(
                 userName: Context.User.Identity.Name,
                 connectionId: Context.ConnectionId);
+
+            await Clients.Caller.SendConnectionsIdToCaller(_connections);
+
+            _connections.Add(new UserConnection
+            {
+                UserName = Context.User.Identity.Name,
+                ConnectionId = Context.ConnectionId
+            });
         }
 
         public override async Task OnDisconnectedAsync(Exception exception)
         {
             await Clients.Others.Logout(Context.User.Identity.Name);
+
+            _connections.Remove(_connections.Find(connection =>
+            {
+                return connection.UserName == Context.User.Identity.Name;
+            }));
 
             await base.OnDisconnectedAsync(exception);
         }

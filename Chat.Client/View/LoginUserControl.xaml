@@ -29,6 +29,12 @@
 
             <Button Style="{StaticResource ValidateButton}"
                     Command="{Binding LoginUser}"/>
+
+            <Button Width="110"
+                    Height="30"
+                    Margin="0, 20, 0, 0"
+                    Content="Registration"
+                    Command="{Binding SetRegistrationTemplate}"/>
         </StackPanel>
     </Grid>
 </UserControl>

@@ -128,6 +128,7 @@ namespace Chat.Client.ViewModel
             _chatService.ConnectUser += ConnectUserEventHandler;
             _chatService.Logout += LogoutEventHandler;
             _chatService.ReciveMessage += ReciveMessageEventHandler;
+            _chatService.SendConnectionsIdToCallerEvent += SendConnectionsIdToCallerEventHandler;
 
             _registrationChatService.RegisterUserToOthersServerHandler += RegisterUserToOthersServerEventHandler;
             _registrationChatService.SendUsersToCallerServerHandler += SendUsersToCallerServerEventHandler;
@@ -164,6 +165,19 @@ namespace Chat.Client.ViewModel
             });
 
             userSender.Messages.Add(message);
+        }
+
+        private void SendConnectionsIdToCallerEventHandler(IEnumerable<UserConnection> connections) 
+        {
+            foreach (UserConnection connection in connections)
+            {
+                UserModel user = Users.First(model =>
+                {
+                    return model.Name == connection.UserName;
+                });
+
+                user.ConnectionId = connection.ConnectionId;
+            }
         }
 
         private void RegisterUserToOthersServerEventHandler(FullUserModel newUser)

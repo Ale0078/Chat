@@ -21,5 +21,10 @@ namespace Chat.Entities
         public virtual User SecondUser { get; set; }
 
         public virtual List<ChatMessage> ChatMessages { get; set; }
+
+        public Chat()
+        {
+            ChatMessages = new List<ChatMessage>();
+        }
     }
 }

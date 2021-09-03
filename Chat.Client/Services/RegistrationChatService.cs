@@ -29,7 +29,7 @@ namespace Chat.Client.Services
 
             _connection.On<FullUserModel>(
                 methodName: nameof(IChatRegistration.RegisterUserToOthers), 
-                handler: userModel => RegisterUserToOthersServerHandler?.Invoke(userModel));
+                handler: userModel => /*RegisterUserToOthersServerHandler?.Invoke(userModel)*/A(userModel));
 
             //_connection.On<string>(
             //    methodName: nameof(IChatRegistration.LoginUserToOthers), 
@@ -51,6 +51,8 @@ namespace Chat.Client.Services
                 methodName: nameof(IChatRegistration.SendUserStateToCaller),
                 handler: userState => SendUserStateToCallerServerHandler?.Invoke(userState));
         }
+
+        private void A(FullUserModel b) => RegisterUserToOthersServerHandler?.Invoke(b);
 
         public async Task Connect() 
         {

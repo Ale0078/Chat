@@ -1,6 +1,8 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
 
+using static System.Console;
+
 using Chat.Server.Services.Interfaces;
 using Chat.Models;
 using Chat.Interfaces;
@@ -23,7 +25,12 @@ namespace Chat.Server.Hubs
                 return false;
             }
 
-            await Clients.Others.RegisterUserToOthers(await _userService.GetUserAsync(model.UserName));
+            FullUserModel user = await _userService.GetUserAsync(model.UserName);
+
+            await Clients.Others.RegisterUserToOthers(user);
+
+            WriteLine("RegisterUserToOthers is finished");
+
             await Clients.Caller.SendUserStateToCaller(UserState.NoLogin);
 
             return true;
@@ -37,6 +44,7 @@ namespace Chat.Server.Hubs
             }
 
             //await Clients.Others.LoginUserToOthers(name);
+            
             await Clients.Caller.SendTokenToClaller(name);
             await Clients.Caller.SendCurrentUserToCaller(await _userService.GetUserAsync(name));
             await Clients.Caller.SendListOfUsersToCaller(await _userService.GetUsersAsync(name));

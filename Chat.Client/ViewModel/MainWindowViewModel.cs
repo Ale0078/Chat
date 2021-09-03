@@ -60,6 +60,8 @@ namespace Chat.Client.ViewModel
         {
             _registrationChatService.SendTokenToCallerServerHandler += SendTokenEventHandler;
             _registrationChatService.SendUserStateToCallerServerHandler += SendUserStateEventHandler;
+
+            Login.SetStateEvent += SendUserStateEventHandler;
         }
 
         private void SendTokenEventHandler(string token) 

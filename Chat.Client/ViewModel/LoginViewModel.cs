@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using System.Windows.Input;
 
 using ReactiveValidation;
@@ -21,6 +22,9 @@ namespace Chat.Client.ViewModel
         private string _password;
 
         private ICommand _loginUser;
+        private ICommand _setRegistrationTemplate;
+
+        public event Action<UserState> SetStateEvent;
 
         public LoginViewModel(RegistrationChatService registrationChatService)
         {
@@ -54,6 +58,19 @@ namespace Chat.Client.ViewModel
         public ICommand LoginUser => _loginUser ?? (_loginUser = new RelayCommandAsync(
             execute: LoginUserExecute));
 
+        private async Task LoginUserExecute(object parametr)
+        {
+            LoginResult result = await _registrationChatService.LoginUser(UserName, Password);
+        }
+
+        public ICommand SetRegistrationTemplate => _setRegistrationTemplate ?? (_setRegistrationTemplate = new RelayCommand(
+            execute: ExecuteSetRegistrationTemplate));
+
+        private void ExecuteSetRegistrationTemplate(object parametr) 
+        {
+            SetStateEvent?.Invoke(UserState.NoRegistered);
+        }
+
         private IObjectValidator GetValidator() 
         {
             ValidationBuilder<LoginViewModel> validator = new();
@@ -71,11 +88,6 @@ namespace Chat.Client.ViewModel
                 .WithMessage("Pssword cannot be less than 6 chars");
 
             return validator.Build(this);
-        }
-
-        private async Task LoginUserExecute(object parametr) 
-        {
-            LoginResult result = await _registrationChatService.LoginUser(UserName, Password);
         }
     }
 }
