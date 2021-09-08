@@ -14,6 +14,7 @@
                 <ResourceDictionary Source="pack://application:,,,/ReactiveValidation;component/WPF/Themes/Generic.xaml"/>
 
                 <ResourceDictionary Source="Resources/FormStyles.xaml"/>
+                <ResourceDictionary Source="Resources/ChatStyles.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>
