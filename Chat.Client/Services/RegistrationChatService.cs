@@ -15,7 +15,6 @@ namespace Chat.Client.Services
         private readonly HubConnection _connection;
 
         public event Action<FullUserModel> RegisterUserToOthersServerHandler;
-        //public event Action<string> LoginUserToOthersServerHandler;
         public event Action<IEnumerable<UserModel>> SendUsersToCallerServerHandler;
         public event Action<FullUserModel> SendUserToCallerServerHandler;
         public event Action<string> SendTokenToCallerServerHandler;
@@ -29,11 +28,7 @@ namespace Chat.Client.Services
 
             _connection.On<FullUserModel>(
                 methodName: nameof(IChatRegistration.RegisterUserToOthers), 
-                handler: userModel => /*RegisterUserToOthersServerHandler?.Invoke(userModel)*/A(userModel));
-
-            //_connection.On<string>(
-            //    methodName: nameof(IChatRegistration.LoginUserToOthers), 
-            //    handler: userName => LoginUserToOthersServerHandler?.Invoke(userName));
+                handler: userModel => RegisterUserToOthersServerHandler?.Invoke(userModel));
 
             _connection.On<IEnumerable<UserModel>>(
                 methodName: nameof(IChatRegistration.SendListOfUsersToCaller),
@@ -51,8 +46,6 @@ namespace Chat.Client.Services
                 methodName: nameof(IChatRegistration.SendUserStateToCaller),
                 handler: userState => SendUserStateToCallerServerHandler?.Invoke(userState));
         }
-
-        private void A(FullUserModel b) => RegisterUserToOthersServerHandler?.Invoke(b);
 
         public async Task Connect() 
         {

@@ -92,7 +92,6 @@ namespace Chat.Client.ViewModel
 
         private async Task ExecuteConnectEvent(object parametr) 
         {
-            await _registrationChatService.Disconect();
             await _chatService.Connect();
         }
 

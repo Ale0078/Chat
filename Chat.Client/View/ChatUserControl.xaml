@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800"
              Name="ChatControl">
@@ -60,7 +61,15 @@
                     Content="Send"
                     Command="{Binding SendMessage}"
                     Margin="0, 10, 10, 10"
-                    Style="{StaticResource ControlVisabilityByTrigger}"/>
+                    Style="{StaticResource ControlVisabilityByTrigger}">
+                <Button.Template>
+                    <ControlTemplate>
+                        <Grid>
+                            <materialDesign:PackIcon Kind="Send" />
+                        </Grid>
+                    </ControlTemplate>
+                </Button.Template>
+            </Button>
         </Grid>
     </Grid>
 </UserControl>
