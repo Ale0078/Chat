@@ -41,6 +41,7 @@
                 </Grid.RowDefinitions>
 
                 <TextBlock Grid.Row="0"
+                           TextWrapping="Wrap"
                            Text="{Binding Message}"/>
 
                 <TextBlock Grid.Row="1"                             
@@ -56,8 +57,7 @@
                 BorderThickness="{TemplateBinding BorderThickness}">
             <ScrollViewer HorizontalScrollBarVisibility="Disabled"
                           VerticalScrollBarVisibility="Auto"
-                          Margin="0"
-                          Template="{StaticResource ScrollViewerTemplate}">
+                          Margin="0">
                 <ItemsPresenter Margin="0"/>
             </ScrollViewer>
         </Border>

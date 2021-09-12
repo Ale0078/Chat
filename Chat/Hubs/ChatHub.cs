@@ -69,7 +69,7 @@ namespace Chat.Server.Hubs
 
             await _userService.AddChatMessageAsync(chatMessage);
 
-            if (connectionId is not null || connectionId != string.Empty)
+            if (connectionId is not null && connectionId != string.Empty)
             {
                 await Clients.Client(connectionId).ReciveMessage(chatMessage);
             }
