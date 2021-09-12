@@ -124,7 +124,7 @@
                         <Trigger Property="IsSelected" Value="True">
                             <Setter Property="Background" Value="#3e90fd"/>
                         </Trigger>
-                        
+
                         <Trigger Property="IsSelected" Value="False">
                             <Setter Property="Background" Value="White"/>
                         </Trigger>
