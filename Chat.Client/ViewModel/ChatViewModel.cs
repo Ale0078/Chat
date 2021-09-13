@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using System.Windows;
 
 using Chat.Client.Services;
 using Chat.Client.Commands;
@@ -18,6 +19,7 @@ namespace Chat.Client.ViewModel
         private string _id;
         private string _userName;
         private string _message;
+        private Visibility _buttonToSendVisibility;
         private UserModel _currentUser;
         private ObservableCollection<UserModel> _users;
 
@@ -28,6 +30,8 @@ namespace Chat.Client.ViewModel
         {
             _chatService = chatService;
             _registrationChatService = registrationChatService;
+
+            _buttonToSendVisibility = Visibility.Collapsed;
 
             SetEvents();
         }
@@ -60,6 +64,28 @@ namespace Chat.Client.ViewModel
             set 
             {
                 _message = value;
+
+                if (_message == string.Empty
+                    || string.IsNullOrEmpty(_message)
+                    || string.IsNullOrWhiteSpace(_message))
+                {
+                    ButtonToSendVisibility = Visibility.Collapsed;
+                }
+                else
+                {
+                    ButtonToSendVisibility = Visibility.Visible;
+                }
+
+                OnPropertyChanged();
+            }
+        }
+
+        public Visibility ButtonToSendVisibility 
+        {
+            get => _buttonToSendVisibility;
+            set 
+            {
+                _buttonToSendVisibility = value;
 
                 OnPropertyChanged();
             }

@@ -8,9 +8,11 @@
              xmlns:model="clr-namespace:Chat.Client.ViewModel"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800"
-             Name="LoginControl">
+             Name="LoginControl"
+             Focusable="False">
     <Grid Background="#DCE6E6"
-          DataContext="{Binding ElementName=LoginControl, Path=DataContext}">
+          DataContext="{Binding ElementName=LoginControl, Path=DataContext}"
+          Focusable="False">
         <StackPanel Style="{StaticResource StyleToForm}">
             <materialDesign:PackIcon Kind="AccountCircle"
                                      HorizontalAlignment="Center"
@@ -28,13 +30,15 @@
                          materialDesign:HintAssist.Hint="Password"/>
 
             <Button Style="{StaticResource ValidateButton}"
-                    Command="{Binding LoginUser}"/>
+                    Command="{Binding LoginUser}"
+                    Focusable="False"/>
 
             <Button Width="110"
                     Height="30"
                     Margin="0, 20, 0, 0"
                     Content="Registration"
-                    Command="{Binding SetRegistrationTemplate}"/>
+                    Command="{Binding SetRegistrationTemplate}"
+                    Focusable="False"/>
         </StackPanel>
     </Grid>
 </UserControl>

@@ -8,9 +8,11 @@
              xmlns:password="clr-namespace:Chat.Client.AttachedProperties"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800"
-             Name="RegistrationControl">
+             Name="RegistrationControl"
+             Focusable="False">
     <Grid Background="#DCE6E6"
-          DataContext="{Binding ElementName=RegistrationControl, Path=DataContext}">
+          DataContext="{Binding ElementName=RegistrationControl, Path=DataContext}"
+          Focusable="False">
         <StackPanel Style="{StaticResource StyleToForm}">
             <materialDesign:PackIcon Kind="AccountCircle"
                                      HorizontalAlignment="Center"
@@ -32,7 +34,8 @@
                          materialDesign:HintAssist.Hint="Confirm password"/>
 
             <Button Style="{StaticResource ValidateButton}"
-                    Command="{Binding RegisterUser}"/>
+                    Command="{Binding RegisterUser}"
+                    Focusable="False"/>
         </StackPanel>
     </Grid>
 </UserControl>

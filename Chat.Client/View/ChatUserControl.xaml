@@ -4,75 +4,88 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+             xmlns:controls="clr-namespace:Chat.Client.View"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800"
-             Name="ChatControl">
+             d:DesignHeight="450" 
+             d:DesignWidth="800"
+             Name="ChatControl"
+             Focusable="False">
     <i:Interaction.Triggers>
         <i:EventTrigger>
             <i:InvokeCommandAction Command="{Binding Connect}"/>
         </i:EventTrigger>
     </i:Interaction.Triggers>
     
-    <Grid DataContext="{Binding ElementName=ChatControl, Path=DataContext}">
+    <Grid DataContext="{Binding ElementName=ChatControl, Path=DataContext}"
+          Focusable="False">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="1*"/>
-            <ColumnDefinition Width="3*"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="4*"/>
         </Grid.ColumnDefinitions>
 
         <ListBox Grid.Column="0"
-                 Padding="0"
-                 Margin="0"
                  ItemsSource="{Binding Users, UpdateSourceTrigger=PropertyChanged}"
                  SelectedItem="{Binding CurrentUser, Mode=TwoWay}"
                  ItemTemplate="{StaticResource UsersTemplate}"
                  ItemContainerStyle="{StaticResource ListBoxItemTemplate}"
-                 BorderThickness="0, 0, 0.3, 0"
-                 BorderBrush="Black"
                  ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                 ScrollViewer.VerticalScrollBarVisibility="Auto"/>
+                 ScrollViewer.VerticalScrollBarVisibility="Auto"
+                 Focusable="False"/>
 
-        <Grid Grid.Column="1">
+        <GridSplitter Grid.Column="1"
+                      Width="1"
+                      Background="LightGray"
+                      HorizontalAlignment="Center"
+                      VerticalAlignment="Stretch"
+                      ResizeBehavior="BasedOnAlignment"/>
+        
+        <Grid Grid.Column="2"
+              Focusable="False">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="3*"/>
-                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition />
+                <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
-                <RowDefinition Height="3*"/>
-                <RowDefinition Height="1*"/>
+                <RowDefinition />
+                <RowDefinition Height="40"/>
             </Grid.RowDefinitions>
 
             <ItemsControl Grid.ColumnSpan="2"
-                          BorderThickness="0, 0, 0, 0.2"
-                          BorderBrush="Black"
+                          BorderThickness="0, 0, 0, 1"
+                          BorderBrush="LightGray"
                           ItemsSource="{Binding CurrentUser.Messages}"
                           ItemTemplate="{StaticResource MessagesTemplate}"
-                          Template="{StaticResource MessagesScrolViewer}"/>
+                          Template="{StaticResource MessagesScrolViewer}"
+                          Focusable="False">
+                <ItemsControl.Background>
+                    <LinearGradientBrush StartPoint="0, 0"
+                                         EndPoint="1, 1">
+                        <GradientStop Color="#E2F672"
+                                      Offset="-0.3"/>
+
+                        <GradientStop Color="#48C35E"
+                                      Offset="0.5"/>
+
+                        <GradientStop Color="#E2F672"
+                                      Offset="1.3"/>
+                    </LinearGradientBrush>
+                </ItemsControl.Background>
+            </ItemsControl>
 
             <TextBox Grid.Row="1"
                      Grid.Column="0"
-                     Margin="10"
                      Text="{Binding Message, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                      Name="Message"
-                     TextWrapping="Wrap"
-                     ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                     ScrollViewer.VerticalScrollBarVisibility="Auto"
-                     Style="{StaticResource ControlVisabilityByTrigger}"/>
+                     Style="{StaticResource TextBoxToMessage}">
+            </TextBox>
 
             <Button Grid.Row="1"
                     Grid.Column="1"
-                    Content="Send"
+                    Visibility="{Binding ButtonToSendVisibility}"
                     Command="{Binding SendMessage}"
-                    Margin="0, 10, 10, 10"
-                    Style="{StaticResource ControlVisabilityByTrigger}">
-                <Button.Template>
-                    <ControlTemplate>
-                        <Grid>
-                            <materialDesign:PackIcon Kind="Send" />
-                        </Grid>
-                    </ControlTemplate>
-                </Button.Template>
-            </Button>
+                    Style="{StaticResource IconButtonToSendMessage}"/>
         </Grid>
     </Grid>
 </UserControl>

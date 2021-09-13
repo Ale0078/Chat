@@ -9,8 +9,12 @@
         xmlns:userState="clr-namespace:Chat.Models;assembly=Chat.Models"
         xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800"
-        Name="Window">
+        Title="MainWindow" 
+        Height="450" 
+        Width="800"
+        BorderThickness="0"
+        Name="Window"
+        Focusable="False">
     <Window.DataContext>
         <model:MainWindowViewModel/>
     </Window.DataContext>
@@ -23,7 +27,8 @@
                     <Setter Property="ContentTemplate">
                         <Setter.Value>
                             <DataTemplate>
-                                <chat:ChatUserControl DataContext="{Binding ElementName=Window, Path=DataContext.Chat}"/>
+                                <chat:ChatUserControl DataContext="{Binding ElementName=Window, Path=DataContext.Chat}"
+                                                      Focusable="False"/>
                             </DataTemplate>
                         </Setter.Value>
                     </Setter>
@@ -33,7 +38,8 @@
                     <Setter Property="ContentTemplate">
                         <Setter.Value>
                             <DataTemplate>
-                                <chat:LoginUserControl DataContext="{Binding ElementName=Window, Path=DataContext.Login}"/>
+                                <chat:LoginUserControl DataContext="{Binding ElementName=Window, Path=DataContext.Login}"
+                                                       Focusable="False"/>
                             </DataTemplate>
                         </Setter.Value>
                     </Setter>
@@ -43,7 +49,8 @@
                     <Setter Property="ContentTemplate">
                         <Setter.Value>
                             <DataTemplate>
-                                <chat:RegistrationUserControl DataContext="{Binding ElementName=Window, Path=DataContext.Registaration}"/>
+                                <chat:RegistrationUserControl DataContext="{Binding ElementName=Window, Path=DataContext.Registaration}"
+                                                              Focusable="False"/>
                             </DataTemplate>
                         </Setter.Value>
                     </Setter>
@@ -59,6 +66,7 @@
     </i:Interaction.Triggers>
     
     <Grid>
-        <ContentControl Style="{StaticResource FullChat}"/>
+        <ContentControl Style="{StaticResource FullChat}"
+                        Focusable="False"/>
     </Grid>
 </Window>
