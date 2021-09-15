@@ -6,6 +6,7 @@ namespace Chat.Models
     {
         public string Id { get; set; }
         public string Name { get; set; }
+        public bool IsAdmin { get; set; }
         public List<ChatModel> Chats { get; set; }
 
         public FullUserModel()

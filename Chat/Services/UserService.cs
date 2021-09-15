@@ -92,7 +92,7 @@ namespace Chat.Server.Services//ToDo: use include to all entities
 
         public async Task<bool> CanLoginUserAsync(string userName, string password)
         {
-            User userToCheckPassword = (await _userManager.FindByNameAsync(userName));
+            User userToCheckPassword = await _userManager.FindByNameAsync(userName);
 
             return userToCheckPassword is null
                 ? false
@@ -108,7 +108,8 @@ namespace Chat.Server.Services//ToDo: use include to all entities
             FullUserModel userModel = new() 
             {
                 Id = dbUser.Id,
-                Name = dbUser.UserName
+                Name = dbUser.UserName,
+                IsAdmin = dbUser.UserName == "Admin"
             };
 
             foreach (Chatter chatter in dbUser.Chatters)

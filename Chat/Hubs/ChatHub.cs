@@ -66,7 +66,7 @@ namespace Chat.Server.Hubs
                 Message = message,
                 SendingTime = DateTime.Now
             };
-
+            
             await _userService.AddChatMessageAsync(chatMessage);
 
             if (connectionId is not null && connectionId != string.Empty)

@@ -10,7 +10,9 @@
              d:DesignHeight="450" 
              d:DesignWidth="800"
              Name="ChatControl"
-             Focusable="False">
+             Focusable="False"
+             BorderThickness="0, 1, 0, 0"
+             BorderBrush="LightGray">
     <i:Interaction.Triggers>
         <i:EventTrigger>
             <i:InvokeCommandAction Command="{Binding Connect}"/>
@@ -48,11 +50,57 @@
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
                 <RowDefinition />
-                <RowDefinition Height="40"/>
+                <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
+            <Border Grid.Row="0"
+                    Grid.Column="0"
+                    Grid.ColumnSpan="2"
+                    Style="{StaticResource BorderWithCurrentUserInfo}"
+                    Height="52">
+                <Grid>
+                    <TextBlock Text="{Binding CurrentUser.Name}"
+                               FontSize="24"
+                               FontWeight="Light"
+                               Margin="8, 0, 0, 0"
+                               VerticalAlignment="Center"/>
+
+                    <Menu HorizontalAlignment="Right"
+                          VerticalAlignment="Center"
+                          IsMainMenu="True"
+                          Background="#FFFFFF"
+                          Margin="0, 0, 8, 0">
+                        <MenuItem Header="{materialDesign:PackIcon Kind=DotsVertical}">
+                            <MenuItem Header="Block user"
+                                      Icon="{materialDesign:PackIcon Kind=Cancel}"
+                                      Visibility="{Binding User.AdminToolsVisibility}"/>
+
+                            <MenuItem Header="Unblock user"
+                                      Icon="{materialDesign:PackIcon Kind=CheckDecagram}"
+                                      Visibility="{Binding User.AdminToolsVisibility}"/>
+
+                            <MenuItem Header="Mute user"
+                                      Icon="{materialDesign:PackIcon Kind=VolumeMute}"
+                                      Visibility="{Binding User.AdminToolsVisibility}"/>
+
+                            <MenuItem Header="Unmute user"
+                                      Icon="{materialDesign:PackIcon Kind=VolumeHigh}"
+                                      Visibility="{Binding User.AdminToolsVisibility}"/>
+
+                            <MenuItem Header="Add to black list"
+                                      Icon="{materialDesign:PackIcon Kind=MessageBulletedOff}"/>
+
+                            <MenuItem Header="Remove from black list"
+                                      Icon="{materialDesign:PackIcon Kind=MessageBulleted}"/>
+                        </MenuItem>
+                    </Menu>
+                </Grid>
+            </Border>
+            
             <ItemsControl Grid.ColumnSpan="2"
+                          Grid.Row="1"
                           BorderThickness="0, 0, 0, 1"
                           BorderBrush="LightGray"
                           ItemsSource="{Binding CurrentUser.Messages}"
@@ -74,16 +122,15 @@
                 </ItemsControl.Background>
             </ItemsControl>
 
-            <TextBox Grid.Row="1"
+            <TextBox Grid.Row="2"
                      Grid.Column="0"
-                     Text="{Binding Message, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                     Text="{Binding User.Message, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                      Name="Message"
-                     Style="{StaticResource TextBoxToMessage}">
-            </TextBox>
+                     Style="{StaticResource TextBoxToMessage}"/>
 
-            <Button Grid.Row="1"
+            <Button Grid.Row="2"
                     Grid.Column="1"
-                    Visibility="{Binding ButtonToSendVisibility}"
+                    Visibility="{Binding User.ButtonToSendVisibility}"
                     Command="{Binding SendMessage}"
                     Style="{StaticResource IconButtonToSendMessage}"/>
         </Grid>

@@ -16,12 +16,7 @@ namespace Chat.Client.ViewModel
         private readonly ChatService _chatService;
         private readonly RegistrationChatService _registrationChatService;
 
-        private string _id;
-        private string _userName;
-        private string _message;
-        private Visibility _buttonToSendVisibility;
-        private UserModel _currentUser;
-        private ObservableCollection<UserModel> _users;
+        private ChatMemberViewModel _currentUser;
 
         private ICommand _connect;
         private ICommand _sendMessage;
@@ -31,83 +26,25 @@ namespace Chat.Client.ViewModel
             _chatService = chatService;
             _registrationChatService = registrationChatService;
 
-            _buttonToSendVisibility = Visibility.Collapsed;
+            User = new UserViewModel()
+            {
+                ButtonToSendVisibility = Visibility.Collapsed
+            };
+            Users = new ObservableCollection<ChatMemberViewModel>();
 
             SetEvents();
         }
 
-        public string Id 
-        {
-            get => _id;
-            set 
-            {
-                _id = value;
+        public UserViewModel User { get; set; }
 
-                OnPropertyChanged();
-            }
-        }
-
-        public string UserName 
-        {
-            get => _userName;
-            set 
-            {
-                _userName = value;
-
-                OnPropertyChanged();
-            }
-        }
-
-        public string Message 
-        {
-            get => _message;
-            set 
-            {
-                _message = value;
-
-                if (_message == string.Empty
-                    || string.IsNullOrEmpty(_message)
-                    || string.IsNullOrWhiteSpace(_message))
-                {
-                    ButtonToSendVisibility = Visibility.Collapsed;
-                }
-                else
-                {
-                    ButtonToSendVisibility = Visibility.Visible;
-                }
-
-                OnPropertyChanged();
-            }
-        }
-
-        public Visibility ButtonToSendVisibility 
-        {
-            get => _buttonToSendVisibility;
-            set 
-            {
-                _buttonToSendVisibility = value;
-
-                OnPropertyChanged();
-            }
-        }
-
-        public UserModel CurrentUser 
+        public ObservableCollection<ChatMemberViewModel> Users { get; set; }
+        
+        public ChatMemberViewModel CurrentUser 
         {
             get => _currentUser;
             set 
             {
                 _currentUser = value;
-
-                OnPropertyChanged();
-            }
-        }
-
-        public ObservableCollection<UserModel> Users 
-        {
-            get => _users;
-            set 
-            {
-                _users = value;
 
                 OnPropertyChanged();
             }
@@ -129,12 +66,12 @@ namespace Chat.Client.ViewModel
         {
             ChatMessageModel sendingMessage = await _chatService.ReciveMessageUser(
                 chatId: CurrentUser.ChatId,
-                fromUserId: Id,
+                fromUserId: User.Id,
                 toUserId: CurrentUser.Id,
-                message: Message.TrimStart().TrimEnd(),
+                message: User.Message.TrimStart().TrimEnd(),
                 connectionId: Users.First(user => user.Name == CurrentUser.Name).ConnectionId);
 
-            Message = string.Empty;
+            User.Message = string.Empty;
 
             sendingMessage.IsFromCurrentUser = true;
 
@@ -143,7 +80,7 @@ namespace Chat.Client.ViewModel
 
         private bool CanExecuteSendMessage(object parametr) 
         {
-            return !(string.IsNullOrWhiteSpace(Message) || string.IsNullOrEmpty(Message));
+            return !(string.IsNullOrWhiteSpace(User.Message) || string.IsNullOrEmpty(User.Message));
         }
 
         private void SetEvents()
@@ -160,7 +97,7 @@ namespace Chat.Client.ViewModel
 
         private void ConnectUserEventHandler(string userName, string connectionId) 
         {
-            UserModel connectedUser = Users.First(user =>
+            ChatMemberViewModel connectedUser = Users.First(user =>
             {
                 return user.Name == userName;
             });
@@ -171,7 +108,7 @@ namespace Chat.Client.ViewModel
 
         private void LogoutEventHandler(string userName) 
         {
-            UserModel logoutedUser = Users.First(user =>
+            ChatMemberViewModel logoutedUser = Users.First(user =>
             {
                 return user.Name == userName;
             });
@@ -182,7 +119,7 @@ namespace Chat.Client.ViewModel
 
         private void ReciveMessageEventHandler(ChatMessageModel message) 
         {
-            UserModel userSender = Users.First(user =>
+            ChatMemberViewModel userSender = Users.First(user =>
             {
                 return user.ChatId.Equals(message.ChatId);
             });
@@ -194,7 +131,7 @@ namespace Chat.Client.ViewModel
         {
             foreach (UserConnection connection in connections)
             {
-                UserModel user = Users.First(model =>
+                ChatMemberViewModel user = Users.First(model =>
                 {
                     return model.Name == connection.UserName;
                 });
@@ -208,12 +145,12 @@ namespace Chat.Client.ViewModel
         {
             ChatModel chat = newUser.Chats.Find(chatModel =>
             {
-                return chatModel.FirstUserId.Equals(Id) || chatModel.SecondUserId.Equals(Id);
+                return chatModel.FirstUserId.Equals(User.Id) || chatModel.SecondUserId.Equals(User.Id);
             });
 
             ObservableCollection<ChatMessageModel> messages = new ObservableCollection<ChatMessageModel>(chat.Messages);
 
-            Users.Add(new UserModel
+            Users.Add(new ChatMemberViewModel
             {
                 Id = newUser.Id,
                 ChatId = chat.Id,
@@ -224,13 +161,26 @@ namespace Chat.Client.ViewModel
 
         private void SendUsersToCallerServerEventHandler(IEnumerable<UserModel> users) 
         {
-            Users = new ObservableCollection<UserModel>(users);
+            foreach (UserModel user in users)
+            {
+                Users.Add(new ChatMemberViewModel
+                {
+                    Id = user.Id,
+                    Name = user.Name,
+                    ConnectionId = user.ConnectionId,
+                    ChatId = user.ChatId,
+                    IsAdmin = user.IsAdmin,
+                    IsLogin = user.IsLogin,
+                    Messages = user.Messages
+                });
+            }
         }
 
         private void SendUserToCallerServerEventHandler(FullUserModel user) 
         {
-            Id = user.Id;
-            UserName = user.Name;
+            User.Id = user.Id;
+            User.UserName = user.Name;
+            User.IsAdmin = user.IsAdmin;
         }
     }
 }

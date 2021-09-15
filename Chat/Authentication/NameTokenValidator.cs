@@ -6,6 +6,8 @@ namespace Chat.Server.Authentication
 {
     public class NameTokenValidator : ISecurityTokenValidator
     {
+        private const string ADMIN_NAME = "Admin";
+
         public bool CanValidateToken => true;
         public int MaximumTokenSizeInBytes { get; set; }
 
@@ -18,13 +20,23 @@ namespace Chat.Server.Authentication
         {
             validatedToken = null;
 
-            return new ClaimsPrincipal(new List<ClaimsIdentity>
+            ClaimsPrincipal principal = new(new List<ClaimsIdentity>
             {
                 new ClaimsIdentity(new List<Claim>
                 {
                     new Claim(ClaimTypes.Name, securityToken)
                 })
             });
+
+            if (securityToken == ADMIN_NAME)
+            {
+                principal.AddIdentity(new ClaimsIdentity(new List<Claim>
+                {
+                    new Claim(ClaimTypes.Role, securityToken)
+                }));
+            }
+
+            return principal;
         }
     }
 }
