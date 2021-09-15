@@ -43,12 +43,14 @@ namespace Chat.Server.Hubs
                 return new LoginResult();
             }
 
-            //await Clients.Others.LoginUserToOthers(name);
-            
+            FullUserModel user = await _userService.GetUserAsync(name);
+
             await Clients.Caller.SendTokenToClaller(name);
-            await Clients.Caller.SendCurrentUserToCaller(await _userService.GetUserAsync(name));
+            await Clients.Caller.SendCurrentUserToCaller(user);
             await Clients.Caller.SendListOfUsersToCaller(await _userService.GetUsersAsync(name));
-            await Clients.Caller.SendUserStateToCaller(UserState.Login);
+            await Clients.Caller.SendUserStateToCaller(user.IsBlocked 
+                ? UserState.Blocked
+                : UserState.Login);
 
             return new LoginResult
             {

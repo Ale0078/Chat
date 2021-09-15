@@ -1,8 +1,5 @@
-﻿using System.Collections.ObjectModel;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using System.Windows.Input;
-using Microsoft.AspNetCore.SignalR.Client;
 
 using Chat.Client.Services;
 using Chat.Client.Commands;
@@ -60,6 +57,8 @@ namespace Chat.Client.ViewModel
         {
             _registrationChatService.SendTokenToCallerServerHandler += SendTokenEventHandler;
             _registrationChatService.SendUserStateToCallerServerHandler += SendUserStateEventHandler;
+
+            _chatService.SetBlockedStateUserToBlockedUser += SendUserStateEventHandler;
 
             Login.SetStateEvent += SendUserStateEventHandler;
         }

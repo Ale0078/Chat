@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.AspNetCore.Authorization;
 
+using Chat.Server.Extensions;
 using Chat.Server.Services.Interfaces;
 using Chat.Interfaces;
 using Chat.Models;
@@ -13,6 +14,8 @@ namespace Chat.Server.Hubs
     [Authorize]
     public class ChatHub : Hub<IChat>
     {
+        private const string ADMIN_ROLE = "Admin";
+
         private static List<UserConnection> _connections;
 
         private readonly IUserService _userService;
@@ -69,12 +72,31 @@ namespace Chat.Server.Hubs
             
             await _userService.AddChatMessageAsync(chatMessage);
 
-            if (connectionId is not null && connectionId != string.Empty)
+            if (connectionId is not null && !connectionId.IsConnectionIdEmpty())
             {
                 await Clients.Client(connectionId).ReciveMessage(chatMessage);
             }
 
             return chatMessage;
+        }
+
+        [Authorize(Roles = ADMIN_ROLE)]
+        public async Task<bool> SetBlockState(string userId, string connectionId, bool isBlocked) 
+        {
+            if (connectionId is not null && !connectionId.IsConnectionIdEmpty())
+            {
+                await Clients.Client(connectionId).ChangeBlockStatusUserToUser(isBlocked
+                    ? UserState.Blocked
+                    : UserState.Login);
+
+                await Clients.AllExcept(connectionId).ChangeBlockStatusUserToAllUsersExceptBlocked(userId, isBlocked);
+            }
+            else 
+            {
+                await Clients.All.ChangeBlockStatusUserToAllUsersExceptBlocked(userId, isBlocked);
+            }
+
+            return await _userService.SetBlockStateAsync(userId, isBlocked);
         }
     }
 }

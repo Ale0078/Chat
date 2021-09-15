@@ -5,6 +5,7 @@ namespace Chat.Entities
 {
     public class User : IdentityUser
     {
+        public bool IsBlocked { get; set; }
         public virtual List<Chatter> Chatters { get; set; }
 
         public User() : base()

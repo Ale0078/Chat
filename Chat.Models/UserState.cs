@@ -4,6 +4,7 @@
     {
         NoRegistered,
         NoLogin,
-        Login
+        Login,
+        Blocked
     }
 }

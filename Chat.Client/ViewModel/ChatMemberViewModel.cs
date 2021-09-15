@@ -13,6 +13,7 @@ namespace Chat.Client.ViewModel
         private Guid _chatId;
         private bool _isAdmin;
         private bool _isLogin;
+        private bool _isBlocked;
 
         public ObservableCollection<ChatMessageModel> Messages { get; set; }
 
@@ -21,7 +22,7 @@ namespace Chat.Client.ViewModel
             get => _id;
             set 
             {
-                _name = value;
+                _id = value;
 
                 OnPropertyChanged();
             }
@@ -77,6 +78,17 @@ namespace Chat.Client.ViewModel
             set 
             {
                 _isLogin = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        public bool IsBlocked 
+        {
+            get => _isBlocked;
+            set 
+            {
+                _isBlocked = value;
 
                 OnPropertyChanged();
             }

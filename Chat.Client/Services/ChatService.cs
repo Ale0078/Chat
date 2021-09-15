@@ -8,7 +8,7 @@ using Chat.Interfaces;
 
 namespace Chat.Client.Services
 {
-    public class ChatService//ToDo : SendConnectionsIdToCaller handler
+    public class ChatService
     {
         private const string URL = "http://localhost:5000/chat";
 
@@ -18,6 +18,8 @@ namespace Chat.Client.Services
         public event Action<string> Logout;
         public event Action<ChatMessageModel> ReciveMessage;
         public event Action<IEnumerable<UserConnection>> SendConnectionsIdToCallerEvent;
+        public event Action<string, bool> SetBlockStateUserToAllUsersExeptBlocked;
+        public event Action<UserState> SetBlockedStateUserToBlockedUser;
 
         public ChatService()
         {
@@ -43,18 +45,36 @@ namespace Chat.Client.Services
             _connection.On<ChatMessageModel>(
                 methodName: nameof(IChat.ReciveMessage), 
                 handler: message => ReciveMessage?.Invoke(message));
+
+            _connection.On<string, bool>(
+                methodName: nameof(IChat.ChangeBlockStatusUserToAllUsersExceptBlocked),
+                handler: (userId, isBlocked) => SetBlockStateUserToAllUsersExeptBlocked?.Invoke(userId, isBlocked));
+
+            _connection.On<UserState>(
+                methodName: nameof(IChat.ChangeBlockStatusUserToUser),
+                handler: state => SetBlockedStateUserToBlockedUser?.Invoke(state));
         }
 
         public string Token { get; set; }
 
         public async Task Connect() 
         {
+            if (_connection.ConnectionId != null)
+            {
+                return;
+            }
+
             await _connection.StartAsync();
         }
 
-        public async Task<ChatMessageModel> ReciveMessageUser(Guid chatId, string fromUserId, string toUserId, string message, string connectionId) 
+        public async Task<ChatMessageModel> ReciveMessageUserAsync(Guid chatId, string fromUserId, string toUserId, string message, string connectionId) 
         {
             return await _connection.InvokeAsync<ChatMessageModel>("ReciveMessage", chatId, fromUserId, toUserId, message, connectionId);
+        }
+
+        public async Task<bool> SetBlockStateToUserAsync(string userId, string connectionId, bool isBlocked) 
+        {
+            return await _connection.InvokeAsync<bool>("SetBlockState", userId, connectionId, isBlocked);
         }
     }
 }

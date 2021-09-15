@@ -12,6 +12,7 @@ namespace Chat.Models
         public ObservableCollection<ChatMessageModel> Messages { get; set; }
         public bool IsAdmin { get; set; }
         public bool IsLogin { get; set; }
+        public bool IsBlocked { get; set; }
 
         public UserModel()
         {

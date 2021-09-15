@@ -75,11 +75,13 @@
                         <MenuItem Header="{materialDesign:PackIcon Kind=DotsVertical}">
                             <MenuItem Header="Block user"
                                       Icon="{materialDesign:PackIcon Kind=Cancel}"
-                                      Visibility="{Binding User.AdminToolsVisibility}"/>
+                                      Visibility="{Binding User.AdminToolsVisibility}"
+                                      Command="{Binding BlockUser}"/>
 
                             <MenuItem Header="Unblock user"
                                       Icon="{materialDesign:PackIcon Kind=CheckDecagram}"
-                                      Visibility="{Binding User.AdminToolsVisibility}"/>
+                                      Visibility="{Binding User.AdminToolsVisibility}"
+                                      Command="{Binding UnblockUser}"/>
 
                             <MenuItem Header="Mute user"
                                       Icon="{materialDesign:PackIcon Kind=VolumeMute}"

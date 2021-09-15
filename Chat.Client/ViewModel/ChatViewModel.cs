@@ -15,11 +15,14 @@ namespace Chat.Client.ViewModel
     {
         private readonly ChatService _chatService;
         private readonly RegistrationChatService _registrationChatService;
+        private readonly List<ChatMemberViewModel> _blockedUsers;
 
         private ChatMemberViewModel _currentUser;
 
         private ICommand _connect;
         private ICommand _sendMessage;
+        private ICommand _blockUser;
+        private ICommand _unblockUser;
 
         public ChatViewModel(ChatService chatService, RegistrationChatService registrationChatService)
         {
@@ -30,7 +33,9 @@ namespace Chat.Client.ViewModel
             {
                 ButtonToSendVisibility = Visibility.Collapsed
             };
+
             Users = new ObservableCollection<ChatMemberViewModel>();
+            _blockedUsers = new List<ChatMemberViewModel>();
 
             SetEvents();
         }
@@ -64,7 +69,7 @@ namespace Chat.Client.ViewModel
 
         private async Task ExecuteSendMessage(object parametr) 
         {
-            ChatMessageModel sendingMessage = await _chatService.ReciveMessageUser(
+            ChatMessageModel sendingMessage = await _chatService.ReciveMessageUserAsync(
                 chatId: CurrentUser.ChatId,
                 fromUserId: User.Id,
                 toUserId: CurrentUser.Id,
@@ -83,12 +88,35 @@ namespace Chat.Client.ViewModel
             return !(string.IsNullOrWhiteSpace(User.Message) || string.IsNullOrEmpty(User.Message));
         }
 
+        public ICommand BlockUser => _blockUser ?? (_blockUser = new RelayCommandAsync(
+            execute: ExecuteBlockUser));
+
+        public async Task ExecuteBlockUser(object parametr) 
+        {
+            await _chatService.SetBlockStateToUserAsync(
+                userId: CurrentUser.Id,
+                connectionId: CurrentUser.ConnectionId,
+                isBlocked: true);
+        }
+
+        public ICommand UnblockUser => _unblockUser ?? (_unblockUser = new RelayCommandAsync(
+            execute: ExecuteUnblockUser));
+
+        public async Task ExecuteUnblockUser(object parametr)
+        {
+            await _chatService.SetBlockStateToUserAsync(
+                userId: CurrentUser.Id,
+                connectionId: CurrentUser.ConnectionId,
+                isBlocked: false);
+        }
+
         private void SetEvents()
         {
             _chatService.ConnectUser += ConnectUserEventHandler;
             _chatService.Logout += LogoutEventHandler;
             _chatService.ReciveMessage += ReciveMessageEventHandler;
             _chatService.SendConnectionsIdToCallerEvent += SendConnectionsIdToCallerEventHandler;
+            _chatService.SetBlockStateUserToAllUsersExeptBlocked += SetBlockStateUserToAllUsersExeptBlockedEventHandler;
 
             _registrationChatService.RegisterUserToOthersServerHandler += RegisterUserToOthersServerEventHandler;
             _registrationChatService.SendUsersToCallerServerHandler += SendUsersToCallerServerEventHandler;
@@ -108,10 +136,18 @@ namespace Chat.Client.ViewModel
 
         private void LogoutEventHandler(string userName) 
         {
-            ChatMemberViewModel logoutedUser = Users.First(user =>
+            ChatMemberViewModel logoutedUser = Users.FirstOrDefault(user =>
             {
                 return user.Name == userName;
             });
+
+            if (logoutedUser is null)
+            {
+                logoutedUser = _blockedUsers.Find(user =>
+                {
+                    return user.Name == userName;
+                });
+            }
 
             logoutedUser.ConnectionId = string.Empty;
             logoutedUser.IsLogin = false;
@@ -131,13 +167,55 @@ namespace Chat.Client.ViewModel
         {
             foreach (UserConnection connection in connections)
             {
-                ChatMemberViewModel user = Users.First(model =>
+                ChatMemberViewModel user = Users.FirstOrDefault(model =>
                 {
                     return model.Name == connection.UserName;
                 });
 
+                if (user is null)
+                {
+                    user = _blockedUsers.Find(user =>
+                    {
+                        return user.Name == connection.UserName;
+                    });
+                }
+
                 user.ConnectionId = connection.ConnectionId;
                 user.IsLogin = true;
+            }
+        }
+
+        private void SetBlockStateUserToAllUsersExeptBlockedEventHandler(string userId, bool isBlocked) 
+        {
+            ChatMemberViewModel chatMember = Users.FirstOrDefault(user =>
+            {
+                return user.Id == userId;
+            });
+
+            if (chatMember is null)
+            {
+                chatMember = _blockedUsers.Find(user =>
+                {
+                    return user.Id == userId;
+                });
+            }
+
+            chatMember.IsBlocked = isBlocked;
+
+            if (User.IsAdmin)
+            {
+                return;
+            }
+
+            if (isBlocked)
+            {
+                _blockedUsers.Add(chatMember);
+                Users.Remove(chatMember);
+            }
+            else 
+            {
+                Users.Add(chatMember);
+                _blockedUsers.Remove(chatMember);
             }
         }
 
@@ -150,20 +228,30 @@ namespace Chat.Client.ViewModel
 
             ObservableCollection<ChatMessageModel> messages = new ObservableCollection<ChatMessageModel>(chat.Messages);
 
-            Users.Add(new ChatMemberViewModel
+            ChatMemberViewModel user = new()
             {
                 Id = newUser.Id,
                 ChatId = chat.Id,
                 Messages = messages,
-                Name = newUser.Name
-            });
+                Name = newUser.Name,
+                IsBlocked = newUser.IsBlocked
+            };
+
+            if (newUser.IsBlocked && !User.IsAdmin)
+            {
+                _blockedUsers.Add(user);
+            }
+            else
+            {
+                Users.Add(user);   
+            }
         }
 
         private void SendUsersToCallerServerEventHandler(IEnumerable<UserModel> users) 
         {
             foreach (UserModel user in users)
             {
-                Users.Add(new ChatMemberViewModel
+                ChatMemberViewModel member = new()
                 {
                     Id = user.Id,
                     Name = user.Name,
@@ -171,8 +259,18 @@ namespace Chat.Client.ViewModel
                     ChatId = user.ChatId,
                     IsAdmin = user.IsAdmin,
                     IsLogin = user.IsLogin,
-                    Messages = user.Messages
-                });
+                    Messages = user.Messages,
+                    IsBlocked = user.IsBlocked
+                };
+
+                if (user.IsBlocked && !User.IsAdmin)
+                {
+                    _blockedUsers.Add(member);
+                }
+                else
+                {
+                    Users.Add(member);
+                }
             }
         }
 

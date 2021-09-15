@@ -25,6 +25,17 @@
         <Style x:Key="FullChat" TargetType="ContentControl">
             <Style.Triggers>
                 <DataTrigger Binding="{Binding State}"
+                             Value="3">
+                    <Setter Property="ContentTemplate">
+                        <Setter.Value>
+                            <DataTemplate>
+                                <chat:BlockedScreen DataContext="{Binding ElementName=Window, Path=DataContext.Chat}"
+                                                    Focusable="False"/>
+                            </DataTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding State}"
                              Value="2">
                     <Setter Property="ContentTemplate">
                         <Setter.Value>
