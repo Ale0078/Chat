@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
-             xmlns:controls="clr-namespace:Chat.Client.View"
+             xmlns:system="clr-namespace:System;assembly=mscorlib"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              mc:Ignorable="d" 
              d:DesignHeight="450" 
@@ -13,6 +13,16 @@
              Focusable="False"
              BorderThickness="0, 1, 0, 0"
              BorderBrush="LightGray">
+    <UserControl.Resources>
+        <system:Boolean x:Key="True">
+            True
+        </system:Boolean>
+
+        <system:Boolean x:Key="False">
+            False
+        </system:Boolean>
+    </UserControl.Resources>
+    
     <i:Interaction.Triggers>
         <i:EventTrigger>
             <i:InvokeCommandAction Command="{Binding Connect}"/>
@@ -76,20 +86,26 @@
                             <MenuItem Header="Block user"
                                       Icon="{materialDesign:PackIcon Kind=Cancel}"
                                       Visibility="{Binding User.AdminToolsVisibility}"
-                                      Command="{Binding BlockUser}"/>
+                                      Command="{Binding BlockUser}"
+                                      CommandParameter="{StaticResource True}"/>
 
                             <MenuItem Header="Unblock user"
                                       Icon="{materialDesign:PackIcon Kind=CheckDecagram}"
                                       Visibility="{Binding User.AdminToolsVisibility}"
-                                      Command="{Binding UnblockUser}"/>
+                                      Command="{Binding BlockUser}"
+                                      CommandParameter="{StaticResource False}"/>
 
                             <MenuItem Header="Mute user"
                                       Icon="{materialDesign:PackIcon Kind=VolumeMute}"
-                                      Visibility="{Binding User.AdminToolsVisibility}"/>
+                                      Visibility="{Binding User.AdminToolsVisibility}"
+                                      Command="{Binding MuteUser}"
+                                      CommandParameter="{StaticResource True}"/>
 
                             <MenuItem Header="Unmute user"
                                       Icon="{materialDesign:PackIcon Kind=VolumeHigh}"
-                                      Visibility="{Binding User.AdminToolsVisibility}"/>
+                                      Visibility="{Binding User.AdminToolsVisibility}"
+                                      Command="{Binding MuteUser}"
+                                      CommandParameter="{StaticResource False}"/>
 
                             <MenuItem Header="Add to black list"
                                       Icon="{materialDesign:PackIcon Kind=MessageBulletedOff}"/>
@@ -132,7 +148,7 @@
 
             <Button Grid.Row="2"
                     Grid.Column="1"
-                    Visibility="{Binding User.ButtonToSendVisibility}"
+                    IsEnabled="{Binding User.IsButtonEnabled}"
                     Command="{Binding SendMessage}"
                     Style="{StaticResource IconButtonToSendMessage}"/>
         </Grid>

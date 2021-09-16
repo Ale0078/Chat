@@ -22,7 +22,7 @@ namespace Chat.Client.ViewModel
         private ICommand _connect;
         private ICommand _sendMessage;
         private ICommand _blockUser;
-        private ICommand _unblockUser;
+        private ICommand _muteUser;
 
         public ChatViewModel(ChatService chatService, RegistrationChatService registrationChatService)
         {
@@ -91,23 +91,23 @@ namespace Chat.Client.ViewModel
         public ICommand BlockUser => _blockUser ?? (_blockUser = new RelayCommandAsync(
             execute: ExecuteBlockUser));
 
-        public async Task ExecuteBlockUser(object parametr) 
+        public async Task ExecuteBlockUser(object isBlocked) 
         {
             await _chatService.SetBlockStateToUserAsync(
                 userId: CurrentUser.Id,
                 connectionId: CurrentUser.ConnectionId,
-                isBlocked: true);
+                isBlocked: (bool)isBlocked);
         }
 
-        public ICommand UnblockUser => _unblockUser ?? (_unblockUser = new RelayCommandAsync(
-            execute: ExecuteUnblockUser));
+        public ICommand MuteUser => _muteUser ?? (_muteUser = new RelayCommandAsync(
+            execute: MuteUserExexcution));
 
-        public async Task ExecuteUnblockUser(object parametr)
+        private async Task MuteUserExexcution(object isMuted) 
         {
-            await _chatService.SetBlockStateToUserAsync(
+            await _chatService.SetMuteStateToUserAsync(
                 userId: CurrentUser.Id,
                 connectionId: CurrentUser.ConnectionId,
-                isBlocked: false);
+                isMuted: (bool)isMuted);
         }
 
         private void SetEvents()
@@ -117,6 +117,7 @@ namespace Chat.Client.ViewModel
             _chatService.ReciveMessage += ReciveMessageEventHandler;
             _chatService.SendConnectionsIdToCallerEvent += SendConnectionsIdToCallerEventHandler;
             _chatService.SetBlockStateUserToAllUsersExeptBlocked += SetBlockStateUserToAllUsersExeptBlockedEventHandler;
+            _chatService.SetMuteStateToUser += SetMuteStateToUser;
 
             _registrationChatService.RegisterUserToOthersServerHandler += RegisterUserToOthersServerEventHandler;
             _registrationChatService.SendUsersToCallerServerHandler += SendUsersToCallerServerEventHandler;
@@ -219,6 +220,11 @@ namespace Chat.Client.ViewModel
             }
         }
 
+        public void SetMuteStateToUser(bool isMuted) 
+        {
+            User.IsMuted = isMuted;
+        }
+
         private void RegisterUserToOthersServerEventHandler(FullUserModel newUser)
         {
             ChatModel chat = newUser.Chats.Find(chatModel =>
@@ -279,6 +285,7 @@ namespace Chat.Client.ViewModel
             User.Id = user.Id;
             User.UserName = user.Name;
             User.IsAdmin = user.IsAdmin;
+            User.IsMuted = user.IsMuted;
         }
     }
 }

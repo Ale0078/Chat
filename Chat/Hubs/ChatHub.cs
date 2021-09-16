@@ -96,7 +96,18 @@ namespace Chat.Server.Hubs
                 await Clients.All.ChangeBlockStatusUserToAllUsersExceptBlocked(userId, isBlocked);
             }
 
-            return await _userService.SetBlockStateAsync(userId, isBlocked);
+            return await _userService.SetBlockOrMuteStateAsync(userId, isBlocked, true);
+        }
+
+        [Authorize(Roles = ADMIN_ROLE)]
+        public async Task<bool> SetMuteState(string userId, string connectionId, bool isMuted) 
+        {
+            if (connectionId is not null && !connectionId.IsConnectionIdEmpty())
+            {
+                await Clients.Client(connectionId).ChangeMuteStateUserToUser(isMuted);
+            }
+
+            return await _userService.SetBlockOrMuteStateAsync(userId, isMuted, false);
         }
     }
 }

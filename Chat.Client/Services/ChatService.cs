@@ -20,6 +20,7 @@ namespace Chat.Client.Services
         public event Action<IEnumerable<UserConnection>> SendConnectionsIdToCallerEvent;
         public event Action<string, bool> SetBlockStateUserToAllUsersExeptBlocked;
         public event Action<UserState> SetBlockedStateUserToBlockedUser;
+        public event Action<bool> SetMuteStateToUser;
 
         public ChatService()
         {
@@ -53,6 +54,10 @@ namespace Chat.Client.Services
             _connection.On<UserState>(
                 methodName: nameof(IChat.ChangeBlockStatusUserToUser),
                 handler: state => SetBlockedStateUserToBlockedUser?.Invoke(state));
+
+            _connection.On<bool>(
+                methodName: nameof(IChat.ChangeMuteStateUserToUser),
+                handler: isMuted => SetMuteStateToUser?.Invoke(isMuted));
         }
 
         public string Token { get; set; }
@@ -75,6 +80,11 @@ namespace Chat.Client.Services
         public async Task<bool> SetBlockStateToUserAsync(string userId, string connectionId, bool isBlocked) 
         {
             return await _connection.InvokeAsync<bool>("SetBlockState", userId, connectionId, isBlocked);
+        }
+
+        public async Task<bool> SetMuteStateToUserAsync(string userId, string connectionId, bool isMuted) 
+        {
+            return await _connection.InvokeAsync<bool>("SetMuteState", userId, connectionId, isMuted);
         }
     }
 }

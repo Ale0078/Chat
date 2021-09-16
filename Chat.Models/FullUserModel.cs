@@ -8,6 +8,7 @@ namespace Chat.Models
         public string Name { get; set; }
         public bool IsAdmin { get; set; }
         public bool IsBlocked { get; set; }
+        public bool IsMuted { get; set; }
         public List<ChatModel> Chats { get; set; }
 
         public FullUserModel()

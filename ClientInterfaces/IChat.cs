@@ -13,5 +13,6 @@ namespace Chat.Interfaces
         Task ReciveMessage(ChatMessageModel message);
         Task ChangeBlockStatusUserToUser(UserState state);
         Task ChangeBlockStatusUserToAllUsersExceptBlocked(string id, bool isBlocked);
+        Task ChangeMuteStateUserToUser(bool isMuted);
     }
 }

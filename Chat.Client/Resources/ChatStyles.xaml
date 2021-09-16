@@ -79,7 +79,7 @@
         </Style.Triggers>-->
         
         <Setter Property="Height" Value="40"/>
-        <Setter Property="materialDesign:HintAssist.Hint" Value="Write a message..."/>
+        <!--<Setter Property="materialDesign:HintAssist.Hint" Value="Write a message..."/>-->
         <Setter Property="TextDecorations" Value="None"/>
         <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled"/>
         <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>
@@ -89,6 +89,18 @@
         <Setter Property="materialDesign:TextFieldAssist.TextBoxViewMargin" Value="8, 6, 0, 0"/>
         <Setter Property="materialDesign:TextFieldAssist.DecorationVisibility" Value="Collapsed"/>
         <Setter Property="BorderThickness" Value="0"/>
+
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding User.IsMuted}" Value="True">
+                <Setter Property="IsEnabled" Value="False"/>
+                <Setter Property="materialDesign:HintAssist.Hint" Value="Sory, but you were muted by admin this chat :)"/>
+            </DataTrigger>
+
+            <DataTrigger Binding="{Binding User.IsMuted}" Value="False">
+                <Setter Property="IsEnabled" Value="True"/>
+                <Setter Property="materialDesign:HintAssist.Hint" Value="Write a message..."/>
+            </DataTrigger>
+        </Style.Triggers>
     </Style>
 
 
@@ -114,7 +126,7 @@
             </Setter.Value>
         </Setter>
 
-        <Style.Triggers>
+        <!--<Style.Triggers>
             <DataTrigger Binding="{Binding CurrentUser}" Value="{x:Null}">
                 <Setter Property="Visibility" Value="Collapsed"/>
             </DataTrigger>
@@ -122,7 +134,7 @@
             <DataTrigger Binding="{Binding CurrentUser}">
                 <Setter Property="Visibility" Value="Visible"/>
             </DataTrigger>
-        </Style.Triggers>
+        </Style.Triggers>-->
     </Style>
 
     <!--<Style x:Key="AdminMenuItem" TargetType="{x:Type MenuItem}">

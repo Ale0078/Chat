@@ -110,7 +110,8 @@ namespace Chat.Server.Services//ToDo: use include to all entities
                 Id = dbUser.Id,
                 Name = dbUser.UserName,
                 IsAdmin = dbUser.UserName == "Admin",
-                IsBlocked = dbUser.IsBlocked
+                IsBlocked = dbUser.IsBlocked,
+                IsMuted = dbUser.IsMuted
             };
 
             foreach (Chatter chatter in dbUser.Chatters)
@@ -192,7 +193,7 @@ namespace Chat.Server.Services//ToDo: use include to all entities
             return userModels;
         }
 
-        public async Task<bool> SetBlockStateAsync(string id, bool isBlock) 
+        public async Task<bool> SetBlockOrMuteStateAsync(string id, bool isBlockOrMuted, bool doBlock)
         {
             User userToSetState = await _userManager.FindByIdAsync(id);
 
@@ -201,7 +202,14 @@ namespace Chat.Server.Services//ToDo: use include to all entities
                 return false;
             }
 
-            userToSetState.IsBlocked = isBlock;
+            if (doBlock)
+            {
+                userToSetState.IsBlocked = isBlockOrMuted;
+            }
+            else
+            {
+                userToSetState.IsMuted = isBlockOrMuted;
+            }
 
             IdentityResult result = await _userManager.UpdateAsync(userToSetState);
 

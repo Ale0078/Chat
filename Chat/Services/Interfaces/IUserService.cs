@@ -17,6 +17,6 @@ namespace Chat.Server.Services.Interfaces
 
         Task<FullUserModel> GetUserAsync(string userName);
 
-        Task<bool> SetBlockStateAsync(string id, bool isBlock);
+        Task<bool> SetBlockOrMuteStateAsync(string id, bool isBlockOrMuted, bool doBlock);
     }
 }
