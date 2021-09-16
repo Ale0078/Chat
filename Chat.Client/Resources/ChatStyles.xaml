@@ -2,6 +2,7 @@
                     xmlns:user="clr-namespace:Chat.Models;assembly=Chat.Models"
                     xmlns:viewModels="clr-namespace:Chat.Client.ViewModel"
                     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+                    xmlns:extensions="clr-namespace:Chat.Client.AttachedProperties"
                     xmlns:selectors="clr-namespace:Chat.Client.TemplateSelectors"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <Style x:Key="MessageTemplate" TargetType="{x:Type Border}">
@@ -61,7 +62,8 @@
                 BorderThickness="{TemplateBinding BorderThickness}"
                 Background="{TemplateBinding Background}">
             <ScrollViewer HorizontalScrollBarVisibility="Disabled"
-                          VerticalScrollBarVisibility="Auto">
+                          VerticalScrollBarVisibility="Auto"
+                          extensions:ScrollViewerExtentions.IsScrollToEnd="True">
                 <ItemsPresenter Focusable="False"/>
             </ScrollViewer>
         </Border>
@@ -77,9 +79,8 @@
                 <Setter Property="Visibility" Value="Visible"/>
             </DataTrigger>
         </Style.Triggers>-->
-        
+
         <Setter Property="Height" Value="40"/>
-        <!--<Setter Property="materialDesign:HintAssist.Hint" Value="Write a message..."/>-->
         <Setter Property="TextDecorations" Value="None"/>
         <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled"/>
         <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>
@@ -137,15 +138,6 @@
         </Style.Triggers>-->
     </Style>
 
-    <!--<Style x:Key="AdminMenuItem" TargetType="{x:Type MenuItem}">
-        <Style.Triggers>
-            <DataTrigger Binding="{Binding IsAdmin}" Value="True">
-                <Setter Property="Item">
-                </Setter>
-            </DataTrigger>
-        </Style.Triggers>
-    </Style>-->
-    
     <Style x:Key="BorderWithCurrentUserInfo" TargetType="{x:Type Border}">
         <Setter Property="Background" Value="#FFFFFF"/>
         <Setter Property="BorderBrush" Value="LightGray"/>
