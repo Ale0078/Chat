@@ -47,7 +47,7 @@ namespace Chat.Server.Services//ToDo: use include to all entities
 
         public async Task<bool> AddUserAsync(RegisterUserModel userModel)//ToDo: change chat generation
         {
-            if (userModel is null || 
+            if (userModel is null ||
                 await _userManager.FindByNameAsync(userModel.UserName) is not null)
             {
                 return false;
@@ -78,7 +78,7 @@ namespace Chat.Server.Services//ToDo: use include to all entities
                 {
                     UserId = newUser.Id,
                     ChatId = addedChat.Entity.Id
-                }, new Chatter 
+                }, new Chatter
                 {
                     UserId = user.Id,
                     ChatId = addedChat.Entity.Id
@@ -105,7 +105,7 @@ namespace Chat.Server.Services//ToDo: use include to all entities
         {
             User dbUser = await _userManager.FindByNameAsync(userName);
 
-            FullUserModel userModel = new() 
+            FullUserModel userModel = new()
             {
                 Id = dbUser.Id,
                 Name = dbUser.UserName,
@@ -113,6 +113,19 @@ namespace Chat.Server.Services//ToDo: use include to all entities
                 IsBlocked = dbUser.IsBlocked,
                 IsMuted = dbUser.IsMuted
             };
+
+            List<BlockModel> blockModels = new(userModel.BlockModels.Count);
+
+            foreach (BlockedUser block in dbUser.BlockedUsers)
+            {
+                blockModels.Add(new BlockModel
+                {
+                    UserId = block.Blocker.UserId,
+                    DoesBlocked = block.Blocker.DoesBlock
+                });
+            }
+
+            userModel.BlockModels = blockModels;
 
             foreach (Chatter chatter in dbUser.Chatters)
             {
@@ -214,6 +227,52 @@ namespace Chat.Server.Services//ToDo: use include to all entities
             IdentityResult result = await _userManager.UpdateAsync(userToSetState);
 
             return result.Succeeded;
+        }
+
+        public async Task<BlockModel> SetUserBlackListStatusAsync(string userId, string blockedUserId, bool doesBlock) 
+        {
+            BlockedUser blockedUser = _dbContext.BlockedUsers
+                .AsEnumerable()
+                .FirstOrDefault(user =>
+                {
+                    return user.UserId == blockedUserId;
+                });
+
+            if (blockedUser is null)
+            {
+                blockedUser = await AddBlockedUserAsync(userId, blockedUserId, doesBlock);
+            }
+            else 
+            {
+                blockedUser.Blocker.DoesBlock = doesBlock;
+
+                _dbContext.Update(blockedUser);
+            }
+
+            return new BlockModel
+            {
+                UserId = blockedUser.Blocker.UserId,
+                DoesBlocked = blockedUser.Blocker.DoesBlock
+            };
+        }
+
+        private async Task<BlockedUser> AddBlockedUserAsync(string userId, string blockedUserId, bool doesBlock) 
+        {
+            EntityEntry<Block> addedBlock = await _dbContext.Blocks.AddAsync(new Block
+            {
+                UserId = userId,
+                DoesBlock = doesBlock
+            });
+
+            EntityEntry<BlockedUser> addedBlockedUser = await _dbContext.BlockedUsers.AddAsync(new BlockedUser
+            {
+                UserId = blockedUserId,
+                BlockerId = addedBlock.Entity.Id
+            });
+
+            await _dbContext.SaveChangesAsync();
+
+            return addedBlockedUser.Entity;
         }
     }
 }

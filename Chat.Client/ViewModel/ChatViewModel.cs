@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Windows;
+using System.ComponentModel;
 
 using Chat.Client.Services;
 using Chat.Client.Commands;
@@ -23,6 +24,8 @@ namespace Chat.Client.ViewModel
         private ICommand _sendMessage;
         private ICommand _blockUser;
         private ICommand _muteUser;
+        private ICommand _setBlackListState;
+        private ICommand _setMessageToUser;
 
         public ChatViewModel(ChatService chatService, RegistrationChatService registrationChatService)
         {
@@ -100,14 +103,39 @@ namespace Chat.Client.ViewModel
         }
 
         public ICommand MuteUser => _muteUser ?? (_muteUser = new RelayCommandAsync(
-            execute: MuteUserExexcution));
+            execute: ExecuteMuteUser));
 
-        private async Task MuteUserExexcution(object isMuted) 
+        private async Task ExecuteMuteUser(object isMuted) 
         {
             await _chatService.SetMuteStateToUserAsync(
                 userId: CurrentUser.Id,
                 connectionId: CurrentUser.ConnectionId,
                 isMuted: (bool)isMuted);
+        }
+
+        public ICommand SetBlackListState => _setBlackListState ?? (_setBlackListState = new RelayCommandAsync(
+            execute: ExecuteSetBlackListState));
+
+        private async Task ExecuteSetBlackListState(object doesBlock) 
+        {
+            await _chatService.SendBlackListStateAsync(
+                userId: User.Id,
+                connectionId: CurrentUser.ConnectionId,
+                blockedUserId: CurrentUser.Id,
+                doesBlock: (bool)doesBlock);
+
+            if ((bool)doesBlock)
+            {
+                User.Message = string.Empty;
+            }
+        }
+
+        public ICommand SetMessageToUser => _setMessageToUser ?? (_setMessageToUser = new RelayCommand(
+            execute: ExecuteSetMessageToUser));
+
+        private void ExecuteSetMessageToUser(object parametr) 
+        {
+            User.Message = CurrentUser.Message;
         }
 
         private void SetEvents()
@@ -118,10 +146,14 @@ namespace Chat.Client.ViewModel
             _chatService.SendConnectionsIdToCallerEvent += SendConnectionsIdToCallerEventHandler;
             _chatService.SetBlockStateUserToAllUsersExeptBlocked += SetBlockStateUserToAllUsersExeptBlockedEventHandler;
             _chatService.SetMuteStateToUser += SetMuteStateToUser;
+            _chatService.SendBlackListStateToUserServerHandler += SendBlackListStateToUserServerEventHandler;
 
             _registrationChatService.RegisterUserToOthersServerHandler += RegisterUserToOthersServerEventHandler;
             _registrationChatService.SendUsersToCallerServerHandler += SendUsersToCallerServerEventHandler;
             _registrationChatService.SendUserToCallerServerHandler += SendUserToCallerServerEventHandler;
+            _registrationChatService.SendBlockersToCallerServerHandler += SendBlockersToCallerServerEventHandler;
+
+            User.PropertyChanged += SetMessageToCurrentUserFromUser;
         }
 
         private void ConnectUserEventHandler(string userName, string connectionId) 
@@ -220,9 +252,19 @@ namespace Chat.Client.ViewModel
             }
         }
 
-        public void SetMuteStateToUser(bool isMuted) 
+        private void SetMuteStateToUser(bool isMuted) 
         {
             User.IsMuted = isMuted;
+        }
+
+        private void SendBlackListStateToUserServerEventHandler(BlockModel block) 
+        {
+            ChatMemberViewModel member = Users.First(user =>
+            {
+                return user.Id == block.UserId;
+            });
+
+            member.IsClientBlockedByMember = block.DoesBlocked;
         }
 
         private void RegisterUserToOthersServerEventHandler(FullUserModel newUser)
@@ -286,6 +328,31 @@ namespace Chat.Client.ViewModel
             User.UserName = user.Name;
             User.IsAdmin = user.IsAdmin;
             User.IsMuted = user.IsMuted;
+        }
+
+        private void SendBlockersToCallerServerEventHandler(IEnumerable<BlockModel> blocks) 
+        {
+            foreach (BlockModel block in blocks) 
+            {
+                ChatMemberViewModel member = Users.FirstOrDefault(user =>
+                {
+                    return user.Id == block.UserId;
+                });
+
+                member.IsClientBlockedByMember = block.DoesBlocked;
+            }
+        }
+
+        private void SetMessageToCurrentUserFromUser(object sender, PropertyChangedEventArgs e) 
+        {
+            if (CurrentUser is null)
+            {
+                return;
+            }
+
+            UserViewModel user = sender as UserViewModel;
+
+            CurrentUser.Message = user.Message;
         }
     }
 }

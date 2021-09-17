@@ -3,6 +3,7 @@
                     xmlns:viewModels="clr-namespace:Chat.Client.ViewModel"
                     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
                     xmlns:extensions="clr-namespace:Chat.Client.AttachedProperties"
+                    xmlns:system="clr-namespace:System;assembly=mscorlib"
                     xmlns:selectors="clr-namespace:Chat.Client.TemplateSelectors"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <Style x:Key="MessageTemplate" TargetType="{x:Type Border}">
@@ -84,6 +85,7 @@
         <Setter Property="TextDecorations" Value="None"/>
         <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled"/>
         <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>
+        <Setter Property="materialDesign:HintAssist.Hint" Value="Write a message..."/>
         <Setter Property="TextWrapping" Value="Wrap"/>
         <Setter Property="FontSize" Value="14"/>
         <Setter Property="FontWeight" Value="Light"/>
@@ -92,15 +94,45 @@
         <Setter Property="BorderThickness" Value="0"/>
 
         <Style.Triggers>
-            <DataTrigger Binding="{Binding User.IsMuted}" Value="True">
+            <MultiDataTrigger>
+                <MultiDataTrigger.Conditions>
+                    <Condition Binding="{Binding User.IsMuted}" Value="True"/>
+                    <Condition Binding="{Binding CurrentUser.IsClientBlockedByMember}" Value="True"/>
+                </MultiDataTrigger.Conditions>
+
                 <Setter Property="IsEnabled" Value="False"/>
                 <Setter Property="materialDesign:HintAssist.Hint" Value="Sory, but you were muted by admin this chat :)"/>
-            </DataTrigger>
+            </MultiDataTrigger>
 
-            <DataTrigger Binding="{Binding User.IsMuted}" Value="False">
+            <MultiDataTrigger>
+                <MultiDataTrigger.Conditions>
+                    <Condition Binding="{Binding User.IsMuted}" Value="True"/>
+                    <Condition Binding="{Binding CurrentUser.IsClientBlockedByMember}" Value="False"/>
+                </MultiDataTrigger.Conditions>
+
+                <Setter Property="IsEnabled" Value="False"/>
+                <Setter Property="materialDesign:HintAssist.Hint" Value="Sory, but you were muted by admin this chat :)"/>
+            </MultiDataTrigger>
+
+            <MultiDataTrigger>
+                <MultiDataTrigger.Conditions>
+                    <Condition Binding="{Binding User.IsMuted}" Value="False"/>
+                    <Condition Binding="{Binding CurrentUser.IsClientBlockedByMember}" Value="True"/>
+                </MultiDataTrigger.Conditions>
+
+                <Setter Property="IsEnabled" Value="False"/>
+                <Setter Property="materialDesign:HintAssist.Hint" Value="Sory, but you were added to black list :)"/>
+            </MultiDataTrigger>
+            
+            <MultiDataTrigger>
+                <MultiDataTrigger.Conditions>
+                    <Condition Binding="{Binding User.IsMuted}" Value="False"/>
+                    <Condition Binding="{Binding CurrentUser.IsClientBlockedByMember}" Value="False"/>
+                </MultiDataTrigger.Conditions>
+
                 <Setter Property="IsEnabled" Value="True"/>
                 <Setter Property="materialDesign:HintAssist.Hint" Value="Write a message..."/>
-            </DataTrigger>
+            </MultiDataTrigger>
         </Style.Triggers>
     </Style>
 
@@ -127,7 +159,7 @@
             </Setter.Value>
         </Setter>
 
-        <!--<Style.Triggers>
+        <Style.Triggers>
             <DataTrigger Binding="{Binding CurrentUser}" Value="{x:Null}">
                 <Setter Property="Visibility" Value="Collapsed"/>
             </DataTrigger>
@@ -135,7 +167,7 @@
             <DataTrigger Binding="{Binding CurrentUser}">
                 <Setter Property="Visibility" Value="Visible"/>
             </DataTrigger>
-        </Style.Triggers>-->
+        </Style.Triggers>
     </Style>
 
     <Style x:Key="BorderWithCurrentUserInfo" TargetType="{x:Type Border}">
@@ -155,14 +187,15 @@
     </Style>
 
     <DataTemplate x:Key="UsersTemplate" DataType="{x:Type viewModels:ChatMemberViewModel}">
-        <Grid Margin="0, 10"
-              Focusable="False">
+        <Grid Focusable="False"
+              Height="52">
             <StackPanel Orientation="Horizontal"
-                        HorizontalAlignment="Center"
+                        HorizontalAlignment="Left"
                         VerticalAlignment="Center"
+                        Margin="5, 0, 0, 0"
                         Focusable="False">
-                <TextBlock FontSize="24"
-                           FontWeight="Light"
+                <TextBlock FontSize="20"
+                           FontWeight="Medium"
                            Focusable="False">
                     <TextBlock.Style>
                         <Style TargetType="{x:Type TextBlock}">

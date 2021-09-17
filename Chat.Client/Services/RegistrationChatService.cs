@@ -19,6 +19,7 @@ namespace Chat.Client.Services
         public event Action<FullUserModel> SendUserToCallerServerHandler;
         public event Action<string> SendTokenToCallerServerHandler;
         public event Action<UserState> SendUserStateToCallerServerHandler;
+        public event Action<IEnumerable<BlockModel>> SendBlockersToCallerServerHandler;
 
         public RegistrationChatService()
         {
@@ -45,6 +46,10 @@ namespace Chat.Client.Services
             _connection.On<UserState>(
                 methodName: nameof(IChatRegistration.SendUserStateToCaller),
                 handler: userState => SendUserStateToCallerServerHandler?.Invoke(userState));
+
+            _connection.On<IEnumerable<BlockModel>>(
+                methodName: nameof(IChatRegistration.SendBlockersToCaller),
+                handler: blockers => SendBlockersToCallerServerHandler?.Invoke(blockers));
         }
 
         public async Task Connect() 

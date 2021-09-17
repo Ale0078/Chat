@@ -48,6 +48,7 @@ namespace Chat.Server.Hubs
             await Clients.Caller.SendTokenToClaller(name);
             await Clients.Caller.SendCurrentUserToCaller(user);
             await Clients.Caller.SendListOfUsersToCaller(await _userService.GetUsersAsync(name));
+            await Clients.Caller.SendBlockersToCaller(user.BlockModels);
             await Clients.Caller.SendUserStateToCaller(user.IsBlocked 
                 ? UserState.Blocked
                 : UserState.Login);

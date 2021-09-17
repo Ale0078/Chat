@@ -14,7 +14,9 @@ namespace Chat.Client.ViewModel
         private bool _isAdmin;
         private bool _isLogin;
         private bool _isBlocked;
+        private bool _isClientBlockedByMember;
 
+        public string Message { get; set; }
         public ObservableCollection<ChatMessageModel> Messages { get; set; }
 
         public string Id 
@@ -89,6 +91,17 @@ namespace Chat.Client.ViewModel
             set 
             {
                 _isBlocked = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        public bool IsClientBlockedByMember 
+        {
+            get => _isClientBlockedByMember;
+            set 
+            {
+                _isClientBlockedByMember = value;
 
                 OnPropertyChanged();
             }

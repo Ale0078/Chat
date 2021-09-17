@@ -44,7 +44,13 @@
                  ItemContainerStyle="{StaticResource ListBoxItemTemplate}"
                  ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                  ScrollViewer.VerticalScrollBarVisibility="Auto"
-                 Focusable="False"/>
+                 Focusable="False">
+            <i:Interaction.Triggers>
+                <i:EventTrigger EventName="SelectionChanged">
+                    <i:InvokeCommandAction Command="{Binding SetMessageToUser}"/>
+                </i:EventTrigger>
+            </i:Interaction.Triggers>
+        </ListBox>
 
         <GridSplitter Grid.Column="1"
                       Width="1"
@@ -72,8 +78,8 @@
                     Height="52">
                 <Grid>
                     <TextBlock Text="{Binding CurrentUser.Name}"
-                               FontSize="24"
-                               FontWeight="Light"
+                               FontSize="20"
+                               FontWeight="Medium"
                                Margin="8, 0, 0, 0"
                                VerticalAlignment="Center"/>
 
@@ -108,10 +114,14 @@
                                       CommandParameter="{StaticResource False}"/>
 
                             <MenuItem Header="Add to black list"
-                                      Icon="{materialDesign:PackIcon Kind=MessageBulletedOff}"/>
+                                      Icon="{materialDesign:PackIcon Kind=MessageBulletedOff}"
+                                      Command="{Binding SetBlackListState}"
+                                      CommandParameter="{StaticResource True}"/>
 
                             <MenuItem Header="Remove from black list"
-                                      Icon="{materialDesign:PackIcon Kind=MessageBulleted}"/>
+                                      Icon="{materialDesign:PackIcon Kind=MessageBulleted}"
+                                      Command="{Binding SetBlackListState}"
+                                      CommandParameter="{StaticResource False}"/>
                         </MenuItem>
                     </Menu>
                 </Grid>

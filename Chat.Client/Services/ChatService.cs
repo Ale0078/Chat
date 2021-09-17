@@ -21,6 +21,7 @@ namespace Chat.Client.Services
         public event Action<string, bool> SetBlockStateUserToAllUsersExeptBlocked;
         public event Action<UserState> SetBlockedStateUserToBlockedUser;
         public event Action<bool> SetMuteStateToUser;
+        public event Action<BlockModel> SendBlackListStateToUserServerHandler;
 
         public ChatService()
         {
@@ -58,6 +59,10 @@ namespace Chat.Client.Services
             _connection.On<bool>(
                 methodName: nameof(IChat.ChangeMuteStateUserToUser),
                 handler: isMuted => SetMuteStateToUser?.Invoke(isMuted));
+
+            _connection.On<BlockModel>(
+                methodName: nameof(IChat.SendBlackListStateToUser),
+                handler: block => SendBlackListStateToUserServerHandler?.Invoke(block));
         }
 
         public string Token { get; set; }
@@ -85,6 +90,11 @@ namespace Chat.Client.Services
         public async Task<bool> SetMuteStateToUserAsync(string userId, string connectionId, bool isMuted) 
         {
             return await _connection.InvokeAsync<bool>("SetMuteState", userId, connectionId, isMuted);
+        }
+
+        public async Task<BlockModel> SendBlackListStateAsync(string userId, string connectionId, string blockedUserId, bool doesBlock) 
+        {
+            return await _connection.InvokeAsync<BlockModel>("SetUserBlackListState", userId, connectionId, blockedUserId, doesBlock);
         }
     }
 }

@@ -72,7 +72,7 @@ namespace Chat.Server.Hubs
             
             await _userService.AddChatMessageAsync(chatMessage);
 
-            if (connectionId is not null && !connectionId.IsConnectionIdEmpty())
+            if (IsValidConnectionId(connectionId))
             {
                 await Clients.Client(connectionId).ReciveMessage(chatMessage);
             }
@@ -80,10 +80,23 @@ namespace Chat.Server.Hubs
             return chatMessage;
         }
 
+        public async Task SetUserBlackListState(string userId, string connectionId, string blockedUserid, bool doesBlock) 
+        {
+            BlockModel block = await _userService.SetUserBlackListStatusAsync(
+                userId: userId,
+                blockedUserId: blockedUserid,
+                doesBlock: doesBlock);
+
+            if (IsValidConnectionId(connectionId))
+            {
+                await Clients.Client(connectionId).SendBlackListStateToUser(block);
+            }
+        }
+
         [Authorize(Roles = ADMIN_ROLE)]
         public async Task<bool> SetBlockState(string userId, string connectionId, bool isBlocked) 
         {
-            if (connectionId is not null && !connectionId.IsConnectionIdEmpty())
+            if (IsValidConnectionId(connectionId))
             {
                 await Clients.Client(connectionId).ChangeBlockStatusUserToUser(isBlocked
                     ? UserState.Blocked
@@ -102,12 +115,15 @@ namespace Chat.Server.Hubs
         [Authorize(Roles = ADMIN_ROLE)]
         public async Task<bool> SetMuteState(string userId, string connectionId, bool isMuted) 
         {
-            if (connectionId is not null && !connectionId.IsConnectionIdEmpty())
+            if (IsValidConnectionId(connectionId))
             {
                 await Clients.Client(connectionId).ChangeMuteStateUserToUser(isMuted);
             }
 
             return await _userService.SetBlockOrMuteStateAsync(userId, isMuted, false);
         }
+
+        private bool IsValidConnectionId(string connectionId) =>
+            connectionId is not null && !connectionId.IsConnectionIdEmpty();
     }
 }

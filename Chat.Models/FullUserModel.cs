@@ -10,10 +10,12 @@ namespace Chat.Models
         public bool IsBlocked { get; set; }
         public bool IsMuted { get; set; }
         public List<ChatModel> Chats { get; set; }
+        public List<BlockModel> BlockModels { get; set; }
 
         public FullUserModel()
         {
             Chats = new List<ChatModel>();
+            BlockModels = new List<BlockModel>();
         }
     }
 }

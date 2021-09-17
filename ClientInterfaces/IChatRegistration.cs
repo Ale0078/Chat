@@ -12,6 +12,6 @@ namespace Chat.Interfaces
         Task SendCurrentUserToCaller(FullUserModel user);
         Task SendTokenToClaller(string token);
         Task RegisterUserToOthers(FullUserModel newUser);
-        //Task LoginUserToOthers(string loginUserName);
+        Task SendBlockersToCaller(IEnumerable<BlockModel> blocks);
     }
 }

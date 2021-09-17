@@ -8,6 +8,8 @@ namespace Chat.Entities.Contexts
         public DbSet<Chat> Chats { get; set; }
         public DbSet<ChatMessage> ChatMessages { get; set; }
         public DbSet<Chatter> Chatters { get; set; }
+        public DbSet<Block> Blocks { get; set; }
+        public DbSet<BlockedUser> BlockedUsers { get; set; }
 
         public ApplicationContext(DbContextOptions<ApplicationContext> options)
             : base(options)
