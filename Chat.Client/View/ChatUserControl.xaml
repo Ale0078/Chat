@@ -158,6 +158,7 @@
 
             <Button Grid.Row="2"
                     Grid.Column="1"
+                    x:Name="Send"
                     IsEnabled="{Binding User.IsButtonEnabled}"
                     Command="{Binding SendMessage}"
                     Style="{StaticResource IconButtonToSendMessage}"/>

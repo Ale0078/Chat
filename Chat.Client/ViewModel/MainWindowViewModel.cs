@@ -16,14 +16,15 @@ namespace Chat.Client.ViewModel
 
         private ICommand _connectRegistrationChatService;
 
-        public MainWindowViewModel()
+        public MainWindowViewModel(ChatService chatService, RegistrationChatService registrationChatService, 
+            LoginViewModel loginViewModel, RegistarationViewModel registarationViewModel, ChatViewModel chatViewModel)
         {
-            _chatService = new ChatService();
-            _registrationChatService = new RegistrationChatService();
+            _chatService = chatService;
+            _registrationChatService = registrationChatService;
 
-            Registaration = new RegistarationViewModel(_registrationChatService);
-            Login = new LoginViewModel(_registrationChatService);
-            Chat = new ChatViewModel(_chatService, _registrationChatService);
+            Registaration = registarationViewModel;
+            Login = loginViewModel;
+            Chat = chatViewModel;
 
             State = UserState.NoLogin;
 
