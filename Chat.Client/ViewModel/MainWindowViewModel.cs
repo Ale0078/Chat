@@ -51,7 +51,7 @@ namespace Chat.Client.ViewModel
 
         private async Task ConnectRegistrationChatServiceEventHandler(object parametr)
         {
-            await _registrationChatService.Connect();
+            await _registrationChatService.ConnectAsync();
         }
 
         private void SetEvents() 

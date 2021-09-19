@@ -2,6 +2,7 @@
 using System.Windows;
 using Microsoft.Extensions.DependencyInjection;
 
+using Chat.Client.Services.Interfaces;
 using Chat.Client.Services;
 using Chat.Client.ViewModel;
 
@@ -26,6 +27,7 @@ namespace Chat.Client
         {
             services.AddSingleton<ChatService>();
             services.AddSingleton<RegistrationChatService>();
+            services.AddSingleton<IDialogService, DialogService>();
             services.AddSingleton<MainWindowViewModel>();
             services.AddSingleton<LoginViewModel>();
             services.AddSingleton<RegistarationViewModel>();

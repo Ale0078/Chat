@@ -52,14 +52,9 @@ namespace Chat.Client.Services
                 handler: blockers => SendBlockersToCallerServerHandler?.Invoke(blockers));
         }
 
-        public async Task Connect() 
+        public async Task ConnectAsync() 
         {
             await _connection.StartAsync();
-        }
-
-        public async Task Disconect() 
-        {
-            await _connection.DisposeAsync();
         }
 
         public async Task<bool> RegisterUser(RegisterUserModel model) 

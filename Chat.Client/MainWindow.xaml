@@ -17,9 +17,6 @@
         BorderThickness="0"
         Name="Window"
         Focusable="False">
-    <!--<Window.DataContext>
-        <model:MainWindowViewModel/>
-    </Window.DataContext>-->
 
     <Window.Resources>
         <Style x:Key="FullChat" TargetType="ContentControl">
