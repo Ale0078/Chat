@@ -11,6 +11,7 @@ namespace Chat.Client.ViewModel
         private string _name;
         private string _connectionId;
         private Guid _chatId;
+        private byte[] _photo;
         private bool _isAdmin;
         private bool _isLogin;
         private bool _isBlocked;
@@ -58,6 +59,17 @@ namespace Chat.Client.ViewModel
             set 
             {
                 _chatId = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        public byte[] Photo 
+        {
+            get => _photo;
+            set 
+            {
+                _photo = value;
 
                 OnPropertyChanged();
             }

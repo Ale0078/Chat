@@ -7,6 +7,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Images\DefaultImage.jpg" />
+    <None Remove="Images\DefaultUser2.png" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="MaterialDesignThemes" Version="4.1.0" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="5.0.8" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.2" />
@@ -17,6 +22,11 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ClientInterfaces\Chat.Interfaces.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Images\DefaultImage.jpg" />
+    <Resource Include="Images\DefaultUser2.png" />
   </ItemGroup>
 
 </Project>

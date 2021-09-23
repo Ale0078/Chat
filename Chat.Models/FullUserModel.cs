@@ -6,6 +6,7 @@ namespace Chat.Models
     {
         public string Id { get; set; }
         public string Name { get; set; }
+        public byte[] Photo { get; set; }
         public bool IsAdmin { get; set; }
         public bool IsBlocked { get; set; }
         public bool IsMuted { get; set; }

@@ -56,7 +56,7 @@ namespace Chat.Server.Services//ToDo: use include to all entities
             List<User> users = _userManager.Users.ToList();
 
             IdentityResult result = await _userManager.CreateAsync(
-                user: new User { UserName = userModel.UserName },
+                user: new User { UserName = userModel.UserName, Photo = userModel.Photo },
                 password: userModel.Password);
 
             if (!result.Succeeded)
@@ -109,6 +109,7 @@ namespace Chat.Server.Services//ToDo: use include to all entities
             {
                 Id = dbUser.Id,
                 Name = dbUser.UserName,
+                Photo = dbUser.Photo,
                 IsAdmin = dbUser.UserName == "Admin",
                 IsBlocked = dbUser.IsBlocked,
                 IsMuted = dbUser.IsMuted
@@ -197,6 +198,7 @@ namespace Chat.Server.Services//ToDo: use include to all entities
                 {
                     Id = user.Id,
                     Name = user.UserName,
+                    Photo = user.Photo,
                     Messages = messageModels,
                     ChatId = chat.ChatId,
                     IsBlocked = user.IsBlocked

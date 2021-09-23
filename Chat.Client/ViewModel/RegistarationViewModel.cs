@@ -1,9 +1,11 @@
-﻿using System.Threading.Tasks;
+﻿using System.IO;
+using System.Threading.Tasks;
 using System.Windows.Input;
 using ReactiveValidation;
 using ReactiveValidation.Extensions;
 
 using Chat.Client.Services;
+using Chat.Client.Services.Interfaces;
 using Chat.Client.Commands;
 using Chat.Models;
 
@@ -15,16 +17,22 @@ namespace Chat.Client.ViewModel
         private const int MIN_LINGTH_OF_PASSWORD = 6;
 
         private readonly RegistrationChatService _registrationService;
+        private readonly IDialogService _dialog;
 
         private string _name;
         private string _password;
         private string _confirmPassword;
+        private string _imageResource;
 
         private ICommand _registerUser;
+        private ICommand _loadPhoto;
 
-        public RegistarationViewModel(RegistrationChatService registrationChatService)
+        public RegistarationViewModel(RegistrationChatService registrationChatService, IDialogService dialogService)
         {
             _registrationService = registrationChatService;
+            _dialog = dialogService;
+
+            ImageResource = "../../../Images/DefaultUser2.png";
 
             Validator = GetValidator();
         }
@@ -63,8 +71,45 @@ namespace Chat.Client.ViewModel
             }
         }
 
+        public string ImageResource 
+        {
+            get => _imageResource;
+            set 
+            {
+                _imageResource = value;
+
+                OnPropertyChanged();
+            }
+        }
+
         public ICommand RegisterUser => _registerUser ?? (_registerUser = new RelayCommandAsync(
             execute: ExecuteRegistrationUser));
+
+        private async Task ExecuteRegistrationUser(object parameters)
+        {
+            await _registrationService.RegisterUser(new RegisterUserModel
+            {
+                UserName = Name,
+                Password = Password,
+                PasswordConfirm = ConfirmPassword,
+                Photo = GetByteImage()
+            });
+        }
+
+        public ICommand LoadPhoto => _loadPhoto ?? (_loadPhoto = new RelayCommand(
+            execute: ExecuteLoadPhote));
+
+        private void ExecuteLoadPhote(object parametr) 
+        {
+            string source = _dialog.OpenFile("Choose image", "Images (*.jpg;*png)|*.jpg;*png");
+
+            if (string.IsNullOrEmpty(source))
+            {
+                return;
+            }
+
+            ImageResource = source;
+        }
 
         private bool ConfirmPasswords(string confirmPassword) =>
             confirmPassword == Password;
@@ -92,14 +137,14 @@ namespace Chat.Client.ViewModel
             return validatorBuilder.Build(this);
         }
 
-        private async Task ExecuteRegistrationUser(object parameters) 
+        private byte[] GetByteImage() 
         {
-            await _registrationService.RegisterUser(new RegisterUserModel
+            if (string.IsNullOrEmpty(ImageResource))
             {
-                UserName = Name,
-                Password = Password,
-                PasswordConfirm = ConfirmPassword
-            });
+                return null;
+            }
+
+            return File.ReadAllBytes(ImageResource);
         }
     }
 }

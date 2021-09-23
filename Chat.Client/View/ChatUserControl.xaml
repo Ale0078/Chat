@@ -44,7 +44,8 @@
                  ItemContainerStyle="{StaticResource ListBoxItemTemplate}"
                  ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                  ScrollViewer.VerticalScrollBarVisibility="Auto"
-                 Focusable="False">
+                 Focusable="False"
+                 x:Name="ListOfUsers">
             <i:Interaction.Triggers>
                 <i:EventTrigger EventName="SelectionChanged">
                     <i:InvokeCommandAction Command="{Binding SetMessageToUser}"/>

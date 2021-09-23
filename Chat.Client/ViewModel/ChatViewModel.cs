@@ -282,6 +282,7 @@ namespace Chat.Client.ViewModel
                 ChatId = chat.Id,
                 Messages = messages,
                 Name = newUser.Name,
+                Photo = newUser.Photo,
                 IsBlocked = newUser.IsBlocked
             };
 
@@ -303,6 +304,7 @@ namespace Chat.Client.ViewModel
                 {
                     Id = user.Id,
                     Name = user.Name,
+                    Photo = user.Photo,
                     ConnectionId = user.ConnectionId,
                     ChatId = user.ChatId,
                     IsAdmin = user.IsAdmin,

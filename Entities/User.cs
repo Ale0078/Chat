@@ -7,6 +7,7 @@ namespace Chat.Entities
     {
         public bool IsBlocked { get; set; }
         public bool IsMuted { get; set; }
+        public byte[] Photo { get; set; }
         public virtual List<Chatter> Chatters { get; set; }
         public virtual List<BlockedUser> BlockedUsers { get; set; }
 
