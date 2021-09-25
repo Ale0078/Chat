@@ -2,10 +2,12 @@
 using System.Collections.ObjectModel;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Windows;
 using System.ComponentModel;
+using System.Windows.Threading;
 
 using Chat.Client.Services;
 using Chat.Client.Commands;
@@ -20,6 +22,7 @@ namespace Chat.Client.ViewModel
         private readonly List<ChatMemberViewModel> _blockedUsers;
 
         private ChatMemberViewModel _currentUser;
+        private DispatcherTimer _timer;
 
         private ICommand _connect;
         private ICommand _sendMessage;
@@ -27,6 +30,7 @@ namespace Chat.Client.ViewModel
         private ICommand _muteUser;
         private ICommand _setBlackListState;
         private ICommand _setMessageToUser;
+        private ICommand _sendTypingStatus;
 
         public ChatViewModel(ChatService chatService, RegistrationChatService registrationChatService)
         {
@@ -40,6 +44,11 @@ namespace Chat.Client.ViewModel
 
             Users = new ObservableCollection<ChatMemberViewModel>();
             _blockedUsers = new List<ChatMemberViewModel>();
+
+            _timer = new DispatcherTimer()
+            {
+                Interval = new TimeSpan(0, 0, 2)
+            };
 
             SetEvents();
         }
@@ -139,6 +148,25 @@ namespace Chat.Client.ViewModel
             User.Message = CurrentUser.Message;
         }
 
+        public ICommand SendTypingStatus => _sendTypingStatus ?? (_sendTypingStatus = new RelayCommandAsync(
+            execute: ExecuteSendTypingStatus));
+
+        private async Task ExecuteSendTypingStatus(object parametr) 
+        {
+            await _chatService.SendUserTypingStatusToUserAsync(
+                isTyping: true,
+                connectionId: CurrentUser.ConnectionId,
+                typingUserId: User.Id);
+
+            _timer.Start();
+            //Thread.Sleep(new TimeSpan(0, 0, 2));
+
+            //await _chatService.SendUserTypingStatusToUserAsync(
+            //    isTyping: false,
+            //    connectionId: CurrentUser.ConnectionId,
+            //    typingUserId: User.Id);
+        }
+
         private void SetEvents()
         {
             _chatService.ConnectUser += ConnectUserEventHandler;
@@ -148,11 +176,14 @@ namespace Chat.Client.ViewModel
             _chatService.SetBlockStateUserToAllUsersExeptBlocked += SetBlockStateUserToAllUsersExeptBlockedEventHandler;
             _chatService.SetMuteStateToUser += SetMuteStateToUser;
             _chatService.SendBlackListStateToUserServerHandler += SendBlackListStateToUserServerEventHandler;
+            _chatService.SendTypingStatusToUserServerHandler += SendTypingStatusToUserServerEventHandler;
 
             _registrationChatService.RegisterUserToOthersServerHandler += RegisterUserToOthersServerEventHandler;
             _registrationChatService.SendUsersToCallerServerHandler += SendUsersToCallerServerEventHandler;
             _registrationChatService.SendUserToCallerServerHandler += SendUserToCallerServerEventHandler;
             _registrationChatService.SendBlockersToCallerServerHandler += SendBlockersToCallerServerEventHandler;
+
+            _timer.Tick += OnTick;
 
             User.PropertyChanged += SetMessageToCurrentUserFromUser;
         }
@@ -269,6 +300,16 @@ namespace Chat.Client.ViewModel
             member.IsClientBlockedByMember = block.DoesBlocked;
         }
 
+        private void SendTypingStatusToUserServerEventHandler(bool isTyping, string typingUserId) 
+        {
+            ChatMemberViewModel user = Users.First(userModel =>
+            {
+                return userModel.Id == typingUserId;
+            });
+
+            user.IsTyping = isTyping;
+        }
+
         private void RegisterUserToOthersServerEventHandler(FullUserModel newUser)
         {
             ChatModel chat = newUser.Chats.Find(chatModel =>
@@ -349,9 +390,19 @@ namespace Chat.Client.ViewModel
             }
         }
 
+        private async void OnTick(object sender, EventArgs e) 
+        {
+            await _chatService.SendUserTypingStatusToUserAsync(
+                isTyping: false,
+                connectionId: CurrentUser.ConnectionId,
+                typingUserId: User.Id);
+
+            _timer.Stop();
+        }
+
         private void SetMessageToCurrentUserFromUser(object sender, PropertyChangedEventArgs e) 
         {
-            if (CurrentUser is null)
+            if (CurrentUser is null || e.PropertyName == nameof(UserViewModel.Message))
             {
                 return;
             }

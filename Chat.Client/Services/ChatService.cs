@@ -22,6 +22,7 @@ namespace Chat.Client.Services
         public event Action<UserState> SetBlockedStateUserToBlockedUser;
         public event Action<bool> SetMuteStateToUser;
         public event Action<BlockModel> SendBlackListStateToUserServerHandler;
+        public event Action<bool, string> SendTypingStatusToUserServerHandler;
 
         public ChatService()
         {
@@ -63,6 +64,10 @@ namespace Chat.Client.Services
             _connection.On<BlockModel>(
                 methodName: nameof(IChat.SendBlackListStateToUser),
                 handler: block => SendBlackListStateToUserServerHandler?.Invoke(block));
+
+            _connection.On<bool, string>(
+                methodName: nameof(IChat.SendTypingStatusToUser),
+                handler: (isTyping, typingUserId) => SendTypingStatusToUserServerHandler?.Invoke(isTyping, typingUserId));
         }
 
         public string Token { get; set; }
@@ -95,6 +100,11 @@ namespace Chat.Client.Services
         public async Task<BlockModel> SendBlackListStateAsync(string userId, string connectionId, string blockedUserId, bool doesBlock) 
         {
             return await _connection.InvokeAsync<BlockModel>("SetUserBlackListState", userId, connectionId, blockedUserId, doesBlock);
+        }
+
+        public async Task SendUserTypingStatusToUserAsync(bool isTyping, string connectionId, string typingUserId) 
+        {
+            await _connection.InvokeAsync("SendTypingStatusToUserAsync", isTyping, connectionId, typingUserId);
         }
     }
 }

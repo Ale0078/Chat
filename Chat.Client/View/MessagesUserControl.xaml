@@ -3,9 +3,11 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
              xmlns:time="clr-namespace:Chat.Controls;assembly=Chat.Controls"
              xmlns:system="clr-namespace:System;assembly=mscorlib"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:views="clr-namespace:Chat.Client.View"
              mc:Ignorable="d" 
              d:DesignHeight="450" 
              d:DesignWidth="800"
@@ -75,6 +77,23 @@
                                             </Setter.Value>
                                         </Setter>
                                     </DataTrigger>
+
+                                    <DataTrigger Binding="{Binding CurrentUser.IsTyping}" Value="True">
+                                        <Setter Property="ContentTemplate">
+                                            <Setter.Value>
+                                                <DataTemplate>
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <TextBlock Text="Is typing"
+                                                                   FontSize="12"
+                                                                   Foreground="#005BF7"
+                                                                   FontWeight="Light"/>
+
+                                                        <views:AnimatedType Padding="0, 4, 0, 0"/>
+                                                    </StackPanel>
+                                                </DataTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </DataTrigger>
                                 </Style.Triggers>
                             </Style>
                         </ContentControl.Style>
@@ -82,83 +101,89 @@
                 </StackPanel>
 
                 <Menu HorizontalAlignment="Right"
-                          VerticalAlignment="Center"
-                          IsMainMenu="True"
-                          Background="#FFFFFF"
-                          Margin="0, 0, 8, 0">
+                      VerticalAlignment="Center"
+                      IsMainMenu="True"
+                      Background="#FFFFFF"
+                      Margin="0, 0, 8, 0">
                     <MenuItem Header="{materialDesign:PackIcon Kind=DotsVertical}">
                         <MenuItem Header="Block user"
-                                      Icon="{materialDesign:PackIcon Kind=Cancel}"
-                                      Visibility="{Binding User.AdminToolsVisibility}"
-                                      Command="{Binding BlockUser}"
-                                      CommandParameter="{StaticResource True}"/>
+                                  Icon="{materialDesign:PackIcon Kind=Cancel}"
+                                  Visibility="{Binding User.AdminToolsVisibility}"
+                                  Command="{Binding BlockUser}"
+                                  CommandParameter="{StaticResource True}"/>
 
                         <MenuItem Header="Unblock user"
-                                      Icon="{materialDesign:PackIcon Kind=CheckDecagram}"
-                                      Visibility="{Binding User.AdminToolsVisibility}"
-                                      Command="{Binding BlockUser}"
-                                      CommandParameter="{StaticResource False}"/>
+                                  Icon="{materialDesign:PackIcon Kind=CheckDecagram}"
+                                  Visibility="{Binding User.AdminToolsVisibility}"
+                                  Command="{Binding BlockUser}"
+                                  CommandParameter="{StaticResource False}"/>
 
                         <MenuItem Header="Mute user"
-                                      Icon="{materialDesign:PackIcon Kind=VolumeMute}"
-                                      Visibility="{Binding User.AdminToolsVisibility}"
-                                      Command="{Binding MuteUser}"
-                                      CommandParameter="{StaticResource True}"/>
+                                  Icon="{materialDesign:PackIcon Kind=VolumeMute}"
+                                  Visibility="{Binding User.AdminToolsVisibility}"
+                                  Command="{Binding MuteUser}"
+                                  CommandParameter="{StaticResource True}"/>
 
                         <MenuItem Header="Unmute user"
-                                      Icon="{materialDesign:PackIcon Kind=VolumeHigh}"
-                                      Visibility="{Binding User.AdminToolsVisibility}"
-                                      Command="{Binding MuteUser}"
-                                      CommandParameter="{StaticResource False}"/>
+                                  Icon="{materialDesign:PackIcon Kind=VolumeHigh}"
+                                  Visibility="{Binding User.AdminToolsVisibility}"
+                                  Command="{Binding MuteUser}"
+                                  CommandParameter="{StaticResource False}"/>
 
                         <MenuItem Header="Add to black list"
-                                      Icon="{materialDesign:PackIcon Kind=MessageBulletedOff}"
-                                      Command="{Binding SetBlackListState}"
-                                      CommandParameter="{StaticResource True}"/>
+                                  Icon="{materialDesign:PackIcon Kind=MessageBulletedOff}"
+                                  Command="{Binding SetBlackListState}"
+                                  CommandParameter="{StaticResource True}"/>
 
                         <MenuItem Header="Remove from black list"
-                                      Icon="{materialDesign:PackIcon Kind=MessageBulleted}"
-                                      Command="{Binding SetBlackListState}"
-                                      CommandParameter="{StaticResource False}"/>
+                                  Icon="{materialDesign:PackIcon Kind=MessageBulleted}"
+                                  Command="{Binding SetBlackListState}"
+                                  CommandParameter="{StaticResource False}"/>
                     </MenuItem>
                 </Menu>
             </Grid>
         </Border>
 
         <ItemsControl Grid.ColumnSpan="2"
-                          Grid.Row="1"
-                          BorderThickness="0, 0, 0, 1"
-                          BorderBrush="LightGray"
-                          ItemsSource="{Binding CurrentUser.Messages}"
-                          ItemTemplate="{StaticResource MessagesTemplate}"
-                          Template="{StaticResource MessagesScrolViewer}"
-                          Focusable="False">
+                      Grid.Row="1"
+                      BorderThickness="0, 0, 0, 1"
+                      BorderBrush="LightGray"
+                      ItemsSource="{Binding CurrentUser.Messages}"
+                      ItemTemplate="{StaticResource MessagesTemplate}"
+                      Template="{StaticResource MessagesScrolViewer}"
+                      Focusable="False">
             <ItemsControl.Background>
                 <LinearGradientBrush StartPoint="0, 0"
                                          EndPoint="1, 1">
                     <GradientStop Color="#E2F672"
-                                      Offset="-0.3"/>
+                                  Offset="-0.3"/>
 
                     <GradientStop Color="#48C35E"
-                                      Offset="0.5"/>
+                                  Offset="0.5"/>
 
                     <GradientStop Color="#E2F672"
-                                      Offset="1.3"/>
+                                  Offset="1.3"/>
                 </LinearGradientBrush>
             </ItemsControl.Background>
         </ItemsControl>
 
         <TextBox Grid.Row="2"
-                     Grid.Column="0"
-                     Text="{Binding User.Message, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                     Name="Message"
-                     Style="{StaticResource TextBoxToMessage}"/>
+                 Grid.Column="0"
+                 Text="{Binding User.Message, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                 Name="Message"
+                 Style="{StaticResource TextBoxToMessage}">
+            <i:Interaction.Triggers>
+                <i:EventTrigger EventName="TextChanged">
+                    <i:InvokeCommandAction Command="{Binding SendTypingStatus}"/>
+                </i:EventTrigger>
+            </i:Interaction.Triggers>
+        </TextBox>
 
         <Button Grid.Row="2"
-                    Grid.Column="1"
-                    x:Name="Send"
-                    IsEnabled="{Binding User.IsButtonEnabled}"
-                    Command="{Binding SendMessage}"
-                    Style="{StaticResource IconButtonToSendMessage}"/>
+                Grid.Column="1"
+                x:Name="Send"
+                IsEnabled="{Binding User.IsButtonEnabled}"
+                Command="{Binding SendMessage}"
+                Style="{StaticResource IconButtonToSendMessage}"/>
     </Grid>
 </UserControl>

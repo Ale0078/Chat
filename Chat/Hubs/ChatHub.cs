@@ -96,6 +96,16 @@ namespace Chat.Server.Hubs
             }
         }
 
+        public async Task SendTypingStatusToUserAsync(bool isTyping, string connectionId, string typingUserId)
+        {
+            if (!IsValidConnectionId(connectionId))
+            {
+                return;
+            }
+
+            await Clients.Client(connectionId).SendTypingStatusToUser(isTyping, typingUserId);
+        }
+
         [Authorize(Roles = ADMIN_ROLE)]
         public async Task<bool> SetBlockState(string userId, string connectionId, bool isBlocked) 
         {
