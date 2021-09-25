@@ -18,6 +18,7 @@ namespace Chat.Client.ViewModel
         private bool _isBlocked;
         private bool _isClientBlockedByMember;
         private bool _isTyping;
+        private ChatMessageModel _lastMessage;
 
         public string Message { get; set; }
         public ObservableCollection<ChatMessageModel> Messages { get; set; }
@@ -138,6 +139,17 @@ namespace Chat.Client.ViewModel
             set 
             {
                 _isTyping = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        public ChatMessageModel LastMessage 
+        {
+            get => _lastMessage;
+            set 
+            {
+                _lastMessage = value;
 
                 OnPropertyChanged();
             }

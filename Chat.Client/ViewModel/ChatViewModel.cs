@@ -94,6 +94,7 @@ namespace Chat.Client.ViewModel
             sendingMessage.IsFromCurrentUser = true;
 
             CurrentUser.Messages.Add(sendingMessage);
+            CurrentUser.LastMessage = sendingMessage;
         }
 
         private bool CanExecuteSendMessage(object parametr) 
@@ -159,12 +160,6 @@ namespace Chat.Client.ViewModel
                 typingUserId: User.Id);
 
             _timer.Start();
-            //Thread.Sleep(new TimeSpan(0, 0, 2));
-
-            //await _chatService.SendUserTypingStatusToUserAsync(
-            //    isTyping: false,
-            //    connectionId: CurrentUser.ConnectionId,
-            //    typingUserId: User.Id);
         }
 
         private void SetEvents()
@@ -227,6 +222,7 @@ namespace Chat.Client.ViewModel
             });
 
             userSender.Messages.Add(message);
+            userSender.LastMessage = message;
         }
 
         private void SendConnectionsIdToCallerEventHandler(IEnumerable<UserConnection> connections) 
@@ -327,7 +323,10 @@ namespace Chat.Client.ViewModel
                 Name = newUser.Name,
                 Photo = newUser.Photo,
                 DisconnectTime = newUser.DisconnectTime,
-                IsBlocked = newUser.IsBlocked
+                IsBlocked = newUser.IsBlocked,
+                LastMessage = messages.Count == 0
+                    ? null
+                    : messages.Last()
             };
 
             if (newUser.IsBlocked && !User.IsAdmin)
@@ -355,7 +354,10 @@ namespace Chat.Client.ViewModel
                     IsLogin = user.IsLogin,
                     Messages = user.Messages,
                     IsBlocked = user.IsBlocked,
-                    DisconnectTime = user.DisconnectTime
+                    DisconnectTime = user.DisconnectTime,
+                    LastMessage = user.Messages.Count == 0 
+                        ? null
+                        : user.Messages.Last()
                 };
 
                 if (user.IsBlocked && !User.IsAdmin)
