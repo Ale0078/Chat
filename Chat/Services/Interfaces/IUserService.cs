@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 using Chat.Models;
@@ -20,5 +21,7 @@ namespace Chat.Server.Services.Interfaces
         Task<bool> SetBlockOrMuteStateAsync(string id, bool isBlockOrMuted, bool doBlock);
 
         Task<BlockModel> SetUserBlackListStatusAsync(string userId, string blockedUserId, bool doesBlock);
+
+        Task<bool> UpdateDisconnectTime(string userName, DateTime disconnectTime);
     }
 }

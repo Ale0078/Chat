@@ -49,7 +49,10 @@ namespace Chat.Server.Hubs
 
         public override async Task OnDisconnectedAsync(Exception exception)
         {
-            await Clients.Others.Logout(Context.User.Identity.Name);
+            if (await _userService.UpdateDisconnectTime(Context.User.Identity.Name, DateTime.Now))
+            {
+                await Clients.Others.Logout(Context.User.Identity.Name, DateTime.Now);
+            }
 
             _connections.Remove(_connections.Find(connection =>
             {

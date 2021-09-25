@@ -1,4 +1,5 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -167,7 +168,7 @@ namespace Chat.Client.ViewModel
             connectedUser.ConnectionId = connectionId;
         }
 
-        private void LogoutEventHandler(string userName) 
+        private void LogoutEventHandler(string userName, DateTime disconnectTime) 
         {
             ChatMemberViewModel logoutedUser = Users.FirstOrDefault(user =>
             {
@@ -183,6 +184,7 @@ namespace Chat.Client.ViewModel
             }
 
             logoutedUser.ConnectionId = string.Empty;
+            logoutedUser.DisconnectTime = disconnectTime;
             logoutedUser.IsLogin = false;
         }
 
@@ -283,6 +285,7 @@ namespace Chat.Client.ViewModel
                 Messages = messages,
                 Name = newUser.Name,
                 Photo = newUser.Photo,
+                DisconnectTime = newUser.DisconnectTime,
                 IsBlocked = newUser.IsBlocked
             };
 
@@ -310,7 +313,8 @@ namespace Chat.Client.ViewModel
                     IsAdmin = user.IsAdmin,
                     IsLogin = user.IsLogin,
                     Messages = user.Messages,
-                    IsBlocked = user.IsBlocked
+                    IsBlocked = user.IsBlocked,
+                    DisconnectTime = user.DisconnectTime
                 };
 
                 if (user.IsBlocked && !User.IsAdmin)

@@ -1,10 +1,10 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
-using Microsoft.EntityFrameworkCore;
 
 using Chat.Models;
 using Chat.Entities;
@@ -56,7 +56,12 @@ namespace Chat.Server.Services//ToDo: use include to all entities
             List<User> users = _userManager.Users.ToList();
 
             IdentityResult result = await _userManager.CreateAsync(
-                user: new User { UserName = userModel.UserName, Photo = userModel.Photo },
+                user: new User 
+                { 
+                    UserName = userModel.UserName, 
+                    Photo = userModel.Photo,
+                    DisconnectTime = DateTime.Now
+                },
                 password: userModel.Password);
 
             if (!result.Succeeded)
@@ -112,7 +117,8 @@ namespace Chat.Server.Services//ToDo: use include to all entities
                 Photo = dbUser.Photo,
                 IsAdmin = dbUser.UserName == "Admin",
                 IsBlocked = dbUser.IsBlocked,
-                IsMuted = dbUser.IsMuted
+                IsMuted = dbUser.IsMuted,
+                DisconnectTime = dbUser.DisconnectTime
             };
 
             List<BlockModel> blockModels = new(userModel.BlockModels.Count);
@@ -201,7 +207,8 @@ namespace Chat.Server.Services//ToDo: use include to all entities
                     Photo = user.Photo,
                     Messages = messageModels,
                     ChatId = chat.ChatId,
-                    IsBlocked = user.IsBlocked
+                    IsBlocked = user.IsBlocked,
+                    DisconnectTime = user.DisconnectTime
                 });
             }
 
@@ -256,6 +263,20 @@ namespace Chat.Server.Services//ToDo: use include to all entities
                 UserId = blockedUser.Blocker.UserId,
                 DoesBlocked = blockedUser.Blocker.DoesBlock
             };
+        }
+
+        public async Task<bool> UpdateDisconnectTime(string userName, DateTime disconnectTime) 
+        {
+            User disconnectedUser = await _userManager.FindByNameAsync(userName);
+
+            if (disconnectedUser is null)
+            {
+                return false;
+            }
+
+            disconnectedUser.DisconnectTime = disconnectTime;
+
+            return (await _userManager.UpdateAsync(disconnectedUser)).Succeeded;
         }
 
         private async Task<BlockedUser> AddBlockedUserAsync(string userId, string blockedUserId, bool doesBlock) 

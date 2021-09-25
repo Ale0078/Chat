@@ -21,6 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Chat.Controls\Chat.Controls.csproj" />
     <ProjectReference Include="..\ClientInterfaces\Chat.Interfaces.csproj" />
   </ItemGroup>
 

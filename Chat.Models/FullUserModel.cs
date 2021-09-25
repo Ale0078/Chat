@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Chat.Models
 {
@@ -10,6 +11,7 @@ namespace Chat.Models
         public bool IsAdmin { get; set; }
         public bool IsBlocked { get; set; }
         public bool IsMuted { get; set; }
+        public DateTime DisconnectTime { get; set; }
         public List<ChatModel> Chats { get; set; }
         public List<BlockModel> BlockModels { get; set; }
 

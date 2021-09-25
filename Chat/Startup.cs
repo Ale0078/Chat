@@ -68,7 +68,12 @@ namespace Chat.Server
                     .Build();
             });
 
-            services.AddSignalR();
+            services.AddSignalR(options => 
+            {
+                options.MaximumReceiveMessageSize = long.MaxValue;
+            });
+
+
             services.AddTransient<IUserService, UserService>();
         }
 

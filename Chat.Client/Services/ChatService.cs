@@ -15,7 +15,7 @@ namespace Chat.Client.Services
         private readonly HubConnection _connection;
 
         public event Action<string, string> ConnectUser;
-        public event Action<string> Logout;
+        public event Action<string, DateTime> Logout;
         public event Action<ChatMessageModel> ReciveMessage;
         public event Action<IEnumerable<UserConnection>> SendConnectionsIdToCallerEvent;
         public event Action<string, bool> SetBlockStateUserToAllUsersExeptBlocked;
@@ -40,9 +40,9 @@ namespace Chat.Client.Services
                 methodName: nameof(IChat.Connect),
                 handler: (userName, connectionId) => ConnectUser?.Invoke(userName, connectionId));
 
-            _connection.On<string>(
+            _connection.On<string, DateTime>(
                 methodName: nameof(IChat.Logout), 
-                handler: userName => Logout?.Invoke(userName));
+                handler: (userName, disconnectTime) => Logout?.Invoke(userName, disconnectTime));
 
             _connection.On<ChatMessageModel>(
                 methodName: nameof(IChat.ReciveMessage), 

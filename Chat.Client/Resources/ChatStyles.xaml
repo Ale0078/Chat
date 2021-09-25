@@ -71,18 +71,8 @@
             </ScrollViewer>
         </Border>
     </ControlTemplate>
-    
+
     <Style x:Key="TextBoxToMessage" TargetType="{x:Type TextBox}" BasedOn="{StaticResource MaterialDesignTextBox}">
-        <!--<Style.Triggers>
-            <DataTrigger Binding="{Binding CurrentUser}" Value="{x:Null}">
-                <Setter Property="Visibility" Value="Collapsed"/>
-            </DataTrigger>
-
-            <DataTrigger Binding="{Binding CurrentUser}">
-                <Setter Property="Visibility" Value="Visible"/>
-            </DataTrigger>
-        </Style.Triggers>-->
-
         <Setter Property="Height" Value="40"/>
         <Setter Property="TextDecorations" Value="None"/>
         <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled"/>

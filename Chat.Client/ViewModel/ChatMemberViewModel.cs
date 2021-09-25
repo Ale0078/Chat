@@ -12,6 +12,7 @@ namespace Chat.Client.ViewModel
         private string _connectionId;
         private Guid _chatId;
         private byte[] _photo;
+        private DateTime _disconnectTime;
         private bool _isAdmin;
         private bool _isLogin;
         private bool _isBlocked;
@@ -70,6 +71,17 @@ namespace Chat.Client.ViewModel
             set 
             {
                 _photo = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        public DateTime DisconnectTime 
+        {
+            get => _disconnectTime;
+            set 
+            {
+                _disconnectTime = value;
 
                 OnPropertyChanged();
             }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Microsoft.AspNetCore.Identity;
 
 namespace Chat.Entities
@@ -8,6 +9,7 @@ namespace Chat.Entities
         public bool IsBlocked { get; set; }
         public bool IsMuted { get; set; }
         public byte[] Photo { get; set; }
+        public DateTime DisconnectTime { get; set; }
         public virtual List<Chatter> Chatters { get; set; }
         public virtual List<BlockedUser> BlockedUsers { get; set; }
 

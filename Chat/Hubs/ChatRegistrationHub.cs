@@ -6,6 +6,7 @@ using static System.Console;
 using Chat.Server.Services.Interfaces;
 using Chat.Models;
 using Chat.Interfaces;
+using System;
 
 namespace Chat.Server.Hubs
 {
@@ -16,6 +17,11 @@ namespace Chat.Server.Hubs
         public ChatRegistrationHub(IUserService userService)
         {
             _userService = userService;
+        }
+
+        public override Task OnDisconnectedAsync(Exception exception)
+        {
+            return base.OnDisconnectedAsync(exception);
         }
 
         public async Task<bool> Register(RegisterUserModel model)//ToDo: drag to one hub

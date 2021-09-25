@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 using Chat.Models;
@@ -9,7 +10,7 @@ namespace Chat.Interfaces
     {
         Task SendConnectionsIdToCaller(IEnumerable<UserConnection> connectionsId);
         Task Connect(string userName, string connectionId);
-        Task Logout(string oldUser);
+        Task Logout(string oldUser, DateTime disconnectTime);
         Task ReciveMessage(ChatMessageModel message);
         Task ChangeBlockStatusUserToUser(UserState state);
         Task ChangeBlockStatusUserToAllUsersExceptBlocked(string id, bool isBlocked);
