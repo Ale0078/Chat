@@ -173,8 +173,12 @@
                  Name="Message"
                  Style="{StaticResource TextBoxToMessage}">
             <i:Interaction.Triggers>
-                <i:EventTrigger EventName="TextChanged">
-                    <i:InvokeCommandAction Command="{Binding SendTypingStatus}"/>
+                <i:EventTrigger EventName="KeyDown">
+                    <i:InvokeCommandAction Command="{Binding Typing}"/>
+                </i:EventTrigger>
+
+                <i:EventTrigger EventName="KeyUp">
+                    <i:InvokeCommandAction Command="{Binding StopTyping}"/>
                 </i:EventTrigger>
             </i:Interaction.Triggers>
         </TextBox>

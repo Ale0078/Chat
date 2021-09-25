@@ -30,7 +30,8 @@ namespace Chat.Client.ViewModel
         private ICommand _muteUser;
         private ICommand _setBlackListState;
         private ICommand _setMessageToUser;
-        private ICommand _sendTypingStatus;
+        private ICommand _typing;
+        private ICommand _stopTyping;
 
         public ChatViewModel(ChatService chatService, RegistrationChatService registrationChatService)
         {
@@ -149,17 +150,27 @@ namespace Chat.Client.ViewModel
             User.Message = CurrentUser.Message;
         }
 
-        public ICommand SendTypingStatus => _sendTypingStatus ?? (_sendTypingStatus = new RelayCommandAsync(
-            execute: ExecuteSendTypingStatus));
+        public ICommand Typing => _typing ?? (_typing = new RelayCommandAsync(
+            execute: ExecuteTyping));
 
-        private async Task ExecuteSendTypingStatus(object parametr) 
+        private async Task ExecuteTyping(object parametr) 
         {
             await _chatService.SendUserTypingStatusToUserAsync(
                 isTyping: true,
                 connectionId: CurrentUser.ConnectionId,
                 typingUserId: User.Id);
 
+            _timer.Stop();
+        }
+
+        public ICommand StopTyping => _stopTyping ?? (_stopTyping = new RelayCommandAsync(
+            execute: ExecuteStopTyping));
+
+        private Task ExecuteStopTyping(object parametr) 
+        {
             _timer.Start();
+
+            return Task.CompletedTask;
         }
 
         private void SetEvents()
