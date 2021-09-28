@@ -2,7 +2,6 @@
 using System.Collections.ObjectModel;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Windows;
@@ -223,6 +222,7 @@ namespace Chat.Client.ViewModel
             logoutedUser.ConnectionId = string.Empty;
             logoutedUser.DisconnectTime = disconnectTime;
             logoutedUser.IsLogin = false;
+            logoutedUser.IsTyping = false;
         }
 
         private void ReciveMessageEventHandler(ChatMessageModel message) 
