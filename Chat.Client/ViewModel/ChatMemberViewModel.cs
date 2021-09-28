@@ -18,9 +18,14 @@ namespace Chat.Client.ViewModel
         private bool _isBlocked;
         private bool _isClientBlockedByMember;
         private bool _isTyping;
+        private DraftViewModel _draft;
         private ChatMessageModel _lastMessage;
 
-        public string Message { get; set; }
+        public ChatMemberViewModel()
+        {
+            Draft = new DraftViewModel();
+        }
+
         public ObservableCollection<ChatMessageModel> Messages { get; set; }
 
         public string Id 
@@ -139,6 +144,17 @@ namespace Chat.Client.ViewModel
             set 
             {
                 _isTyping = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        public DraftViewModel Draft
+        {
+            get => _draft;
+            set
+            {
+                _draft = value;
 
                 OnPropertyChanged();
             }

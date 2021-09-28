@@ -147,7 +147,7 @@ namespace Chat.Client.ViewModel
 
         private void ExecuteSetMessageToUser(object parametr) 
         {
-            User.Message = CurrentUser.Message;
+            User.Message = CurrentUser.Draft.Message;
         }
 
         public ICommand Typing => _typing ?? (_typing = new RelayCommandAsync(
@@ -422,7 +422,19 @@ namespace Chat.Client.ViewModel
 
             UserViewModel user = sender as UserViewModel;
 
-            CurrentUser.Message = user.Message;
+            if (string.IsNullOrEmpty(user.Message))
+            {
+                CurrentUser.Draft.Message = null;
+            }
+            else
+            {
+                if (CurrentUser.Draft.Message is null)
+                {
+                    CurrentUser.Draft.StartTypingTime = DateTime.Now;
+                }
+
+                CurrentUser.Draft.Message = user.Message;
+            }
         }
     }
 }

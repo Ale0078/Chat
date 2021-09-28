@@ -22,6 +22,7 @@
                                 Background="{TemplateBinding Background}"
                                 CornerRadius="5">
                         </Border>
+                        
                         <Rectangle Style="{StaticResource AutoStyle}"
                                        Fill="Transparent"/>
                     </Grid>
@@ -41,7 +42,7 @@
                           HorizontalAlignment="{TemplateBinding HorizontalAlignment}"
                           Margin="{TemplateBinding Margin}"
                           Background="Transparent">
-                        <Track x:Name="PART_Track" 
+                        <Track x:Name="PART_Track"
                                Grid.Row="0" 
                                IsDirectionReversed="true" 
                                Focusable="False">

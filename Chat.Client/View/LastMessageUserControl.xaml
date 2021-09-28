@@ -1,0 +1,120 @@
+﻿<UserControl x:Class="Chat.Client.View.LastMessageUserControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:extensions="clr-namespace:Chat.Client.AttachedProperties"
+             xmlns:views="clr-namespace:Chat.Client.View"
+             xmlns:viewModels="clr-namespace:Chat.Client.ViewModel"
+             mc:Ignorable="d" 
+             Height="Auto"
+             Width="Auto">
+    <Grid>
+        <ContentControl Content="{Binding}"
+                        extensions:FrameworkElementExtension.ActualWidth="0">
+            <ContentControl.Style>
+                <Style TargetType="{x:Type ContentControl}">
+                    <Style.Triggers>
+                        <MultiDataTrigger>
+                            <MultiDataTrigger.Conditions>
+                                <Condition Binding="{Binding LastMessage, Converter={StaticResource IsNull}}" Value="False"/>
+                                <Condition Binding="{Binding LastMessage.IsFromCurrentUser}" Value="True"/>
+                            </MultiDataTrigger.Conditions>
+
+                            <Setter Property="ContentTemplate">
+                                <Setter.Value>
+                                    <DataTemplate DataType="{x:Type viewModels:ChatMemberViewModel}">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition extensions:FrameworkElementExtension.ActualWidth="0"/>
+                                            </Grid.ColumnDefinitions>
+
+                                            <TextBlock Text="Yuo: "
+                                                       FontWeight="Light"
+                                                       TextWrapping="NoWrap"
+                                                       TextTrimming="WordEllipsis"
+                                                       Foreground="#005BF7"
+                                                       Grid.Column="0"/>
+
+                                            <TextBlock Text="{Binding LastMessage.Message}"
+                                                       FontWeight="Light"
+                                                       TextWrapping="NoWrap"
+                                                       TextTrimming="WordEllipsis"
+                                                       Width="{Binding RelativeSource={RelativeSource AncestorType=Grid, AncestorLevel=1}, Path=(extensions:FrameworkElementExtension.ActualWidth)}"
+                                                       Grid.Column="1"/>
+                                        </Grid>
+                                    </DataTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </MultiDataTrigger>
+
+                        <MultiDataTrigger>
+                            <MultiDataTrigger.Conditions>
+                                <Condition Binding="{Binding LastMessage, Converter={StaticResource IsNull}}" Value="False"/>
+                                <Condition Binding="{Binding LastMessage.IsFromCurrentUser}" Value="False"/>
+                            </MultiDataTrigger.Conditions>
+
+                            <Setter Property="ContentTemplate">
+                                <Setter.Value>
+                                    <DataTemplate DataType="{x:Type viewModels:ChatMemberViewModel}">
+                                        <TextBlock Text="{Binding LastMessage.Message}"
+                                                   FontWeight="Light"
+                                                   TextWrapping="NoWrap"
+                                                   TextTrimming="WordEllipsis"
+                                                   Width="{Binding RelativeSource={RelativeSource AncestorType=ContentControl, Mode=FindAncestor}, Path=(extensions:FrameworkElementExtension.ActualWidth)}"/>
+                                    </DataTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </MultiDataTrigger>
+
+                        <DataTrigger Binding="{Binding Draft.Message, Converter={StaticResource IsNull}}" Value="False">
+                            <Setter Property="ContentTemplate">
+                                <Setter.Value>
+                                    <DataTemplate DataType="{x:Type viewModels:ChatMemberViewModel}">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition extensions:FrameworkElementExtension.ActualWidth="0"/>
+                                            </Grid.ColumnDefinitions>
+
+                                            <TextBlock Text="Draft: "
+                                                       FontWeight="Light"
+                                                       TextWrapping="NoWrap"
+                                                       TextTrimming="WordEllipsis"
+                                                       Foreground="Red"
+                                                       Grid.Column="0"/>
+
+                                            <TextBlock Text="{Binding Draft.Message}"
+                                                       FontWeight="Light"
+                                                       TextWrapping="NoWrap"
+                                                       TextTrimming="WordEllipsis"
+                                                       Width="{Binding RelativeSource={RelativeSource AncestorType=Grid, AncestorLevel=1}, Path=(extensions:FrameworkElementExtension.ActualWidth)}"
+                                                       Grid.Column="1"/>
+                                        </Grid>
+                                    </DataTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </DataTrigger>
+
+                        <DataTrigger Binding="{Binding IsTyping}" Value="True">
+                            <Setter Property="ContentTemplate">
+                                <Setter.Value>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="Is typing"
+                                                       Foreground="#005BF7"
+                                                       FontWeight="Light"/>
+
+                                            <views:AnimatedType/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </ContentControl.Style>
+        </ContentControl>
+    </Grid>
+</UserControl>

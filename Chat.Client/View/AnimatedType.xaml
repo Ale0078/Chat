@@ -3,42 +3,46 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:converters="clr-namespace:Chat.Client.Converters"
              mc:Ignorable="d" 
              Height="Auto" 
-             Width="Auto">
+             Width="Auto"
+             x:Name="IconControl">
     <UserControl.Resources>
+        <converters:ColorToSolidColorBrush x:Key="ColotToBrush"/>
+
         <Style TargetType="{x:Type Ellipse}">
-            <Setter Property="Fill" Value="#005BF7"/>
-            <Setter Property="Width" Value="6"/>
-            <Setter Property="Height" Value="6"/>
-            <Setter Property="Margin" Value="2, 0, 0, 0"/>
+            <Setter Property="Fill" Value="{Binding ElementName=IconControl, Path=EllipseColor, Converter={StaticResource ColotToBrush}}"/>
+            <Setter Property="Width" Value="{Binding ElementName=IconControl, Path=EllipseWidth}"/>
+            <Setter Property="Height" Value="{Binding ElementName=IconControl, Path=EllipseHeight}"/>
+            <Setter Property="Margin" Value="{Binding ElementName=IconControl, Path=EllipseMargin}"/>
         </Style>
     </UserControl.Resources>
     
     <StackPanel Orientation="Horizontal">
-        <Ellipse x:Name="FirstEllips"/>
-        <Ellipse x:Name="SecondEllips"/>
-        <Ellipse x:Name="ThirdEllips"/>
+        <Ellipse x:Name="FirstEllipse"/>
+        <Ellipse x:Name="SecondEllipse"/>
+        <Ellipse x:Name="ThirdEllipse"/>
 
         <StackPanel.Triggers>
             <EventTrigger RoutedEvent="Loaded">
                 <BeginStoryboard>
                     <Storyboard RepeatBehavior="Forever">
-                        <DoubleAnimation Storyboard.TargetName="FirstEllips"
+                        <DoubleAnimation Storyboard.TargetName="FirstEllipse"
                                          Storyboard.TargetProperty="Opacity"
                                          From="1"
                                          To="0.5"
                                          Duration="0:0:0.2"
                                          FillBehavior="Stop"/>
 
-                        <DoubleAnimation Storyboard.TargetName="SecondEllips"
+                        <DoubleAnimation Storyboard.TargetName="SecondEllipse"
                                          Storyboard.TargetProperty="Opacity"
                                          From="1"
                                          To="0.5"
                                          Duration="0:0:0.4"
                                          FillBehavior="Stop"/>
 
-                        <DoubleAnimation Storyboard.TargetName="ThirdEllips"
+                        <DoubleAnimation Storyboard.TargetName="ThirdEllipse"
                                          Storyboard.TargetProperty="Opacity"
                                          From="1"
                                          To="0.5"

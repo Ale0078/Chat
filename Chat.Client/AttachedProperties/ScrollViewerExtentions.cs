@@ -5,7 +5,7 @@ namespace Chat.Client.AttachedProperties
 {
     public static class ScrollViewerExtentions
     {
-        public static DependencyProperty IsScrollToEndProperty;
+        public static readonly DependencyProperty IsScrollToEndProperty;
 
         static ScrollViewerExtentions()
         {

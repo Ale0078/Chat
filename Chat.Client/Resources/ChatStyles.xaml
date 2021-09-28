@@ -3,13 +3,19 @@
                     xmlns:viewModels="clr-namespace:Chat.Client.ViewModel"
                     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
                     xmlns:extensions="clr-namespace:Chat.Client.AttachedProperties"
-                    xmlns:system="clr-namespace:System;assembly=mscorlib"
-                    xmlns:models="clr-namespace:Chat.Models;assembly=Chat.Models"
                     xmlns:converters="clr-namespace:Chat.Client.Converters"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
                     xmlns:views="clr-namespace:Chat.Client.View">
     <converters:ByteToImage x:Key="ConvertBytesToPhoto"/>
     <converters:NullToBoolean x:Key="IsNull"/>
+
+    <Style TargetType="{x:Type views:AnimatedType}">
+        <Setter Property="EllipseHeight" Value="6"/>
+        <Setter Property="EllipseWidth" Value="6"/>
+        <Setter Property="EllipseMargin" Value="1"/>
+        <Setter Property="EllipseColor" Value="#005BF7"/>
+        <Setter Property="Padding" Value="0, 0, 0, 6"/>
+    </Style>
 
     <Style x:Key="MessageTemplate" TargetType="{x:Type Border}">
         <Setter Property="CornerRadius" Value="10"/>
@@ -239,7 +245,8 @@
             </Grid>
 
             <Grid Grid.Row="0"
-                  Grid.Column="1">
+                  Grid.Column="1"
+                  x:Name="GridSize">
                 <TextBlock FontSize="16"
                            FontWeight="Medium"
                            Focusable="False"
@@ -261,79 +268,18 @@
                     </TextBlock.Style>
                 </TextBlock>
 
-                <TextBlock Grid.Row="0"
-                           Grid.Column="2"
-                           VerticalAlignment="Center"
-                           HorizontalAlignment="Right"
-                           Margin="0, 0, 5, 0"
-                           Text="{Binding LastMessage.SendingTime, StringFormat={}{0:t}}"
-                           FontSize="10"
-                           Foreground="#A6A6A6"/>
+                <views:LastMessageTimeUserControl DataContext="{Binding}"
+                                                  Grid.Row="0"
+                                                  Grid.Column="2"
+                                                  VerticalAlignment="Center"
+                                                  HorizontalAlignment="Right"
+                                                  Margin="0, 0, 5, 0"/>
             </Grid>
 
-            <ContentControl Content="{Binding LastMessage}"
+            <views:LastMessageUserControl DataContext="{Binding}"
                             Grid.Column="1"
-                            Grid.Row="1">
-                <ContentControl.Style>
-                    <Style TargetType="{x:Type ContentControl}">
-                        <Style.Triggers>
-                            <MultiDataTrigger>
-                                <MultiDataTrigger.Conditions>
-                                    <Condition Binding="{Binding LastMessage, Converter={StaticResource IsNull}}" Value="False"/>
-                                    <Condition Binding="{Binding LastMessage.IsFromCurrentUser}" Value="True"/>
-                                </MultiDataTrigger.Conditions>
-
-                                <Setter Property="ContentTemplate">
-                                    <Setter.Value>
-                                        <DataTemplate DataType="{x:Type models:ChatMessageModel}">
-                                            <StackPanel Orientation="Horizontal">
-                                                <TextBlock Text="You: "
-                                                           Foreground="#005BF7"
-                                                           FontWeight="Light"/>
-
-                                                <TextBlock Text="{Binding Message}"
-                                                           FontWeight="Light"/>
-                                            </StackPanel>
-                                        </DataTemplate>
-                                    </Setter.Value>
-                                </Setter>
-                            </MultiDataTrigger>
-
-                            <MultiDataTrigger>
-                                <MultiDataTrigger.Conditions>
-                                    <Condition Binding="{Binding LastMessage, Converter={StaticResource IsNull}}" Value="False"/>
-                                    <Condition Binding="{Binding LastMessage.IsFromCurrentUser}" Value="False"/>
-                                </MultiDataTrigger.Conditions>
-
-                                <Setter Property="ContentTemplate">
-                                    <Setter.Value>
-                                        <DataTemplate DataType="{x:Type models:ChatMessageModel}">
-                                            <TextBlock Text="{Binding Message}"
-                                                       FontWeight="Light"/>
-                                        </DataTemplate>
-                                    </Setter.Value>
-                                </Setter>
-                            </MultiDataTrigger>
-
-                            <DataTrigger Binding="{Binding IsTyping}" Value="True">
-                                <Setter Property="ContentTemplate">
-                                    <Setter.Value>
-                                        <DataTemplate DataType="{x:Type models:ChatMessageModel}">
-                                            <StackPanel Orientation="Horizontal">
-                                                <TextBlock Text="Is typing"
-                                                           Foreground="#005BF7"
-                                                           FontWeight="Light"/>
-
-                                                <views:AnimatedType Padding="0, 0, 0, 6"/>
-                                            </StackPanel>
-                                        </DataTemplate>
-                                    </Setter.Value>
-                                </Setter>
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </ContentControl.Style>
-            </ContentControl>
+                            Grid.Row="1"
+                            HorizontalAlignment="Left"/>
         </Grid>
     </DataTemplate>
 
