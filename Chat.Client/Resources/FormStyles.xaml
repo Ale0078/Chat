@@ -43,5 +43,6 @@
         <Setter Property="FontSize" Value="12"/>
         <Setter Property="Content" Value="Send"/>
         <Setter Property="IsEnabled" Value="{Binding Validator.IsValid}"/>
+        <Setter Property="IsDefault" Value="True"/>
     </Style>
 </ResourceDictionary>

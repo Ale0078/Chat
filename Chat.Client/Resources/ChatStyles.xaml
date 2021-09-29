@@ -82,6 +82,7 @@
     </ControlTemplate>
 
     <Style x:Key="TextBoxToMessage" TargetType="{x:Type TextBox}" BasedOn="{StaticResource MaterialDesignTextBox}">
+        <Setter Property="AcceptsReturn" Value="True"/>
         <Setter Property="MinHeight" Value="40"/>
         <Setter Property="MaxHeight" Value="100"/>
         <Setter Property="TextDecorations" Value="None"/>
@@ -147,6 +148,7 @@
         <Setter Property="Width" Value="40"/>
         <Setter Property="Height" Value="40"/>
         <Setter Property="Focusable" Value="False"/>
+        <Setter Property="IsDefault" Value="True"/>
         <Setter Property="VerticalAlignment" Value="Bottom"/>
         <Setter Property="Template">
             <Setter.Value>
