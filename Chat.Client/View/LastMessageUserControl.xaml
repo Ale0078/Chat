@@ -17,7 +17,7 @@
                     <Style.Triggers>
                         <MultiDataTrigger>
                             <MultiDataTrigger.Conditions>
-                                <Condition Binding="{Binding LastMessage, Converter={StaticResource IsNull}}" Value="False"/>
+                                <Condition Binding="{Binding LastMessage.Message, Converter={StaticResource IsNull}}" Value="False"/>
                                 <Condition Binding="{Binding LastMessage.IsFromCurrentUser}" Value="True"/>
                             </MultiDataTrigger.Conditions>
 
@@ -51,7 +51,7 @@
 
                         <MultiDataTrigger>
                             <MultiDataTrigger.Conditions>
-                                <Condition Binding="{Binding LastMessage, Converter={StaticResource IsNull}}" Value="False"/>
+                                <Condition Binding="{Binding LastMessage.Message, Converter={StaticResource IsNull}}" Value="False"/>
                                 <Condition Binding="{Binding LastMessage.IsFromCurrentUser}" Value="False"/>
                             </MultiDataTrigger.Conditions>
 
@@ -99,7 +99,7 @@
 
                         <MultiDataTrigger>
                             <MultiDataTrigger.Conditions>
-                                <Condition Binding="{Binding LastMessage, Converter={StaticResource IsNull}}" Value="True"/>
+                                <Condition Binding="{Binding LastMessage.Message, Converter={StaticResource IsNull}}" Value="True"/>
                                 <Condition Binding="{Binding Draft.Message, Converter={StaticResource IsNull}}" Value="True"/>
                             </MultiDataTrigger.Conditions>
 

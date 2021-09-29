@@ -11,6 +11,7 @@ using System.Windows.Threading;
 using Chat.Client.Services;
 using Chat.Client.Commands;
 using Chat.Models;
+using Chat.Client.Extensions;
 
 namespace Chat.Client.ViewModel
 {
@@ -22,6 +23,7 @@ namespace Chat.Client.ViewModel
 
         private ChatMemberViewModel _currentUser;
         private DispatcherTimer _timer;
+        private ObservableCollection<ChatMemberViewModel> _users;
 
         private ICommand _connect;
         private ICommand _sendMessage;
@@ -55,7 +57,16 @@ namespace Chat.Client.ViewModel
 
         public UserViewModel User { get; set; }
 
-        public ObservableCollection<ChatMemberViewModel> Users { get; set; }
+        public ObservableCollection<ChatMemberViewModel> Users 
+        {
+            get => _users;
+            set 
+            {
+                _users = value;
+
+                OnPropertyChanged();
+            } 
+        }
         
         public ChatMemberViewModel CurrentUser 
         {
@@ -95,6 +106,8 @@ namespace Chat.Client.ViewModel
 
             CurrentUser.Messages.Add(sendingMessage);
             CurrentUser.LastMessage = sendingMessage;
+
+            Users = Users.GetSortedCollectionByLastMessage();
         }
 
         private bool CanExecuteSendMessage(object parametr) 
@@ -154,7 +167,17 @@ namespace Chat.Client.ViewModel
                 connectionId: CurrentUser.ConnectionId,
                 typingUserId: User.Id);
 
-            _timer.Stop();
+            if (string.IsNullOrEmpty(User.Message))
+            {
+                await _chatService.SendUserTypingStatusToUserAsync(
+                    isTyping: false,
+                    connectionId: CurrentUser.ConnectionId,
+                    typingUserId: User.Id);
+            }
+            else
+            {
+                _timer.Stop();
+            }
         }
 
         public ICommand StopTyping => _stopTyping ?? (_stopTyping = new RelayCommandAsync(
@@ -229,6 +252,8 @@ namespace Chat.Client.ViewModel
 
             userSender.Messages.Add(message);
             userSender.LastMessage = message;
+
+            Users = Users.GetSortedCollectionByLastMessage();
         }
 
         private void SendConnectionsIdToCallerEventHandler(IEnumerable<UserConnection> connections) 
@@ -339,7 +364,7 @@ namespace Chat.Client.ViewModel
                 DisconnectTime = newUser.DisconnectTime,
                 IsBlocked = newUser.IsBlocked,
                 LastMessage = messages.Count == 0
-                    ? null
+                    ? new ChatMessageModel()
                     : messages.Last()
             };
 
@@ -370,7 +395,7 @@ namespace Chat.Client.ViewModel
                     IsBlocked = user.IsBlocked,
                     DisconnectTime = user.DisconnectTime,
                     LastMessage = user.Messages.Count == 0 
-                        ? null
+                        ? new ChatMessageModel()
                         : user.Messages.Last()
                 };
 
@@ -383,6 +408,8 @@ namespace Chat.Client.ViewModel
                     Users.Add(member);
                 }
             }
+
+            Users = Users.GetSortedCollectionByLastMessage();
         }
 
         private void SendUserToCallerServerEventHandler(FullUserModel user) 

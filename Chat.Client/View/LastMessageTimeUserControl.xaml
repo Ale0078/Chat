@@ -17,7 +17,7 @@
             <ContentControl.Style>
                 <Style TargetType="{x:Type ContentControl}">
                     <Style.Triggers>
-                        <DataTrigger Binding="{Binding LastMessage, Converter={StaticResource IsNull}}" Value="False">
+                        <DataTrigger Binding="{Binding LastMessage.Message, Converter={StaticResource IsNull}}" Value="False">
                             <Setter Property="ContentTemplate">
                                 <Setter.Value>
                                     <DataTemplate DataType="{x:Type viewModels:ChatMemberViewModel}">
@@ -43,7 +43,7 @@
 
                         <MultiDataTrigger>
                             <MultiDataTrigger.Conditions>
-                                <Condition Binding="{Binding LastMessage, Converter={StaticResource IsNull}}" Value="True"/>
+                                <Condition Binding="{Binding LastMessage.Message, Converter={StaticResource IsNull}}" Value="True"/>
                                 <Condition Binding="{Binding Draft.Message, Converter={StaticResource IsNull}}" Value="True"/>
                             </MultiDataTrigger.Conditions>
 
