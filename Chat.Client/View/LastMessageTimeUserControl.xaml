@@ -40,6 +40,21 @@
                                 </Setter.Value>
                             </Setter>
                         </DataTrigger>
+
+                        <MultiDataTrigger>
+                            <MultiDataTrigger.Conditions>
+                                <Condition Binding="{Binding LastMessage, Converter={StaticResource IsNull}}" Value="True"/>
+                                <Condition Binding="{Binding Draft.Message, Converter={StaticResource IsNull}}" Value="True"/>
+                            </MultiDataTrigger.Conditions>
+
+                            <Setter Property="ContentTemplate">
+                                <Setter.Value>
+                                    <DataTemplate>
+                                        <TextBlock/>
+                                    </DataTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </MultiDataTrigger>
                     </Style.Triggers>
                 </Style>
             </ContentControl.Style>

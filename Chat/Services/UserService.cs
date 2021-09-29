@@ -5,6 +5,7 @@ using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Microsoft.EntityFrameworkCore;
 
 using Chat.Models;
 using Chat.Entities;
@@ -241,10 +242,12 @@ namespace Chat.Server.Services//ToDo: use include to all entities
         public async Task<BlockModel> SetUserBlackListStatusAsync(string userId, string blockedUserId, bool doesBlock) 
         {
             BlockedUser blockedUser = _dbContext.BlockedUsers
+                .Include(entity => entity.Blocker)
                 .AsEnumerable()
                 .FirstOrDefault(user =>
                 {
-                    return user.UserId == blockedUserId;
+                    return user.UserId == blockedUserId
+                        && user.Blocker.UserId == userId;
                 });
 
             if (blockedUser is null)
@@ -256,6 +259,8 @@ namespace Chat.Server.Services//ToDo: use include to all entities
                 blockedUser.Blocker.DoesBlock = doesBlock;
 
                 _dbContext.Update(blockedUser);
+
+                await _dbContext.SaveChangesAsync();
             }
 
             return new BlockModel

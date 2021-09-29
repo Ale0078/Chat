@@ -173,7 +173,7 @@
                  Name="Message"
                  Style="{StaticResource TextBoxToMessage}">
             <i:Interaction.Triggers>
-                <i:EventTrigger EventName="KeyDown">
+                <i:EventTrigger EventName="TextChanged">
                     <i:InvokeCommandAction Command="{Binding Typing}"/>
                 </i:EventTrigger>
 

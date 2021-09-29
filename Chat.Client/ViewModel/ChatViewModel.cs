@@ -134,11 +134,6 @@ namespace Chat.Client.ViewModel
                 connectionId: CurrentUser.ConnectionId,
                 blockedUserId: CurrentUser.Id,
                 doesBlock: (bool)doesBlock);
-
-            if ((bool)doesBlock)
-            {
-                User.Message = string.Empty;
-            }
         }
 
         public ICommand SetMessageToUser => _setMessageToUser ?? (_setMessageToUser = new RelayCommand(
@@ -295,6 +290,8 @@ namespace Chat.Client.ViewModel
         private void SetMuteStateToUser(bool isMuted) 
         {
             User.IsMuted = isMuted;
+
+            User.Message = string.Empty;
         }
 
         private void SendBlackListStateToUserServerEventHandler(BlockModel block) 
@@ -305,6 +302,12 @@ namespace Chat.Client.ViewModel
             });
 
             member.IsClientBlockedByMember = block.DoesBlocked;
+            member.Draft.Message = null;
+
+            if (CurrentUser.Equals(member))
+            {
+                User.Message = string.Empty;
+            }
         }
 
         private void SendTypingStatusToUserServerEventHandler(bool isTyping, string typingUserId) 
@@ -346,7 +349,7 @@ namespace Chat.Client.ViewModel
             }
             else
             {
-                Users.Add(user);   
+                Users.Add(user);
             }
         }
 
