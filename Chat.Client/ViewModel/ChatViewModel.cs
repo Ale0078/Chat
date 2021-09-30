@@ -198,6 +198,7 @@ namespace Chat.Client.ViewModel
             _chatService.SendConnectionsIdToCallerEvent += SendConnectionsIdToCallerEventHandler;
             _chatService.SetBlockStateUserToAllUsersExeptBlocked += SetBlockStateUserToAllUsersExeptBlockedEventHandler;
             _chatService.SetMuteStateToUser += SetMuteStateToUser;
+            _chatService.SetMuteStateUserToAllUsersExeptMuted += SetMuteStateUserToAllUsersExeptMutedEventHandler;
             _chatService.SendBlackListStateToUserServerHandler += SendBlackListStateToUserServerEventHandler;
             _chatService.SendTypingStatusToUserServerHandler += SendTypingStatusToUserServerEventHandler;
 
@@ -213,7 +214,7 @@ namespace Chat.Client.ViewModel
 
         private void ConnectUserEventHandler(string userName, string connectionId) 
         {
-            ChatMemberViewModel connectedUser = Users.First(user =>
+            ChatMemberViewModel connectedUser = Users.FirstOrDefault(user =>
             {
                 return user.Name == userName;
             });
@@ -309,6 +310,8 @@ namespace Chat.Client.ViewModel
             {
                 Users.Add(chatMember);
                 _blockedUsers.Remove(chatMember);
+
+                Users = Users.GetSortedCollectionByLastMessage();
             }
         }
 
@@ -317,6 +320,29 @@ namespace Chat.Client.ViewModel
             User.IsMuted = isMuted;
 
             User.Message = string.Empty;
+
+            foreach (ChatMemberViewModel user in Users)
+            {
+                user.Draft.Message = null;
+            }
+        }
+
+        private void SetMuteStateUserToAllUsersExeptMutedEventHandler(string userId, bool isMuted) 
+        {
+            ChatMemberViewModel member = Users.First(user =>
+            {
+                return user.Id == userId;
+            });
+
+            if (member is null)
+            {
+                member = _blockedUsers.First(user =>
+                {
+                    return user.Id == userId;
+                });
+            }
+
+            member.IsMuted = isMuted; 
         }
 
         private void SendBlackListStateToUserServerEventHandler(BlockModel block) 
@@ -362,6 +388,8 @@ namespace Chat.Client.ViewModel
                 Name = newUser.Name,
                 Photo = newUser.Photo,
                 DisconnectTime = newUser.DisconnectTime,
+                IsMuted = newUser.IsMuted,
+                IsAdmin = newUser.IsAdmin,
                 IsBlocked = newUser.IsBlocked,
                 LastMessage = messages.Count == 0
                     ? new ChatMessageModel()
@@ -392,6 +420,7 @@ namespace Chat.Client.ViewModel
                     IsAdmin = user.IsAdmin,
                     IsLogin = user.IsLogin,
                     Messages = user.Messages,
+                    IsMuted = user.IsMuted,
                     IsBlocked = user.IsBlocked,
                     DisconnectTime = user.DisconnectTime,
                     LastMessage = user.Messages.Count == 0 

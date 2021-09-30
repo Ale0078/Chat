@@ -16,6 +16,7 @@ namespace Chat.Client.ViewModel
         private bool _isAdmin;
         private bool _isLogin;
         private bool _isBlocked;
+        private bool _isMuted;
         private bool _isClientBlockedByMember;
         private bool _isTyping;
         private DraftViewModel _draft;
@@ -122,6 +123,17 @@ namespace Chat.Client.ViewModel
             set 
             {
                 _isBlocked = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        public bool IsMuted 
+        {
+            get => _isMuted;
+            set 
+            {
+                _isMuted = value;
 
                 OnPropertyChanged();
             }

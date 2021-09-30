@@ -209,6 +209,7 @@ namespace Chat.Server.Services//ToDo: use include to all entities
                     Messages = messageModels,
                     ChatId = chat.ChatId,
                     IsBlocked = user.IsBlocked,
+                    IsMuted = user.IsMuted,
                     DisconnectTime = user.DisconnectTime
                 });
             }
@@ -270,7 +271,7 @@ namespace Chat.Server.Services//ToDo: use include to all entities
             };
         }
 
-        public async Task<bool> UpdateDisconnectTime(string userName, DateTime disconnectTime) 
+        public async Task<bool> UpdateDisconnectTimeAsync(string userName, DateTime disconnectTime) 
         {
             User disconnectedUser = await _userManager.FindByNameAsync(userName);
 

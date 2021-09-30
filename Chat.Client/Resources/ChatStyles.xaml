@@ -235,12 +235,24 @@
                     <Ellipse.Style>
                         <Style TargetType="{x:Type Ellipse}">
                             <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsLogin}" Value="True">
+                                    <Setter Property="Fill" Value="LightGreen"/>
+                                </DataTrigger>
+                                
                                 <DataTrigger Binding="{Binding IsLogin}" Value="False">
                                     <Setter Property="Fill" Value="Red"/>
                                 </DataTrigger>
 
-                                <DataTrigger Binding="{Binding IsLogin}" Value="True">
-                                    <Setter Property="Fill" Value="LightGreen"/>
+                                <DataTrigger Binding="{Binding IsClientBlockedByMember}" Value="True">
+                                    <Setter Property="Fill" Value="Black"/>
+                                </DataTrigger>
+
+                                <DataTrigger Binding="{Binding IsMuted}" Value="True">
+                                    <Setter Property="Fill" Value="Orange"/>
+                                </DataTrigger>
+
+                                <DataTrigger Binding="{Binding IsBlocked}" Value="True">
+                                    <Setter Property="Fill" Value="DarkRed"/>
                                 </DataTrigger>
                             </Style.Triggers>
                         </Style>
@@ -257,20 +269,8 @@
                            VerticalAlignment="Center"
                            HorizontalAlignment="Left"
                            Grid.Column="1"
-                           Grid.Row="0">
-                    <TextBlock.Style>
-                        <Style TargetType="{x:Type TextBlock}">
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding IsBlocked}" Value="True">
-                                    <Setter Property="Text" Value="{Binding Name, StringFormat={}{0} - Blocked}"/>
-                                </DataTrigger>
-                                <DataTrigger Binding="{Binding IsBlocked}" Value="False">
-                                    <Setter Property="Text" Value="{Binding Name}"/>
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </TextBlock.Style>
-                </TextBlock>
+                           Grid.Row="0"
+                           Text="{Binding Name}"/>
 
                 <views:LastMessageTimeUserControl DataContext="{Binding}"
                                                   Grid.Row="0"
@@ -292,10 +292,37 @@
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ListBoxItem}">
                     <Border Background="{TemplateBinding Background}"
+                            ToolTipService.Placement="MousePoint"
                             Focusable="False">
                         <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalAlignment}"
                                           VerticalAlignment="{TemplateBinding VerticalAlignment}"
                                           SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+
+                        <Border.Style>
+                            <Style TargetType="{x:Type Border}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsLogin}" Value="True">
+                                        <Setter Property="ToolTip" Value="Is Login"/>
+                                    </DataTrigger>
+
+                                    <DataTrigger Binding="{Binding IsLogin}" Value="False">
+                                        <Setter Property="ToolTip" Value="Is Disconnected"/>
+                                    </DataTrigger>
+
+                                    <DataTrigger Binding="{Binding IsClientBlockedByMember}" Value="True">
+                                        <Setter Property="ToolTip" Value="Is Added To Black List"/>
+                                    </DataTrigger>
+
+                                    <DataTrigger Binding="{Binding IsMuted}" Value="True">
+                                        <Setter Property="ToolTip" Value="Is Muted"/>
+                                    </DataTrigger>
+
+                                    <DataTrigger Binding="{Binding IsBlocked}" Value="True">
+                                        <Setter Property="ToolTip" Value="Is Blocked"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Border.Style>
                     </Border>
 
                     <ControlTemplate.Triggers>

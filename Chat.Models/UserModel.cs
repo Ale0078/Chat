@@ -13,6 +13,7 @@ namespace Chat.Models
         public bool IsAdmin { get; set; }
         public bool IsLogin { get; set; }
         public bool IsBlocked { get; set; }
+        public bool IsMuted { get; set; }
         public DateTime DisconnectTime { get; set; }
         public ObservableCollection<ChatMessageModel> Messages { get; set; }
         

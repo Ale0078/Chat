@@ -49,7 +49,7 @@ namespace Chat.Server.Hubs
 
         public override async Task OnDisconnectedAsync(Exception exception)
         {
-            if (await _userService.UpdateDisconnectTime(Context.User.Identity.Name, DateTime.Now))
+            if (await _userService.UpdateDisconnectTimeAsync(Context.User.Identity.Name, DateTime.Now))
             {
                 await Clients.Others.Logout(Context.User.Identity.Name, DateTime.Now);
             }
@@ -131,6 +131,12 @@ namespace Chat.Server.Hubs
             if (IsValidConnectionId(connectionId))
             {
                 await Clients.Client(connectionId).ChangeMuteStateUserToUser(isMuted);
+
+                await Clients.AllExcept(connectionId).ChangeMuteStateUserToAllUsersExceptMuted(userId, isMuted);
+            }
+            else 
+            {
+                await Clients.All.ChangeMuteStateUserToAllUsersExceptMuted(userId, isMuted);
             }
 
             return await _userService.SetBlockOrMuteStateAsync(userId, isMuted, false);

@@ -19,6 +19,7 @@ namespace Chat.Client.Services
         public event Action<ChatMessageModel> ReciveMessage;
         public event Action<IEnumerable<UserConnection>> SendConnectionsIdToCallerEvent;
         public event Action<string, bool> SetBlockStateUserToAllUsersExeptBlocked;
+        public event Action<string, bool> SetMuteStateUserToAllUsersExeptMuted;
         public event Action<UserState> SetBlockedStateUserToBlockedUser;
         public event Action<bool> SetMuteStateToUser;
         public event Action<BlockModel> SendBlackListStateToUserServerHandler;
@@ -52,6 +53,10 @@ namespace Chat.Client.Services
             _connection.On<string, bool>(
                 methodName: nameof(IChat.ChangeBlockStatusUserToAllUsersExceptBlocked),
                 handler: (userId, isBlocked) => SetBlockStateUserToAllUsersExeptBlocked?.Invoke(userId, isBlocked));
+
+            _connection.On<string, bool>(
+                methodName: nameof(IChat.ChangeMuteStateUserToAllUsersExceptMuted),
+                handler: (userId, isMuted) => SetMuteStateUserToAllUsersExeptMuted?.Invoke(userId, isMuted));
 
             _connection.On<UserState>(
                 methodName: nameof(IChat.ChangeBlockStatusUserToUser),

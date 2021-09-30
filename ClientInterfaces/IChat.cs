@@ -22,6 +22,8 @@ namespace Chat.Interfaces
 
         Task ChangeMuteStateUserToUser(bool isMuted);
 
+        Task ChangeMuteStateUserToAllUsersExceptMuted(string userId, bool isMuted);
+
         Task SendBlackListStateToUser(BlockModel blockModel);
 
         Task SendTypingStatusToUser(bool isTyping, string typingUserId);
