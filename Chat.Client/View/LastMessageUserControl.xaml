@@ -10,8 +10,7 @@
              Height="Auto"
              Width="Auto">
     <Grid>
-        <ContentControl Content="{Binding}"
-                        extensions:FrameworkElementExtension.ActualWidth="0">
+        <ContentControl Content="{Binding}">
             <ContentControl.Style>
                 <Style TargetType="{x:Type ContentControl}">
                     <Style.Triggers>
@@ -58,11 +57,19 @@
                             <Setter Property="ContentTemplate">
                                 <Setter.Value>
                                     <DataTemplate DataType="{x:Type viewModels:ChatMemberViewModel}">
-                                        <TextBlock Text="{Binding LastMessage.Message}"
-                                                   FontWeight="Light"
-                                                   TextWrapping="NoWrap"
-                                                   TextTrimming="WordEllipsis"
-                                                   Width="{Binding RelativeSource={RelativeSource AncestorType=ContentControl, Mode=FindAncestor}, Path=(extensions:FrameworkElementExtension.ActualWidth)}"/>
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition extensions:FrameworkElementExtension.ActualWidth="0"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+
+                                            <TextBlock Text="{Binding LastMessage.Message}"
+                                                       FontWeight="Light"
+                                                       TextWrapping="NoWrap"
+                                                       TextTrimming="WordEllipsis"
+                                                       Grid.Column="0"
+                                                       Width="{Binding RelativeSource={RelativeSource AncestorType=Grid, AncestorLevel=1}, Path=(extensions:FrameworkElementExtension.ActualWidth)}"/>
+                                        </Grid>
                                     </DataTemplate>
                                 </Setter.Value>
                             </Setter>
