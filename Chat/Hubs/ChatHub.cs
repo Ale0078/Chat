@@ -106,6 +106,13 @@ namespace Chat.Server.Hubs
             await Clients.Client(connectionId).SendTypingStatusToUser(isTyping, typingUserId);
         }
 
+        public async Task SetNewPhotoToUserAsync(string userName, byte[] photo) 
+        {
+            await Clients.Others.ChangeUserPhotoToAllExceptChanged(userName, photo);
+
+            await _userService.SetNewPhotoAsync(userName, photo);
+        }
+
         [Authorize(Roles = ADMIN_ROLE)]
         public async Task<bool> SetBlockState(string userId, string connectionId, bool isBlocked) 
         {

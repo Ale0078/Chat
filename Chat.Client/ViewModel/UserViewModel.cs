@@ -1,17 +1,36 @@
-﻿using System.Windows;
+﻿using System.IO;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Input;
+
+using Chat.Client.Services;
+using Chat.Client.Services.Interfaces;
+using Chat.Client.Commands;
 
 namespace Chat.Client.ViewModel
 {
     public class UserViewModel : ViewModelBase
     {
+        private readonly ChatService _chatService;
+        private readonly IDialogService _dialog;
+
         private string _id;
-        private string _userName;
+        private string _name;
         private string _message;
+        private byte[] _photo;
         private bool _isAdmin;
         private bool _isMuted;
         private Visibility _adminToolsVisibility;
         private Visibility _buttonToSendVisibility;//ToDo: maybe remove
         private bool _isButtonEnabled;
+
+        private ICommand _setNewPhoto;
+
+        public UserViewModel(ChatService chatService, IDialogService dialog)
+        {
+            _chatService = chatService;
+            _dialog = dialog;
+        }
 
         public string Id 
         {
@@ -24,12 +43,12 @@ namespace Chat.Client.ViewModel
             }
         }
 
-        public string UserName
+        public string Name
         {
-            get => _userName;
+            get => _name;
             set
             {
-                _userName = value;
+                _name = value;
 
                 OnPropertyChanged();
             }
@@ -55,6 +74,17 @@ namespace Chat.Client.ViewModel
                     IsButtonEnabled = true;
                     ButtonToSendVisibility = Visibility.Visible;
                 }
+
+                OnPropertyChanged();
+            }
+        }
+
+        public byte[] Photo 
+        {
+            get => _photo;
+            set 
+            {
+                _photo = value;
 
                 OnPropertyChanged();
             }
@@ -123,6 +153,25 @@ namespace Chat.Client.ViewModel
 
                 OnPropertyChanged();
             }
+        }
+
+        public ICommand SetNewPhoto => _setNewPhoto ?? (_setNewPhoto = new RelayCommandAsync(
+            execute: ExecuteSetNewPhoto));
+
+        private async Task ExecuteSetNewPhoto(object parametr) 
+        {
+            string source = _dialog.OpenFile("Choose image", "Images (*.jpg;*png)|*.jpg;*png");
+
+            if (string.IsNullOrEmpty(source))
+            {
+                MessageBox.Show("Invaled photo");//ToDo: Custom message box
+
+                return;
+            }
+
+            Photo = await File.ReadAllBytesAsync(source);
+
+            await _chatService.SendUserPhotoToAllUsersExceptChanged(Name, Photo);
         }
     }
 }

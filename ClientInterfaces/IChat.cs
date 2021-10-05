@@ -27,5 +27,7 @@ namespace Chat.Interfaces
         Task SendBlackListStateToUser(BlockModel blockModel);
 
         Task SendTypingStatusToUser(bool isTyping, string typingUserId);
+
+        Task ChangeUserPhotoToAllExceptChanged(string userName, byte[] photo);
     }
 }

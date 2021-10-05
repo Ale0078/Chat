@@ -101,8 +101,8 @@ namespace Chat.Controls
 
             Text = desconnectedTime switch
             {
-                { Days: 0, Hours: 0, Minutes: 0 } => "Last seen resently",
-                { Days: 0, Hours: 0, Minutes: not 0 } => $"Last seen {desconnectedTime.Minutes} minets ago",
+                { Days: 0, Hours: 0, Minutes: 0 } => "Last seen recently",
+                { Days: 0, Hours: 0, Minutes: not 0 } => $"Last seen {desconnectedTime.Minutes} minutes ago",
                 { Days: 0, Hours: not 0 } => $"Last seen {desconnectedTime.Hours} hours ago",
                 { Days: not 0 } => $"Last seen {desconnectedTime.Days} days ago"
             };

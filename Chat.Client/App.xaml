@@ -12,6 +12,13 @@
 
                 <ResourceDictionary Source="pack://application:,,,/ReactiveValidation;component/WPF/Themes/Generic.xaml"/>
 
+                <ResourceDictionary Source="Resources/Colors.xaml"/>
+                <ResourceDictionary Source="Resources/Datas.xaml"/>
+                <ResourceDictionary Source="Resources/Converters.xaml"/>
+                <ResourceDictionary Source="Resources/TextBlockStyles.xaml"/>
+                <ResourceDictionary Source="Resources/ButtonStyles.xaml"/>
+                <ResourceDictionary Source="Resources/PackIconStyles.xaml"/>
+                <ResourceDictionary Source="Resources/EllipseStyles.xaml"/>
                 <ResourceDictionary Source="Resources/ScrollStyles.xaml"/>
                 <ResourceDictionary Source="Resources/FormStyles.xaml"/>
                 <ResourceDictionary Source="Resources/ChatStyles.xaml"/>

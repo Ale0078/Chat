@@ -23,5 +23,7 @@ namespace Chat.Server.Services.Interfaces
         Task<BlockModel> SetUserBlackListStatusAsync(string userId, string blockedUserId, bool doesBlock);
 
         Task<bool> UpdateDisconnectTimeAsync(string userName, DateTime disconnectTime);
+
+        Task<bool> SetNewPhotoAsync(string userName, byte[] photo);
     }
 }

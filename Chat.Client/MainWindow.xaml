@@ -9,7 +9,7 @@
         xmlns:userState="clr-namespace:Chat.Models;assembly=Chat.Models"
         xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
         mc:Ignorable="d"
-        Title="MainWindow" 
+        Title="Chat"
         Height="450" 
         Width="800"
         MinHeight="400"

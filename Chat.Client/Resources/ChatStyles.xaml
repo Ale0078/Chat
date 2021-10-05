@@ -6,9 +6,6 @@
                     xmlns:converters="clr-namespace:Chat.Client.Converters"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
                     xmlns:views="clr-namespace:Chat.Client.View">
-    <converters:ByteToImage x:Key="ConvertBytesToPhoto"/>
-    <converters:NullToBoolean x:Key="IsNull"/>
-
     <Style TargetType="{x:Type views:AnimatedType}">
         <Setter Property="EllipseHeight" Value="6"/>
         <Setter Property="EllipseWidth" Value="6"/>
@@ -216,8 +213,7 @@
                   Grid.Column="0"
                   Grid.Row="0"
                   Grid.RowSpan="2">
-                <Ellipse Stroke="#BB303030"
-                         StrokeThickness="0.5">
+                <Ellipse Style="{StaticResource EllipseStrokePhoto}">
                     <Ellipse.Fill>
                         <ImageBrush ImageSource="{Binding Photo, Converter={StaticResource ConvertBytesToPhoto}}"
                                     Stretch="UniformToFill"/>
@@ -228,36 +224,9 @@
                          Height="10"
                          Margin="10, 0, 0, 0"
                          Focusable="False"
-                         Stroke="#BB303030"
-                         StrokeThickness="0.5"
                          VerticalAlignment="Bottom"
-                         HorizontalAlignment="Right">
-                    <Ellipse.Style>
-                        <Style TargetType="{x:Type Ellipse}">
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding IsLogin}" Value="True">
-                                    <Setter Property="Fill" Value="LightGreen"/>
-                                </DataTrigger>
-                                
-                                <DataTrigger Binding="{Binding IsLogin}" Value="False">
-                                    <Setter Property="Fill" Value="Red"/>
-                                </DataTrigger>
-
-                                <DataTrigger Binding="{Binding IsClientBlockedByMember}" Value="True">
-                                    <Setter Property="Fill" Value="Black"/>
-                                </DataTrigger>
-
-                                <DataTrigger Binding="{Binding IsMuted}" Value="True">
-                                    <Setter Property="Fill" Value="Orange"/>
-                                </DataTrigger>
-
-                                <DataTrigger Binding="{Binding IsBlocked}" Value="True">
-                                    <Setter Property="Fill" Value="DarkRed"/>
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </Ellipse.Style>
-                </Ellipse>
+                         HorizontalAlignment="Right"
+                         Style="{StaticResource EllipseStatusUser}"/>
             </Grid>
 
             <Grid Grid.Row="0"

@@ -16,8 +16,7 @@
             <Grid Margin="0, 5, 0, 0"
                   Height="120"
                   Width="120">
-                <Ellipse Stroke="#BB303030"
-                         StrokeThickness="0.5">
+                <Ellipse Style="{StaticResource EllipseStrokePhoto}">
                     <Ellipse.Fill>
                         <ImageBrush ImageSource="{Binding ImageResource}"
                                     Stretch="UniformToFill"/>

@@ -29,7 +29,7 @@
                                                 <ColumnDefinition extensions:FrameworkElementExtension.ActualWidth="0"/>
                                             </Grid.ColumnDefinitions>
 
-                                            <TextBlock Text="Yuo: "
+                                            <TextBlock Text="You: "
                                                        FontWeight="Light"
                                                        TextWrapping="NoWrap"
                                                        TextTrimming="WordEllipsis"

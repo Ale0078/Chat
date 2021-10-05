@@ -5,23 +5,12 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
              xmlns:time="clr-namespace:Chat.Controls;assembly=Chat.Controls"
-             xmlns:system="clr-namespace:System;assembly=mscorlib"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:views="clr-namespace:Chat.Client.View"
              mc:Ignorable="d" 
              d:DesignHeight="450" 
              d:DesignWidth="800"
              x:Name="Messages">
-    <UserControl.Resources>
-        <system:Boolean x:Key="True">
-            True
-        </system:Boolean>
-
-        <system:Boolean x:Key="False">
-            False
-        </system:Boolean>
-    </UserControl.Resources>
-    
     <Grid Grid.Column="2"
               Focusable="False">
         <Grid.ColumnDefinitions>
@@ -151,21 +140,8 @@
                       ItemsSource="{Binding CurrentUser.Messages}"
                       ItemTemplate="{StaticResource MessagesTemplate}"
                       Template="{StaticResource MessagesScrolViewer}"
-                      Focusable="False">
-            <ItemsControl.Background>
-                <LinearGradientBrush StartPoint="0, 0"
-                                         EndPoint="1, 1">
-                    <GradientStop Color="#E2F672"
-                                  Offset="-0.3"/>
-
-                    <GradientStop Color="#48C35E"
-                                  Offset="0.5"/>
-
-                    <GradientStop Color="#E2F672"
-                                  Offset="1.3"/>
-                </LinearGradientBrush>
-            </ItemsControl.Background>
-        </ItemsControl>
+                      Focusable="False"
+                      Background="{StaticResource YellowGrenYellowGradient}"/>
 
         <TextBox Grid.Row="2"
                  Grid.Column="0"

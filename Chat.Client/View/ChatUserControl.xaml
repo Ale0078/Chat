@@ -4,7 +4,6 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
-             xmlns:converters="clr-namespace:Chat.Client.Converters"
              xmlns:views="clr-namespace:Chat.Client.View"
              mc:Ignorable="d" 
              d:DesignHeight="450" 
@@ -13,16 +12,12 @@
              Focusable="False"
              BorderThickness="0, 1, 0, 0"
              BorderBrush="LightGray">
-    <UserControl.Resources>
-        <converters:NullToBoolean x:Key="IsNull"/>
-    </UserControl.Resources>
-    
     <i:Interaction.Triggers>
         <i:EventTrigger>
             <i:InvokeCommandAction Command="{Binding Connect}"/>
         </i:EventTrigger>
     </i:Interaction.Triggers>
-    
+
     <Grid DataContext="{Binding ElementName=ChatControl, Path=DataContext}"
           Focusable="False">
         <Grid.ColumnDefinitions>
@@ -30,8 +25,35 @@
             <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="4*"/>
         </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+
+        <Grid Height="52">
+            <Button x:Name="UserInfo"
+                    Command="{Binding SetVisibilityToUserInfoVisibility}"
+                    CommandParameter="{x:Static Visibility.Visible}"/>
+
+            <Grid.Triggers>
+                <EventTrigger RoutedEvent="{x:Static Button.ClickEvent}"
+                              SourceName="UserInfo">
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <DoubleAnimation Storyboard.TargetName="GridScale"
+                                             Storyboard.TargetProperty="ScaleX"
+                                             Duration="0:0:0.2"
+                                             From="0"
+                                             To="1"
+                                             FillBehavior="HoldEnd"/>
+                        </Storyboard>
+                    </BeginStoryboard>
+                </EventTrigger>
+            </Grid.Triggers>
+        </Grid>
 
         <ListBox Grid.Column="0"
+                 Grid.Row="1"
                  ItemsSource="{Binding Users, UpdateSourceTrigger=PropertyChanged}"
                  SelectedItem="{Binding CurrentUser, Mode=TwoWay}"
                  ItemTemplate="{StaticResource UsersTemplate}"
@@ -48,6 +70,8 @@
         </ListBox>
 
         <GridSplitter Grid.Column="1"
+                      Grid.Row="0"
+                      Grid.RowSpan="2"
                       Width="1"
                       Background="LightGray"
                       HorizontalAlignment="Center"
@@ -55,7 +79,9 @@
                       ResizeBehavior="BasedOnAlignment"/>
 
         <ContentControl Content="{Binding ElementName=ChatControl, Path=DataContext}"
-                        Grid.Column="2">
+                        Grid.Column="2"
+                        Grid.Row="0"
+                        Grid.RowSpan="2">
             <ContentControl.Style>
                 <Style TargetType="{x:Type ContentControl}">
                     <Style.Triggers>
@@ -82,5 +108,51 @@
                 </Style>
             </ContentControl.Style>
         </ContentControl>
+
+        <Rectangle Fill="#A0676767"
+                   Grid.Column="0"
+                   Grid.ColumnSpan="3"
+                   Grid.Row="0"
+                   Grid.RowSpan="2"
+                   Focusable="True"
+                   Visibility="{Binding UserInfoVisibility.BackgroundInfoVisibility}"
+                   x:Name="ChatFill">
+            <i:Interaction.Triggers>
+                <i:EventTrigger EventName="GotFocus">
+                    <i:InvokeCommandAction Command="{Binding SetVisibilityToUserInfoVisibility}"
+                                           CommandParameter="{x:Static Visibility.Collapsed}"/>
+                </i:EventTrigger>
+            </i:Interaction.Triggers>
+
+            <Rectangle.Triggers>
+                <EventTrigger RoutedEvent="{x:Static Rectangle.GotFocusEvent}">
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <DoubleAnimation Storyboard.TargetName="GridScale"
+                                             Storyboard.TargetProperty="ScaleX"
+                                             Duration="0:0:0.2"
+                                             From="1"
+                                             To="0"
+                                             FillBehavior="HoldEnd"/>
+                        </Storyboard>
+                    </BeginStoryboard>
+                </EventTrigger>
+            </Rectangle.Triggers>
+        </Rectangle>
+
+        <Grid Grid.Column="0"
+              Grid.ColumnSpan="3"
+              Grid.Row="0"
+              Grid.RowSpan="2"
+              HorizontalAlignment="Left"
+              Width="250"
+              Background="White">
+            <Grid.RenderTransform>
+                <ScaleTransform ScaleX="0"
+                                x:Name="GridScale"/>
+            </Grid.RenderTransform>
+
+            <views:FlyoutUserInfo DataContext="{Binding User}"/>
+        </Grid>
     </Grid>
 </UserControl>

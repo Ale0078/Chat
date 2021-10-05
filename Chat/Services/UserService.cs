@@ -285,6 +285,20 @@ namespace Chat.Server.Services//ToDo: use include to all entities
             return (await _userManager.UpdateAsync(disconnectedUser)).Succeeded;
         }
 
+        public async Task<bool> SetNewPhotoAsync(string userName, byte[] photo) 
+        {
+            User userToChangePhoto = await _userManager.FindByNameAsync(userName);
+
+            if (userToChangePhoto is null)
+            {
+                return false;
+            }
+
+            userToChangePhoto.Photo = photo;
+
+            return (await _userManager.UpdateAsync(userToChangePhoto)).Succeeded;
+        }
+
         private async Task<BlockedUser> AddBlockedUserAsync(string userId, string blockedUserId, bool doesBlock) 
         {
             EntityEntry<Block> addedBlock = await _dbContext.Blocks.AddAsync(new Block

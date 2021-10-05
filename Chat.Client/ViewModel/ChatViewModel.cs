@@ -33,16 +33,15 @@ namespace Chat.Client.ViewModel
         private ICommand _setMessageToUser;
         private ICommand _typing;
         private ICommand _stopTyping;
+        private ICommand _setVisibilityToUserInfoVisibility;
 
-        public ChatViewModel(ChatService chatService, RegistrationChatService registrationChatService)
+        public ChatViewModel(ChatService chatService, RegistrationChatService registrationChatService, UserViewModel user)
         {
             _chatService = chatService;
             _registrationChatService = registrationChatService;
+            User = user;
 
-            User = new UserViewModel()
-            {
-                ButtonToSendVisibility = Visibility.Collapsed
-            };
+            UserInfoVisibility = new UserInfoVisibilityViewModel();
 
             Users = new ObservableCollection<ChatMemberViewModel>();
             _blockedUsers = new List<ChatMemberViewModel>();
@@ -55,7 +54,8 @@ namespace Chat.Client.ViewModel
             SetEvents();
         }
 
-        public UserViewModel User { get; set; }
+        public UserViewModel User { get; }
+        public UserInfoVisibilityViewModel UserInfoVisibility { get; }
 
         public ObservableCollection<ChatMemberViewModel> Users 
         {
@@ -190,6 +190,14 @@ namespace Chat.Client.ViewModel
             return Task.CompletedTask;
         }
 
+        public ICommand SetVisibilityToUserInfoVisibility => _setVisibilityToUserInfoVisibility ?? (_setVisibilityToUserInfoVisibility = new RelayCommand(
+            execute: ExecuteSetVisibilityToUserInfoVisibility));
+
+        private void ExecuteSetVisibilityToUserInfoVisibility(object visibility) 
+        {
+            UserInfoVisibility.BackgroundInfoVisibility = (Visibility)visibility;
+        }
+
         private void SetEvents()
         {
             _chatService.ConnectUser += ConnectUserEventHandler;
@@ -201,6 +209,7 @@ namespace Chat.Client.ViewModel
             _chatService.SetMuteStateUserToAllUsersExeptMuted += SetMuteStateUserToAllUsersExeptMutedEventHandler;
             _chatService.SendBlackListStateToUserServerHandler += SendBlackListStateToUserServerEventHandler;
             _chatService.SendTypingStatusToUserServerHandler += SendTypingStatusToUserServerEventHandler;
+            _chatService.SetNewPhotoToUserServerHandler += SetNewPhotoToUserServerEventHandler;
 
             _registrationChatService.RegisterUserToOthersServerHandler += RegisterUserToOthersServerEventHandler;
             _registrationChatService.SendUsersToCallerServerHandler += SendUsersToCallerServerEventHandler;
@@ -355,7 +364,7 @@ namespace Chat.Client.ViewModel
             member.IsClientBlockedByMember = block.DoesBlocked;
             member.Draft.Message = null;
 
-            if (CurrentUser.Equals(member))
+            if (CurrentUser is not null && CurrentUser.Equals(member))
             {
                 User.Message = string.Empty;
             }
@@ -369,6 +378,16 @@ namespace Chat.Client.ViewModel
             });
 
             user.IsTyping = isTyping;
+        }
+
+        private void SetNewPhotoToUserServerEventHandler(string userName, byte[] photo) 
+        {
+            ChatMemberViewModel user = Users.First(userModel =>
+            {
+                return userModel.Name == userName;
+            });
+
+            user.Photo = photo;
         }
 
         private void RegisterUserToOthersServerEventHandler(FullUserModel newUser)
@@ -444,9 +463,10 @@ namespace Chat.Client.ViewModel
         private void SendUserToCallerServerEventHandler(FullUserModel user) 
         {
             User.Id = user.Id;
-            User.UserName = user.Name;
+            User.Name = user.Name;
             User.IsAdmin = user.IsAdmin;
             User.IsMuted = user.IsMuted;
+            User.Photo = user.Photo;
         }
 
         private void SendBlockersToCallerServerEventHandler(IEnumerable<BlockModel> blocks) 

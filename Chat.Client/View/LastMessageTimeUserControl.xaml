@@ -8,10 +8,6 @@
              mc:Ignorable="d" 
              Height="Auto" 
              Width="Auto">
-    <UserControl.Resources>
-        <converters:NullToBoolean x:Key="IsNull"/>
-    </UserControl.Resources>
-    
     <Grid>
         <ContentControl Content="{Binding}">
             <ContentControl.Style>

@@ -33,6 +33,7 @@ namespace Chat.Client
             services.AddSingleton<RegistarationViewModel>();
             services.AddSingleton<ChatViewModel>();
             services.AddSingleton<MainWindow>();
+            services.AddSingleton<UserViewModel>();
         }
 
         private void OnStartup(object sernder, StartupEventArgs e) 
