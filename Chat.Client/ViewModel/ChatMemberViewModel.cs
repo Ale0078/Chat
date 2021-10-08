@@ -20,14 +20,15 @@ namespace Chat.Client.ViewModel
         private bool _isClientBlockedByMember;
         private bool _isTyping;
         private DraftViewModel _draft;
-        private ChatMessageModel _lastMessage;
+        private ChatMessageViewModel _lastMessage;
+        private ChatMessageViewModel _editMessage;
 
         public ChatMemberViewModel()
         {
             Draft = new DraftViewModel();
         }
 
-        public ObservableCollection<ChatMessageModel> Messages { get; set; }
+        public ObservableCollection<ChatMessageViewModel> Messages { get; set; }
 
         public string Id 
         {
@@ -172,12 +173,23 @@ namespace Chat.Client.ViewModel
             }
         }
 
-        public ChatMessageModel LastMessage 
+        public ChatMessageViewModel LastMessage 
         {
             get => _lastMessage;
             set 
             {
                 _lastMessage = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        public ChatMessageViewModel EditMessage 
+        {
+            get => _editMessage;
+            set 
+            {
+                _editMessage = value;
 
                 OnPropertyChanged();
             }

@@ -4,24 +4,24 @@ using System.Windows.Data;
 
 namespace Chat.Client.AttachedProperties
 {
-    public static class PasswordExtention
+    public static class PasswordExtension
     {
         private static readonly DependencyProperty PasswordInitializedProperty;
 
         public static readonly DependencyProperty PasswordProperty;
 
-        static PasswordExtention() 
+        static PasswordExtension() 
         {
             PasswordInitializedProperty = DependencyProperty.RegisterAttached(
                 name: "PasswordInitialized",
                 propertyType: typeof(bool),
-                ownerType: typeof(PasswordExtention),
+                ownerType: typeof(PasswordExtension),
                 defaultMetadata: new FrameworkPropertyMetadata(false));
 
             PasswordProperty = DependencyProperty.RegisterAttached(
                 name: "Password",
                 propertyType: typeof(string),
-                ownerType: typeof(PasswordExtention),
+                ownerType: typeof(PasswordExtension),
                 defaultMetadata: new FrameworkPropertyMetadata(string.Empty, HandelPasswrodChangedCallback) 
                 {
                     BindsTwoWayByDefault = true,

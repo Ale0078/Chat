@@ -3,16 +3,16 @@ using System.Windows.Controls;
 
 namespace Chat.Client.AttachedProperties
 {
-    public static class ScrollViewerExtentions
+    public static class ScrollViewerExtension
     {
         public static readonly DependencyProperty IsScrollToEndProperty;
 
-        static ScrollViewerExtentions()
+        static ScrollViewerExtension()
         {
             IsScrollToEndProperty = DependencyProperty.RegisterAttached(
                 name: "IsScrollToEnd",
                 propertyType: typeof(bool),
-                ownerType: typeof(ScrollViewerExtentions),
+                ownerType: typeof(ScrollViewerExtension),
                 defaultMetadata: new PropertyMetadata(false, IsSrollToEndChanged));
         }
 

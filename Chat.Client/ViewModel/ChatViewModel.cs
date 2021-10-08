@@ -7,6 +7,7 @@ using System.Windows.Input;
 using System.Windows;
 using System.ComponentModel;
 using System.Windows.Threading;
+using AutoMapper;
 
 using Chat.Client.Services;
 using Chat.Client.Commands;
@@ -17,6 +18,7 @@ namespace Chat.Client.ViewModel
 {
     public class ChatViewModel : ViewModelBase
     {
+        private readonly IMapper _mapper;
         private readonly ChatService _chatService;
         private readonly RegistrationChatService _registrationChatService;
         private readonly List<ChatMemberViewModel> _blockedUsers;
@@ -35,8 +37,10 @@ namespace Chat.Client.ViewModel
         private ICommand _stopTyping;
         private ICommand _setVisibilityToUserInfoVisibility;
 
-        public ChatViewModel(ChatService chatService, RegistrationChatService registrationChatService, UserViewModel user)
+        public ChatViewModel(ChatService chatService, RegistrationChatService registrationChatService, UserViewModel user,
+            IMapper mapper)
         {
+            _mapper = mapper;
             _chatService = chatService;
             _registrationChatService = registrationChatService;
             User = user;
@@ -104,8 +108,8 @@ namespace Chat.Client.ViewModel
 
             sendingMessage.IsFromCurrentUser = true;
 
-            CurrentUser.Messages.Add(sendingMessage);
-            CurrentUser.LastMessage = sendingMessage;
+            CurrentUser.Messages.Add(_mapper.Map<ChatMessageViewModel>(sendingMessage));
+            CurrentUser.LastMessage = _mapper.Map<ChatMessageViewModel>(sendingMessage);
 
             Users = Users.GetSortedCollectionByLastMessage();
         }
@@ -260,8 +264,8 @@ namespace Chat.Client.ViewModel
                 return user.ChatId.Equals(message.ChatId);
             });
 
-            userSender.Messages.Add(message);
-            userSender.LastMessage = message;
+            userSender.Messages.Add(_mapper.Map<ChatMessageViewModel>(message));
+            userSender.LastMessage = _mapper.Map<ChatMessageViewModel>(message);
 
             Users = Users.GetSortedCollectionByLastMessage();
         }
@@ -397,55 +401,20 @@ namespace Chat.Client.ViewModel
                 return chatModel.FirstUserId.Equals(User.Id) || chatModel.SecondUserId.Equals(User.Id);
             });
 
-            ObservableCollection<ChatMessageModel> messages = new ObservableCollection<ChatMessageModel>(chat.Messages);
+            ChatMemberViewModel user = _mapper.Map<ChatMemberViewModel>(newUser);
 
-            ChatMemberViewModel user = new()
-            {
-                Id = newUser.Id,
-                ChatId = chat.Id,
-                Messages = messages,
-                Name = newUser.Name,
-                Photo = newUser.Photo,
-                DisconnectTime = newUser.DisconnectTime,
-                IsMuted = newUser.IsMuted,
-                IsAdmin = newUser.IsAdmin,
-                IsBlocked = newUser.IsBlocked,
-                LastMessage = messages.Count == 0
-                    ? new ChatMessageModel()
-                    : messages.Last()
-            };
-
-            if (newUser.IsBlocked && !User.IsAdmin)
-            {
-                _blockedUsers.Add(user);
-            }
-            else
-            {
-                Users.Add(user);
-            }
+            user.ChatId = chat.Id;
+            user.Messages = _mapper.Map<ObservableCollection<ChatMessageViewModel>>(chat.Messages);
+            user.LastMessage = chat.Messages.Count == 0
+                    ? new ChatMessageViewModel()
+                    : _mapper.Map<ChatMessageViewModel>(chat.Messages.Last());
         }
 
         private void SendUsersToCallerServerEventHandler(IEnumerable<UserModel> users) 
         {
             foreach (UserModel user in users)
             {
-                ChatMemberViewModel member = new()
-                {
-                    Id = user.Id,
-                    Name = user.Name,
-                    Photo = user.Photo,
-                    ConnectionId = user.ConnectionId,
-                    ChatId = user.ChatId,
-                    IsAdmin = user.IsAdmin,
-                    IsLogin = user.IsLogin,
-                    Messages = user.Messages,
-                    IsMuted = user.IsMuted,
-                    IsBlocked = user.IsBlocked,
-                    DisconnectTime = user.DisconnectTime,
-                    LastMessage = user.Messages.Count == 0 
-                        ? new ChatMessageModel()
-                        : user.Messages.Last()
-                };
+                ChatMemberViewModel member = _mapper.Map<ChatMemberViewModel>(user);
 
                 if (user.IsBlocked && !User.IsAdmin)
                 {

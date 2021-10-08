@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Chat.Client.Services.Interfaces;
 using Chat.Client.Services;
 using Chat.Client.ViewModel;
+using Chat.Client.AutoMapperProfiles;
 
 namespace Chat.Client
 {
@@ -34,6 +35,8 @@ namespace Chat.Client
             services.AddSingleton<ChatViewModel>();
             services.AddSingleton<MainWindow>();
             services.AddSingleton<UserViewModel>();
+
+            services.AddAutoMapper(typeof(ChatMessageProfile), typeof(ChatMemberProfile));
         }
 
         private void OnStartup(object sernder, StartupEventArgs e) 

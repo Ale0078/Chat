@@ -25,7 +25,7 @@
                      materialDesign:HintAssist.Hint="Name"/>
 
             <PasswordBox Style="{StaticResource ValidatePasswordBox}"
-                         password:PasswordExtention.Password="{Binding Password, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                         password:PasswordExtension.Password="{Binding Password, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                          materialDesign:HintAssist.Hint="Password"/>
 
             <Button Style="{StaticResource ValidateButton}"

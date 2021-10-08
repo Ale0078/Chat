@@ -52,11 +52,11 @@
                      materialDesign:HintAssist.Hint="Name"/>
 
             <PasswordBox Style="{StaticResource ValidatePasswordBox}"
-                         password:PasswordExtention.Password="{Binding Password, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                         password:PasswordExtension.Password="{Binding Password, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                          materialDesign:HintAssist.Hint="Password"/>
 
             <PasswordBox Style="{StaticResource ValidatePasswordBox}"
-                         password:PasswordExtention.Password="{Binding ConfirmPassword, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                         password:PasswordExtension.Password="{Binding ConfirmPassword, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                          materialDesign:HintAssist.Hint="Confirm password"/>
 
             <Button Style="{StaticResource ValidateButton}"

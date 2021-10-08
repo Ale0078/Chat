@@ -30,10 +30,22 @@
             <RowDefinition/>
         </Grid.RowDefinitions>
 
-        <Grid Height="52">
+        <Grid Height="52"
+              Grid.Row="0"
+              Grid.Column="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+
             <Button x:Name="UserInfo"
+                    Grid.Column="0"
                     Command="{Binding SetVisibilityToUserInfoVisibility}"
-                    CommandParameter="{x:Static Visibility.Visible}"/>
+                    CommandParameter="{x:Static Visibility.Visible}"
+                    Style="{StaticResource ButtonSetterUserInfoVisibility}"/>
+
+            <TextBox Grid.Column="1"
+                     Style="{StaticResource TextBoxSearching}"/>
 
             <Grid.Triggers>
                 <EventTrigger RoutedEvent="{x:Static Button.ClickEvent}"

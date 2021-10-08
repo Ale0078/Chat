@@ -46,12 +46,21 @@
 
     <DataTemplate x:Key="MessagesTemplate" DataType="{x:Type user:ChatMessageModel}">
         <Border Style="{StaticResource MessageTemplate}"
-                Focusable="False">
+                Focusable="False"
+                x:Name="ChatSource">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="6*"/>
                     <RowDefinition Height="1*"/>
                 </Grid.RowDefinitions>
+
+                <Grid.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="Edit"
+                                  Command="{Binding EditMessage}"
+                                  CommandParameter="{}"/>
+                    </ContextMenu>
+                </Grid.ContextMenu>
 
                 <TextBlock Grid.Row="0"
                            TextWrapping="Wrap"
@@ -72,7 +81,7 @@
                 Background="{TemplateBinding Background}">
             <ScrollViewer HorizontalScrollBarVisibility="Disabled"
                           VerticalScrollBarVisibility="Auto"
-                          extensions:ScrollViewerExtentions.IsScrollToEnd="True">
+                          extensions:ScrollViewerExtension.IsScrollToEnd="True">
                 <ItemsPresenter Focusable="False"/>
             </ScrollViewer>
         </Border>
