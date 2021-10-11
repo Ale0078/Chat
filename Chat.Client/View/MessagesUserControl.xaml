@@ -21,13 +21,14 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition />
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
         <Border Grid.Row="0"
-                    Grid.Column="0"
-                    Grid.ColumnSpan="2"
-                    Style="{StaticResource BorderWithCurrentUserInfo}"
-                    Height="52">
+                Grid.Column="0"
+                Grid.ColumnSpan="2"
+                Style="{StaticResource BorderWithCurrentUserInfo}"
+                Height="52">
             <Grid>
                 <StackPanel Margin="8, 0, 0, 0"
                             VerticalAlignment="Center"
@@ -97,25 +98,25 @@
                     <MenuItem Header="{materialDesign:PackIcon Kind=DotsVertical}">
                         <MenuItem Header="Block user"
                                   Icon="{materialDesign:PackIcon Kind=Cancel}"
-                                  Visibility="{Binding User.AdminToolsVisibility}"
+                                  Visibility="{Binding User.IsAdmin, Converter={StaticResource ConverterBoolToVisibilityCollapsed}}"
                                   Command="{Binding BlockUser}"
                                   CommandParameter="{StaticResource True}"/>
 
                         <MenuItem Header="Unblock user"
                                   Icon="{materialDesign:PackIcon Kind=CheckDecagram}"
-                                  Visibility="{Binding User.AdminToolsVisibility}"
+                                  Visibility="{Binding User.IsAdmin, Converter={StaticResource ConverterBoolToVisibilityCollapsed}}"
                                   Command="{Binding BlockUser}"
                                   CommandParameter="{StaticResource False}"/>
 
                         <MenuItem Header="Mute user"
                                   Icon="{materialDesign:PackIcon Kind=VolumeMute}"
-                                  Visibility="{Binding User.AdminToolsVisibility}"
+                                  Visibility="{Binding User.IsAdmin, Converter={StaticResource ConverterBoolToVisibilityCollapsed}}"
                                   Command="{Binding MuteUser}"
                                   CommandParameter="{StaticResource True}"/>
 
                         <MenuItem Header="Unmute user"
                                   Icon="{materialDesign:PackIcon Kind=VolumeHigh}"
-                                  Visibility="{Binding User.AdminToolsVisibility}"
+                                  Visibility="{Binding User.IsAdmin, Converter={StaticResource ConverterBoolToVisibilityCollapsed}}"
                                   Command="{Binding MuteUser}"
                                   CommandParameter="{StaticResource False}"/>
 
@@ -143,7 +144,30 @@
                       Focusable="False"
                       Background="{StaticResource YellowGrenYellowGradient}"/>
 
-        <TextBox Grid.Row="2"
+        <ContentControl Content="{Binding CurrentUser.EditMessage}"
+                        Grid.Column="0"
+                        Grid.ColumnSpan="2"
+                        Grid.Row="2">
+            <ContentControl.Style>
+                <Style TargetType="{x:Type ContentControl}">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding CurrentUser.EditMessage, Converter={StaticResource IsNull}}" Value="False">
+                            <Setter Property="ContentTemplate">
+                                <Setter.Value>
+                                    <DataTemplate>
+                                        <views:EditMessageUserControl DataContext="{Binding}"
+                                                                      CancelCommand="{Binding EditMessage}"
+                                                                      CancelCommandParametr="{StaticResource False}"/>
+                                    </DataTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </ContentControl.Style>
+        </ContentControl>
+
+        <TextBox Grid.Row="3"
                  Grid.Column="0"
                  Text="{Binding User.Message, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                  Name="Message"
@@ -159,7 +183,7 @@
             </i:Interaction.Triggers>
         </TextBox>
 
-        <Button Grid.Row="2"
+        <Button Grid.Row="3"
                 Grid.Column="1"
                 x:Name="Send"
                 IsEnabled="{Binding User.IsButtonEnabled}"

@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 
-using Chat.Models;
-
 namespace Chat.Client.ViewModel
 {
     public class ChatMemberViewModel : ViewModelBase

@@ -58,7 +58,8 @@
                     <ContextMenu>
                         <MenuItem Header="Edit"
                                   Command="{Binding EditMessage}"
-                                  CommandParameter="{}"/>
+                                  CommandParameter="{StaticResource True}"
+                                  Visibility="{Binding IsFromCurrentUser, Converter={StaticResource ConverterBoolToVisibilityCollapsed}}"/>
                     </ContextMenu>
                 </Grid.ContextMenu>
 

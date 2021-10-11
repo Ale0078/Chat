@@ -29,5 +29,7 @@ namespace Chat.Interfaces
         Task SendTypingStatusToUser(bool isTyping, string typingUserId);
 
         Task ChangeUserPhotoToAllExceptChanged(string userName, byte[] photo);
+
+        Task ChangeMessageToUserAsync(string userId, Guid messageId, string message);
     }
 }

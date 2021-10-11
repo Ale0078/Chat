@@ -25,5 +25,7 @@ namespace Chat.Server.Services.Interfaces
         Task<bool> UpdateDisconnectTimeAsync(string userName, DateTime disconnectTime);
 
         Task<bool> SetNewPhotoAsync(string userName, byte[] photo);
+
+        Task<bool> ChangeUserMessageAsync(Guid messageId, string message);
     }
 }

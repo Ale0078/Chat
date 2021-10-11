@@ -12,6 +12,9 @@ namespace Chat.Entities
         [Required]
         public string Message { get; set; }
 
+        [Required]
+        public bool IsEdit { get; set; }
+
         public Guid ChatId { get; set; }
 
         public string ReceiverId { get; set; }

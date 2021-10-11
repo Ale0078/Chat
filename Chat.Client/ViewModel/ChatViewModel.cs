@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
@@ -97,21 +98,48 @@ namespace Chat.Client.ViewModel
 
         private async Task ExecuteSendMessage(object parametr) 
         {
+            if (CurrentUser.EditMessage is null)
+            {
+                await ExecuteSendMessage();
+            }
+            else 
+            {
+                await ExecuteChangeMessage();
+            }
+
+            User.Message = string.Empty;
+        }
+
+        private async Task ExecuteSendMessage() 
+        {
             ChatMessageModel sendingMessage = await _chatService.ReciveMessageUserAsync(
                 chatId: CurrentUser.ChatId,
                 fromUserId: User.Id,
                 toUserId: CurrentUser.Id,
                 message: User.Message.TrimStart().TrimEnd(),
                 connectionId: Users.First(user => user.Name == CurrentUser.Name).ConnectionId);
-
-            User.Message = string.Empty;
-
             sendingMessage.IsFromCurrentUser = true;
 
-            CurrentUser.Messages.Add(_mapper.Map<ChatMessageViewModel>(sendingMessage));
+            CurrentUser.Messages.AddViewModel(
+                item: _mapper.Map<ChatMessageViewModel>(sendingMessage),
+                handler: OnMessageChanged);
+
             CurrentUser.LastMessage = _mapper.Map<ChatMessageViewModel>(sendingMessage);
 
             Users = Users.GetSortedCollectionByLastMessage();
+        }
+
+        private async Task ExecuteChangeMessage() 
+        {
+            await _chatService.SetMessageToChatMessageAsync(
+                connectionId: CurrentUser.ConnectionId,
+                userId: User.Id,
+                messageId: CurrentUser.EditMessage.Id,
+                message: User.Message);
+
+            CurrentUser.EditMessage.IsEdit = true;
+            CurrentUser.EditMessage.Message = User.Message;
+            CurrentUser.EditMessage.IsEditing = false;
         }
 
         private bool CanExecuteSendMessage(object parametr) 
@@ -214,6 +242,7 @@ namespace Chat.Client.ViewModel
             _chatService.SendBlackListStateToUserServerHandler += SendBlackListStateToUserServerEventHandler;
             _chatService.SendTypingStatusToUserServerHandler += SendTypingStatusToUserServerEventHandler;
             _chatService.SetNewPhotoToUserServerHandler += SetNewPhotoToUserServerEventHandler;
+            _chatService.ChangeMessageToUserServerHandler += ChangeMessageToUserServerEventHandler;
 
             _registrationChatService.RegisterUserToOthersServerHandler += RegisterUserToOthersServerEventHandler;
             _registrationChatService.SendUsersToCallerServerHandler += SendUsersToCallerServerEventHandler;
@@ -264,7 +293,10 @@ namespace Chat.Client.ViewModel
                 return user.ChatId.Equals(message.ChatId);
             });
 
-            userSender.Messages.Add(_mapper.Map<ChatMessageViewModel>(message));
+            userSender.Messages.AddViewModel(
+                item: _mapper.Map<ChatMessageViewModel>(message),
+                handler: OnMessageChanged);
+
             userSender.LastMessage = _mapper.Map<ChatMessageViewModel>(message);
 
             Users = Users.GetSortedCollectionByLastMessage();
@@ -394,6 +426,22 @@ namespace Chat.Client.ViewModel
             user.Photo = photo;
         }
 
+        private void ChangeMessageToUserServerEventHandler(string userId, Guid messageId, string message) 
+        {
+            ChatMemberViewModel user = Users.First(userModel =>
+            {
+                return userModel.Id == userId;
+            });
+
+            ChatMessageViewModel chatMessage = user.Messages.First(messageModel =>
+            {
+                return messageModel.Id == messageId;
+            });
+
+            chatMessage.Message = message;
+            chatMessage.IsEdit = true;
+        }
+
         private void RegisterUserToOthersServerEventHandler(FullUserModel newUser)
         {
             ChatModel chat = newUser.Chats.Find(chatModel =>
@@ -408,6 +456,8 @@ namespace Chat.Client.ViewModel
             user.LastMessage = chat.Messages.Count == 0
                     ? new ChatMessageViewModel()
                     : _mapper.Map<ChatMessageViewModel>(chat.Messages.Last());
+
+            user.Messages.SetPropertyChangedEventHandler(OnMessageChanged);
         }
 
         private void SendUsersToCallerServerEventHandler(IEnumerable<UserModel> users) 
@@ -415,6 +465,8 @@ namespace Chat.Client.ViewModel
             foreach (UserModel user in users)
             {
                 ChatMemberViewModel member = _mapper.Map<ChatMemberViewModel>(user);
+
+                member.Messages.SetPropertyChangedEventHandler(OnMessageChanged);
 
                 if (user.IsBlocked && !User.IsAdmin)
                 {
@@ -482,6 +534,26 @@ namespace Chat.Client.ViewModel
                 }
 
                 CurrentUser.Draft.Message = user.Message;
+            }
+        }
+
+        private void OnMessageChanged(object sender, PropertyChangedEventArgs e) 
+        {
+            if (CurrentUser is null || e.PropertyName != nameof(ChatMessageViewModel.IsEditing))
+            {
+                return;
+            }
+
+            ChatMessageViewModel message = sender as ChatMessageViewModel;
+
+            if (message.IsEditing)
+            {
+                CurrentUser.EditMessage = message;
+                User.Message = message.Message;
+            }
+            else 
+            {
+                CurrentUser.EditMessage = null;
             }
         }
     }

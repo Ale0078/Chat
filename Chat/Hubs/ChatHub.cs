@@ -113,6 +113,16 @@ namespace Chat.Server.Hubs
             await _userService.SetNewPhotoAsync(userName, photo);
         }
 
+        public async Task ChangeMessageAsync(string connectionId, string userId, Guid messageId, string message) 
+        {
+            if (IsValidConnectionId(connectionId))
+            {
+                await Clients.Client(connectionId).ChangeMessageToUserAsync(userId, messageId, message);
+            }
+
+            await _userService.ChangeUserMessageAsync(messageId, message);
+        }
+
         [Authorize(Roles = ADMIN_ROLE)]
         public async Task<bool> SetBlockState(string userId, string connectionId, bool isBlocked) 
         {

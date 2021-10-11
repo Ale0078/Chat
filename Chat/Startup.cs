@@ -13,6 +13,7 @@ using Chat.Server.Hubs;
 using Chat.Server.Authentication;
 using Chat.Server.Services;
 using Chat.Server.Services.Interfaces;
+using Chat.Server.AutoMapperProfiles;
 using Chat.Entities;
 using Chat.Entities.Contexts;
 
@@ -75,6 +76,7 @@ namespace Chat.Server
 
 
             services.AddTransient<IUserService, UserService>();
+            services.AddAutoMapper(typeof(UserProfile), typeof(MessageProfile), typeof(ChatProfile), typeof(BlockedProfile));
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

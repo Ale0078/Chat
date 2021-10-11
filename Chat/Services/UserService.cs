@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore;
+using AutoMapper;
 
 using Chat.Models;
 using Chat.Entities;
@@ -14,15 +15,17 @@ using Chat.Server.Services.Interfaces;
 
 namespace Chat.Server.Services//ToDo: use include to all entities
 {
-    internal class UserService : IUserService//ToDo: auto map to models
+    internal class UserService : IUserService
     {
-        private ApplicationContext _dbContext;
-        private UserManager<User> _userManager;
+        private readonly ApplicationContext _dbContext;
+        private readonly UserManager<User> _userManager;
+        private readonly IMapper _mapper;
 
-        public UserService(ApplicationContext dbContext, UserManager<User> userManager)
+        public UserService(ApplicationContext dbContext, UserManager<User> userManager, IMapper mapper)
         {
             _dbContext = dbContext;
             _userManager = userManager;
+            _mapper = mapper;
         }
 
         public async Task<bool> AddChatMessageAsync(ChatMessageModel message)
@@ -32,14 +35,7 @@ namespace Chat.Server.Services//ToDo: use include to all entities
                 return false;
             }
 
-            await _dbContext.ChatMessages.AddAsync(new ChatMessage
-            {
-                ChatId = message.ChatId,
-                ReceiverId = message.ToUserId,
-                SenderId = message.FromUserId,
-                Message = message.Message,
-                Time = message.SendingTime
-            });
+            await _dbContext.ChatMessages.AddAsync(_mapper.Map<ChatMessage>(message));
 
             await _dbContext.SaveChangesAsync();
 
@@ -57,12 +53,7 @@ namespace Chat.Server.Services//ToDo: use include to all entities
             List<User> users = _userManager.Users.ToList();
 
             IdentityResult result = await _userManager.CreateAsync(
-                user: new User 
-                { 
-                    UserName = userModel.UserName, 
-                    Photo = userModel.Photo,
-                    DisconnectTime = DateTime.Now
-                },
+                user: _mapper.Map<User>(userModel),
                 password: userModel.Password);
 
             if (!result.Succeeded)
@@ -111,29 +102,7 @@ namespace Chat.Server.Services//ToDo: use include to all entities
         {
             User dbUser = await _userManager.FindByNameAsync(userName);
 
-            FullUserModel userModel = new()
-            {
-                Id = dbUser.Id,
-                Name = dbUser.UserName,
-                Photo = dbUser.Photo,
-                IsAdmin = dbUser.UserName == "Admin",
-                IsBlocked = dbUser.IsBlocked,
-                IsMuted = dbUser.IsMuted,
-                DisconnectTime = dbUser.DisconnectTime
-            };
-
-            List<BlockModel> blockModels = new(userModel.BlockModels.Count);
-
-            foreach (BlockedUser block in dbUser.BlockedUsers)
-            {
-                blockModels.Add(new BlockModel
-                {
-                    UserId = block.Blocker.UserId,
-                    DoesBlocked = block.Blocker.DoesBlock
-                });
-            }
-
-            userModel.BlockModels = blockModels;
+            FullUserModel userModel = _mapper.Map<FullUserModel>(dbUser);
 
             foreach (Chatter chatter in dbUser.Chatters)
             {
@@ -141,25 +110,16 @@ namespace Chat.Server.Services//ToDo: use include to all entities
 
                 foreach (ChatMessage message in chatter.Chat.ChatMessages)
                 {
-                    messageModels.Add(new ChatMessageModel
-                    {
-                        Id = message.Id,
-                        ChatId = message.ChatId,
-                        FromUserId = message.SenderId,
-                        ToUserId = message.ReceiverId,
-                        Message = message.Message,
-                        SendingTime = message.Time,
-                        IsFromCurrentUser = dbUser.Id.Equals(message.SenderId)
-                    });
+                    ChatMessageModel messageModel = _mapper.Map<ChatMessageModel>(message);
+                    messageModel.IsFromCurrentUser = dbUser.Id.Equals(message.SenderId);
+
+                    messageModels.Add(messageModel);
                 }
 
-                userModel.Chats.Add(new ChatModel
-                {
-                    Id = chatter.ChatId,
-                    FirstUserId = chatter.Chat.FirstUserId,
-                    SecondUserId = chatter.Chat.SecondUserId,
-                    Messages = messageModels
-                });
+                ChatModel chat = _mapper.Map<ChatModel>(chatter);
+                chat.Messages = messageModels;
+
+                userModel.Chats.Add(chat);
             }
 
             return userModel;
@@ -183,35 +143,21 @@ namespace Chat.Server.Services//ToDo: use include to all entities
                             chatter.Chat.SecondUserId == currentUser.Id;
                     });
 
-                List<ChatMessage> messages = chat.Chat.ChatMessages;
-
                 ObservableCollection<ChatMessageModel> messageModels = new();
 
-                foreach (ChatMessage message in messages)
+                foreach (ChatMessage message in chat.Chat.ChatMessages)
                 {
-                    messageModels.Add(new ChatMessageModel
-                    {
-                        Id = message.Id,
-                        ChatId = message.ChatId,
-                        FromUserId = message.SenderId,
-                        ToUserId = message.ReceiverId,
-                        Message = message.Message,
-                        SendingTime = message.Time,
-                        IsFromCurrentUser = currentUser.Id.Equals(message.SenderId)
-                    });
+                    ChatMessageModel messageModel = _mapper.Map<ChatMessageModel>(message);
+                    messageModel.IsFromCurrentUser = currentUser.Id.Equals(message.SenderId);
+
+                    messageModels.Add(messageModel);
                 }
 
-                userModels.Add(new UserModel
-                {
-                    Id = user.Id,
-                    Name = user.UserName,
-                    Photo = user.Photo,
-                    Messages = messageModels,
-                    ChatId = chat.ChatId,
-                    IsBlocked = user.IsBlocked,
-                    IsMuted = user.IsMuted,
-                    DisconnectTime = user.DisconnectTime
-                });
+                UserModel userModel = _mapper.Map<UserModel>(user);
+                userModel.ChatId = chat.ChatId;
+                userModel.Messages = messageModels;
+                
+                userModels.Add(userModel);
             }
 
             return userModels;
@@ -264,11 +210,7 @@ namespace Chat.Server.Services//ToDo: use include to all entities
                 await _dbContext.SaveChangesAsync();
             }
 
-            return new BlockModel
-            {
-                UserId = blockedUser.Blocker.UserId,
-                DoesBlocked = blockedUser.Blocker.DoesBlock
-            };
+            return _mapper.Map<BlockModel>(blockedUser);
         }
 
         public async Task<bool> UpdateDisconnectTimeAsync(string userName, DateTime disconnectTime) 
@@ -297,6 +239,29 @@ namespace Chat.Server.Services//ToDo: use include to all entities
             userToChangePhoto.Photo = photo;
 
             return (await _userManager.UpdateAsync(userToChangePhoto)).Succeeded;
+        }
+
+        public async Task<bool> ChangeUserMessageAsync(Guid messageId, string message) 
+        {
+            ChatMessage chatMessage = await _dbContext.ChatMessages.FindAsync(messageId);
+
+            if (chatMessage is null)
+            {
+                return false;
+            }
+
+            chatMessage.Message = message;
+
+            if (!chatMessage.IsEdit)
+            {
+                chatMessage.IsEdit = true;
+            }
+
+            _dbContext.ChatMessages.Update(chatMessage);
+
+            await _dbContext.SaveChangesAsync();
+
+            return true;
         }
 
         private async Task<BlockedUser> AddBlockedUserAsync(string userId, string blockedUserId, bool doesBlock) 

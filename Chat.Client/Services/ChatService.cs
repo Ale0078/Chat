@@ -25,6 +25,7 @@ namespace Chat.Client.Services
         public event Action<BlockModel> SendBlackListStateToUserServerHandler;
         public event Action<bool, string> SendTypingStatusToUserServerHandler;
         public event Action<string, byte[]> SetNewPhotoToUserServerHandler;
+        public event Action<string, Guid, string> ChangeMessageToUserServerHandler;
 
         public ChatService()
         {
@@ -78,6 +79,10 @@ namespace Chat.Client.Services
             _connection.On<string, byte[]>(
                 methodName: nameof(IChat.ChangeUserPhotoToAllExceptChanged),
                 handler: (userName, photo) => SetNewPhotoToUserServerHandler?.Invoke(userName, photo));
+
+            _connection.On<string, Guid, string>(
+                methodName: nameof(IChat.ChangeMessageToUserAsync),
+                handler: (userId, messageId, message) => ChangeMessageToUserServerHandler?.Invoke(userId, messageId, message));
         }
 
         public string Token { get; set; }
@@ -120,6 +125,11 @@ namespace Chat.Client.Services
         public async Task SendUserPhotoToAllUsersExceptChanged(string userName, byte[] photo) 
         {
             await _connection.InvokeAsync("SetNewPhotoToUserAsync", userName, photo);
+        }
+
+        public async Task SetMessageToChatMessageAsync(string connectionId, string userId, Guid messageId, string message) 
+        {
+            await _connection.InvokeAsync("ChangeMessageAsync", connectionId, userId, messageId, message);
         }
     }
 }

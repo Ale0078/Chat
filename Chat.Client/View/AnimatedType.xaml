@@ -9,8 +9,6 @@
              Width="Auto"
              x:Name="IconControl">
     <UserControl.Resources>
-        <converters:ColorToSolidColorBrush x:Key="ColotToBrush"/>
-
         <Style TargetType="{x:Type Ellipse}">
             <Setter Property="Fill" Value="{Binding ElementName=IconControl, Path=EllipseColor, Converter={StaticResource ColotToBrush}}"/>
             <Setter Property="Width" Value="{Binding ElementName=IconControl, Path=EllipseWidth}"/>

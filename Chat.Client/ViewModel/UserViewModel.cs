@@ -20,8 +20,6 @@ namespace Chat.Client.ViewModel
         private byte[] _photo;
         private bool _isAdmin;
         private bool _isMuted;
-        private Visibility _adminToolsVisibility;
-        private Visibility _buttonToSendVisibility;//ToDo: maybe remove
         private bool _isButtonEnabled;
 
         private ICommand _setNewPhoto;
@@ -61,18 +59,15 @@ namespace Chat.Client.ViewModel
             {
                 _message = value;
 
-                if ((_message == string.Empty
-                    || string.IsNullOrEmpty(_message)
-                    || string.IsNullOrWhiteSpace(_message))
-                    && !IsMuted)
+                if (string.IsNullOrEmpty(_message)
+                    || string.IsNullOrWhiteSpace(_message)
+                    || IsMuted)
                 {
-                    IsButtonEnabled = true;
-                    ButtonToSendVisibility = Visibility.Collapsed;
+                    IsButtonEnabled = false;
                 }
                 else
                 {
                     IsButtonEnabled = true;
-                    ButtonToSendVisibility = Visibility.Visible;
                 }
 
                 OnPropertyChanged();
@@ -97,15 +92,6 @@ namespace Chat.Client.ViewModel
             {
                 _isAdmin = value;
 
-                if (IsAdmin)
-                {
-                    AdminToolsVisibility = Visibility.Visible;
-                }
-                else
-                {
-                    AdminToolsVisibility = Visibility.Collapsed;
-                }
-
                 OnPropertyChanged();
             }
         }
@@ -117,28 +103,6 @@ namespace Chat.Client.ViewModel
             {
                 _isMuted = value;
                 IsButtonEnabled = value;
-
-                OnPropertyChanged();
-            }
-        }
-
-        public Visibility ButtonToSendVisibility
-        {
-            get => _buttonToSendVisibility;
-            set
-            {
-                _buttonToSendVisibility = value;
-
-                OnPropertyChanged();
-            }
-        }
-
-        public Visibility AdminToolsVisibility
-        {
-            get => _adminToolsVisibility;
-            set
-            {
-                _adminToolsVisibility = value;
 
                 OnPropertyChanged();
             }

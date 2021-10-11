@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 
 using Chat.Client.ViewModel;
 
@@ -35,6 +36,25 @@ namespace Chat.Client.Extensions
             TimeId = 0;
 
             return new ObservableCollection<T>(sortedList.Values.Reverse());
+        }
+
+        public static void AddViewModel<T>(this ObservableCollection<T> items, T item, PropertyChangedEventHandler handler)
+            where T : ViewModelBase
+        {
+            item.PropertyChanged -= handler;
+            item.PropertyChanged += handler;
+
+            items.Add(item);
+        }
+
+        public static void SetPropertyChangedEventHandler<T>(this ObservableCollection<T> items, PropertyChangedEventHandler handler)
+            where T : ViewModelBase
+        {
+            foreach (T item in items)
+            {
+                item.PropertyChanged -= handler;
+                item.PropertyChanged += handler;
+            }
         }
 
         private struct DateTimeToSort : IComparable
