@@ -1,28 +1,43 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using System.Windows.Media.Animation;
 
 namespace Chat.Client.View
 {
-    /// <summary>
-    /// Interaction logic for MessagesUserControl.xaml
-    /// </summary>
     public partial class MessagesUserControl : UserControl
     {
+        public static readonly DependencyProperty TypeControlNameScopeToFileMessageProperty;
+        public static readonly DependencyProperty TimeLineAnimationToFileMessageProperty;
+
         public MessagesUserControl()
         {
             InitializeComponent();
+        }
+
+        static MessagesUserControl() 
+        {
+            TypeControlNameScopeToFileMessageProperty = DependencyProperty.Register(
+                name: nameof(TypeControlNameScopeToFileMessage),
+                propertyType: typeof(Type),
+                ownerType: typeof(MessagesUserControl));
+
+            TimeLineAnimationToFileMessageProperty = DependencyProperty.Register(
+                name: nameof(TimeLineAnimationToFileMessage),
+                propertyType: typeof(Timeline),
+                ownerType: typeof(MessagesUserControl));
+        }
+
+        public Type TypeControlNameScopeToFileMessage
+        {
+            get => (Type)GetValue(TypeControlNameScopeToFileMessageProperty);
+            set => SetValue(TypeControlNameScopeToFileMessageProperty, value);
+        }
+
+        public Timeline TimeLineAnimationToFileMessage
+        {
+            get => (Timeline)GetValue(TimeLineAnimationToFileMessageProperty);
+            set => SetValue(TimeLineAnimationToFileMessageProperty, value);
         }
     }
 }

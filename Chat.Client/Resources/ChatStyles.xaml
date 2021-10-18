@@ -44,7 +44,7 @@
         <Setter Property="TextAlignment" Value="Right"/>
     </Style>
 
-    <DataTemplate x:Key="MessagesTemplate" DataType="{x:Type user:ChatMessageModel}">
+    <DataTemplate x:Key="MessagesTemplate" DataType="{x:Type viewModels:ChatMessageViewModel}">
         <Border Style="{StaticResource MessageTemplate}"
                 Focusable="False"
                 x:Name="ChatSource">
@@ -63,15 +63,47 @@
                     </ContextMenu>
                 </Grid.ContextMenu>
 
-                <TextBlock Grid.Row="0"
-                           TextWrapping="Wrap"
-                           FontWeight="Light"
-                           FontSize="16"
-                           Text="{Binding Message}"/>
+                <StackPanel Orientation="Vertical"
+                            Grid.Row="0">
+                    <Image Source="{Binding ByteFile, Converter={StaticResource ConvertBytesToPhoto}}"
+                           Stretch="Uniform"
+                           MaxHeight="200"
+                           MaxWidth="300"/>
 
-                <TextBlock Grid.Row="1"                             
-                           Text="{Binding SendingTime, StringFormat={}{0:t}}"
-                           Style="{StaticResource SendingTimeMessage}"/>
+                    <TextBlock Grid.Row="0"
+                               TextWrapping="Wrap"
+                               FontWeight="Light"
+                               FontSize="16"
+                               Height="Auto"
+                               Text="{Binding Message}"/>
+                </StackPanel>
+                <!--<ContentControl Grid.Row="0"
+                                Content="{Binding}">
+                    <ContentControl.Style>
+                        <Style TargetType="{x:Type ContentControl}">
+                            <Style.Triggers>
+                                <MultiDataTrigger>
+                                    <MultiDataTrigger.Conditions>
+                                        <Condition Binding="{Binding }"
+                                    </MultiDataTrigger.Conditions>
+                                    
+                                </MultiDataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </ContentControl.Style>
+                </ContentControl>-->
+
+                <StackPanel Orientation="Horizontal"
+                            Grid.Row="1"
+                            Width="Auto">
+                    <TextBlock Text="edited "
+                               Style="{StaticResource SendingTimeMessage}"
+                               Visibility="{Binding IsEdit, Converter={StaticResource ConverterBoolToVisibilityCollapsed}}"/>
+
+                    <TextBlock Text="{Binding SendingTime, StringFormat={}{0:t}}"
+                               Style="{StaticResource SendingTimeMessage}"/>
+                </StackPanel>
+                
             </Grid>
         </Border>
     </DataTemplate>
@@ -107,7 +139,7 @@
             <DataTrigger Binding="{Binding CurrentUser}" Value="{x:Null}">
                 <Setter Property="IsEnabled" Value="False"/>
             </DataTrigger>
-            
+
             <MultiDataTrigger>
                 <MultiDataTrigger.Conditions>
                     <Condition Binding="{Binding User.IsMuted}" Value="True"/>
@@ -137,7 +169,7 @@
                 <Setter Property="IsEnabled" Value="False"/>
                 <Setter Property="materialDesign:HintAssist.Hint" Value="Sory, but you were added to black list :)"/>
             </MultiDataTrigger>
-            
+
             <MultiDataTrigger>
                 <MultiDataTrigger.Conditions>
                     <Condition Binding="{Binding User.IsMuted}" Value="False"/>
@@ -149,7 +181,6 @@
             </MultiDataTrigger>
         </Style.Triggers>
     </Style>
-
 
     <Style x:Key="IconButtonToSendMessage" TargetType="{x:Type Button}">
         <Setter Property="Width" Value="40"/>

@@ -17,6 +17,7 @@
                 <ResourceDictionary Source="Resources/Converters.xaml"/>
                 <ResourceDictionary Source="Resources/TextBlockStyles.xaml"/>
                 <ResourceDictionary Source="Resources/ButtonStyles.xaml"/>
+                <ResourceDictionary Source="Resources/RectangleStyles.xaml"/>
                 <ResourceDictionary Source="Resources/TextBoxStyles.xaml"/>
                 <ResourceDictionary Source="Resources/PackIconStyles.xaml"/>
                 <ResourceDictionary Source="Resources/EllipseStyles.xaml"/>

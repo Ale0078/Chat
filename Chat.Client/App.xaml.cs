@@ -29,12 +29,14 @@ namespace Chat.Client
             services.AddSingleton<ChatService>();
             services.AddSingleton<RegistrationChatService>();
             services.AddSingleton<IDialogService, DialogService>();
+
             services.AddSingleton<MainWindowViewModel>();
             services.AddSingleton<LoginViewModel>();
             services.AddSingleton<RegistarationViewModel>();
             services.AddSingleton<ChatViewModel>();
             services.AddSingleton<MainWindow>();
             services.AddSingleton<UserViewModel>();
+            services.AddSingleton<MessageCreaterViewModel>();
 
             services.AddAutoMapper(typeof(ChatMessageProfile), typeof(ChatMemberProfile));
         }

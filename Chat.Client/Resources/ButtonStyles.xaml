@@ -23,4 +23,105 @@
             </Setter.Value>
         </Setter>
     </Style>
+
+    <Style x:Key="ButtonFileMessage" TargetType="{x:Type Button}">
+        <Setter Property="Width" Value="40"/>
+        <Setter Property="Height" Value="40"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="Focusable" Value="False"/>
+        <Setter Property="Foreground" Value="LightGray"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Button}">
+                    <Grid Width="{TemplateBinding Width}"
+                          Height="{TemplateBinding Height}"
+                          Focusable="{TemplateBinding Focusable}"
+                          Background="Transparent">
+                        <materialDesign:PackIcon Kind="Paperclip"
+                                                 Height="30"
+                                                 Width="30"
+                                                 Foreground="{TemplateBinding Foreground}"
+                                                 HorizontalAlignment="Center"
+                                                 VerticalAlignment="Center">
+                            <materialDesign:PackIcon.RenderTransform>
+                                <RotateTransform Angle="225"
+                                                 CenterX="15"
+                                                 CenterY="15"/>
+                            </materialDesign:PackIcon.RenderTransform>
+                        </materialDesign:PackIcon>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="CornerButton" TargetType="{x:Type Button}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Button}">
+                    <Grid>
+                        <ContentPresenter HorizontalAlignment="Center"
+                                          VerticalAlignment="Center"/>
+                        
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                Opacity="0"
+                                CornerRadius="5"
+                                x:Name="ButtonBorder">
+                            <Border.Triggers>
+                                <EventTrigger RoutedEvent="{x:Static Button.MouseEnterEvent}">
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetName="ButtonBorder"
+                                                             Storyboard.TargetProperty="Opacity"
+                                                             Duration="0:0:0.2"
+                                                             From="0"
+                                                             To="0.2"
+                                                             FillBehavior="HoldEnd"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </EventTrigger>
+
+                                <EventTrigger RoutedEvent="{x:Static Button.MouseLeaveEvent}">
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetName="ButtonBorder"
+                                                             Storyboard.TargetProperty="Opacity"
+                                                             Duration="0:0:0.2"
+                                                             From="0.2"
+                                                             To="0"
+                                                             FillBehavior="HoldEnd"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </EventTrigger>
+                            </Border.Triggers>
+                        </Border>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="CornerButtonFileMessage" TargetType="{x:Type Button}" BasedOn="{StaticResource CornerButton}">
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="Background" Value="#A2D1FD"/>
+        <Setter Property="FontWeight" Value="Medium"/>
+        <Setter Property="FontSize" Value="20"/>
+        <Setter Property="Foreground" Value="#40A3FF"/>
+        <Setter Property="Height" Value="40"/>
+        <Setter Property="BorderThickness" Value="0"/>
+    </Style>
+
+    <Style x:Key="CornerButtonAddFileMessage" TargetType="{x:Type Button}" BasedOn="{StaticResource CornerButtonFileMessage}">
+        <Setter Property="Content" Value="Add"/>
+        <Setter Property="Width" Value="60"/>
+        <Setter Property="HorizontalAlignment" Value="Left"/>
+    </Style>
+
+    <Style x:Key="CornerButtonCancelFileMessage" TargetType="{x:Type Button}" BasedOn="{StaticResource CornerButtonFileMessage}">
+        <Setter Property="Content" Value="Cancel"/>
+        <Setter Property="Width" Value="100"/>
+        <Setter Property="HorizontalAlignment" Value="Right"/>
+    </Style>
 </ResourceDictionary>

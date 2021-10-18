@@ -14,6 +14,7 @@
     <Grid Grid.Column="2"
               Focusable="False">
         <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
             <ColumnDefinition />
             <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
@@ -26,7 +27,7 @@
 
         <Border Grid.Row="0"
                 Grid.Column="0"
-                Grid.ColumnSpan="2"
+                Grid.ColumnSpan="3"
                 Style="{StaticResource BorderWithCurrentUserInfo}"
                 Height="52">
             <Grid>
@@ -134,7 +135,8 @@
             </Grid>
         </Border>
 
-        <ItemsControl Grid.ColumnSpan="2"
+        <ItemsControl Grid.ColumnSpan="3"
+                      Grid.Column="0"
                       Grid.Row="1"
                       BorderThickness="0, 0, 0, 1"
                       BorderBrush="LightGray"
@@ -167,9 +169,16 @@
             </ContentControl.Style>
         </ContentControl>
 
+        <time:StartAnimationButton Grid.Row="3"
+                                   Grid.Column="0"
+                                   Command="{Binding User.MessageCreater.SetFileMessage}"
+                                   Style="{StaticResource ButtonFileMessage}"
+                                   TimeLineAnimation="{Binding ElementName=Messages, Path=TimeLineAnimationToFileMessage}"
+                                   TypeControlNameScope="{Binding ElementName=Messages, Path=TypeControlNameScopeToFileMessage}"/>
+
         <TextBox Grid.Row="3"
-                 Grid.Column="0"
-                 Text="{Binding User.Message, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                 Grid.Column="1"
+                 Text="{Binding User.MessageCreater.TextMessage, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                  Name="Message"
                  Style="{StaticResource TextBoxToMessage}">
             <i:Interaction.Triggers>
@@ -184,7 +193,7 @@
         </TextBox>
 
         <Button Grid.Row="3"
-                Grid.Column="1"
+                Grid.Column="2"
                 x:Name="Send"
                 IsEnabled="{Binding User.IsButtonEnabled}"
                 Command="{Binding SendMessage}"

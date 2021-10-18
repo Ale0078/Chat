@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
+using System.ComponentModel;
 using System.Windows;
 using System.Windows.Input;
 
@@ -16,7 +17,6 @@ namespace Chat.Client.ViewModel
 
         private string _id;
         private string _name;
-        private string _message;
         private byte[] _photo;
         private bool _isAdmin;
         private bool _isMuted;
@@ -24,11 +24,17 @@ namespace Chat.Client.ViewModel
 
         private ICommand _setNewPhoto;
 
-        public UserViewModel(ChatService chatService, IDialogService dialog)
+        public UserViewModel(ChatService chatService, IDialogService dialog, MessageCreaterViewModel messageCreater)
         {
             _chatService = chatService;
             _dialog = dialog;
+
+            MessageCreater = messageCreater;
+
+            messageCreater.PropertyChanged += OnTextMessagePropertyChanged;
         }
+
+        public MessageCreaterViewModel MessageCreater { get; }
 
         public string Id 
         {
@@ -47,28 +53,6 @@ namespace Chat.Client.ViewModel
             set
             {
                 _name = value;
-
-                OnPropertyChanged();
-            }
-        }
-
-        public string Message
-        {
-            get => _message;
-            set
-            {
-                _message = value;
-
-                if (string.IsNullOrEmpty(_message)
-                    || string.IsNullOrWhiteSpace(_message)
-                    || IsMuted)
-                {
-                    IsButtonEnabled = false;
-                }
-                else
-                {
-                    IsButtonEnabled = true;
-                }
 
                 OnPropertyChanged();
             }
@@ -136,6 +120,25 @@ namespace Chat.Client.ViewModel
             Photo = await File.ReadAllBytesAsync(source);
 
             await _chatService.SendUserPhotoToAllUsersExceptChanged(Name, Photo);
+        }
+
+        private void OnTextMessagePropertyChanged(object sender, PropertyChangedEventArgs e) 
+        {
+            MessageCreaterViewModel messageCreater = sender as MessageCreaterViewModel;
+
+            if (messageCreater is null)
+            {
+                return;
+            }
+
+            if (string.IsNullOrEmpty(messageCreater.TextMessage) || string.IsNullOrWhiteSpace(messageCreater.TextMessage))
+            {
+                IsButtonEnabled = false;
+            }
+            else 
+            {
+                IsButtonEnabled = true;
+            }
         }
     }
 }

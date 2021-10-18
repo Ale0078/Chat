@@ -9,9 +9,9 @@ namespace Chat.Client.Converters
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (value is null)
+            if (value is null || ((byte[])value).Length == 0)
             {
-                return null;
+                return Binding.DoNothing;
             }
 
             ImageSourceConverter converter = new();

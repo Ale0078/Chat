@@ -1,0 +1,9 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:extensions="clr-namespace:Chat.Client.AttachedProperties">
+    <Style x:Key="GrayTransparentRectangleOnBack" TargetType="{x:Type Rectangle}">
+        <Setter Property="Fill" Value="#A0676767"/>
+        <Setter Property="Focusable" Value="True"/>
+        <Setter Property="Opacity" Value="0"/>
+    </Style>
+</ResourceDictionary>

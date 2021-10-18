@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using System.Windows;
 using System.ComponentModel;
 using System.Windows.Threading;
 using AutoMapper;
@@ -36,7 +34,6 @@ namespace Chat.Client.ViewModel
         private ICommand _setMessageToUser;
         private ICommand _typing;
         private ICommand _stopTyping;
-        private ICommand _setVisibilityToUserInfoVisibility;
 
         public ChatViewModel(ChatService chatService, RegistrationChatService registrationChatService, UserViewModel user,
             IMapper mapper)
@@ -45,8 +42,6 @@ namespace Chat.Client.ViewModel
             _chatService = chatService;
             _registrationChatService = registrationChatService;
             User = user;
-
-            UserInfoVisibility = new UserInfoVisibilityViewModel();
 
             Users = new ObservableCollection<ChatMemberViewModel>();
             _blockedUsers = new List<ChatMemberViewModel>();
@@ -60,7 +55,6 @@ namespace Chat.Client.ViewModel
         }
 
         public UserViewModel User { get; }
-        public UserInfoVisibilityViewModel UserInfoVisibility { get; }
 
         public ObservableCollection<ChatMemberViewModel> Users 
         {
@@ -84,17 +78,17 @@ namespace Chat.Client.ViewModel
             }
         }
 
-        public ICommand Connect => _connect ?? (_connect = new RelayCommandAsync(
-            execute: ExecuteConnectEvent));
+        public ICommand Connect => _connect ??= new RelayCommandAsync(
+            execute: ExecuteConnectEvent);
 
         private async Task ExecuteConnectEvent(object parametr) 
         {
             await _chatService.Connect();
         }
 
-        public ICommand SendMessage => _sendMessage ?? (_sendMessage = new RelayCommandAsync(
-            execute: ExecuteSendMessage,
-            canExecute: CanExecuteSendMessage));
+        public ICommand SendMessage => _sendMessage ??= new RelayCommandAsync(
+            execute: ExecuteSendMessage
+            /*canExecute: CanExecuteSendMessage*/);
 
         private async Task ExecuteSendMessage(object parametr) 
         {
@@ -107,17 +101,24 @@ namespace Chat.Client.ViewModel
                 await ExecuteChangeMessage();
             }
 
-            User.Message = string.Empty;
+            User.MessageCreater.TextMessage = string.Empty;
+            User.MessageCreater.FileMessage = null;
         }
 
         private async Task ExecuteSendMessage() 
         {
             ChatMessageModel sendingMessage = await _chatService.ReciveMessageUserAsync(
-                chatId: CurrentUser.ChatId,
-                fromUserId: User.Id,
-                toUserId: CurrentUser.Id,
-                message: User.Message.TrimStart().TrimEnd(),
-                connectionId: Users.First(user => user.Name == CurrentUser.Name).ConnectionId);
+                connectionId: Users.First(user => user.Name == CurrentUser.Name).ConnectionId,
+                chatMessage: new ChatMessageModel 
+                {
+                    ChatId = CurrentUser.ChatId,
+                    FromUserId = User.Id,
+                    ToUserId = CurrentUser.Id,
+                    Message = User.MessageCreater.TextMessage,
+                    ByteFile = User.MessageCreater.FileMessage,
+                    SendingTime = DateTime.Now
+                });
+
             sendingMessage.IsFromCurrentUser = true;
 
             CurrentUser.Messages.AddViewModel(
@@ -135,20 +136,22 @@ namespace Chat.Client.ViewModel
                 connectionId: CurrentUser.ConnectionId,
                 userId: User.Id,
                 messageId: CurrentUser.EditMessage.Id,
-                message: User.Message);
+                message: User.MessageCreater.TextMessage);
 
             CurrentUser.EditMessage.IsEdit = true;
-            CurrentUser.EditMessage.Message = User.Message;
+            CurrentUser.EditMessage.Message = User.MessageCreater.TextMessage;
             CurrentUser.EditMessage.IsEditing = false;
         }
 
-        private bool CanExecuteSendMessage(object parametr) 
-        {
-            return !(string.IsNullOrWhiteSpace(User.Message) || string.IsNullOrEmpty(User.Message));
-        }
+        //private bool CanExecuteSendMessage(object parametr) 
+        //{
+        //    return !(string.IsNullOrWhiteSpace(User.MessageCreater.TextMessage) 
+        //            || string.IsNullOrEmpty(User.MessageCreater.TextMessage) 
+        //            || User.MessageCreater.FileMessage is not null);
+        //}
 
-        public ICommand BlockUser => _blockUser ?? (_blockUser = new RelayCommandAsync(
-            execute: ExecuteBlockUser));
+        public ICommand BlockUser => _blockUser ??= new RelayCommandAsync(
+            execute: ExecuteBlockUser);
 
         public async Task ExecuteBlockUser(object isBlocked) 
         {
@@ -158,8 +161,8 @@ namespace Chat.Client.ViewModel
                 isBlocked: (bool)isBlocked);
         }
 
-        public ICommand MuteUser => _muteUser ?? (_muteUser = new RelayCommandAsync(
-            execute: ExecuteMuteUser));
+        public ICommand MuteUser => _muteUser ??= new RelayCommandAsync(
+            execute: ExecuteMuteUser);
 
         private async Task ExecuteMuteUser(object isMuted) 
         {
@@ -169,8 +172,8 @@ namespace Chat.Client.ViewModel
                 isMuted: (bool)isMuted);
         }
 
-        public ICommand SetBlackListState => _setBlackListState ?? (_setBlackListState = new RelayCommandAsync(
-            execute: ExecuteSetBlackListState));
+        public ICommand SetBlackListState => _setBlackListState ??= new RelayCommandAsync(
+            execute: ExecuteSetBlackListState);
 
         private async Task ExecuteSetBlackListState(object doesBlock) 
         {
@@ -181,16 +184,16 @@ namespace Chat.Client.ViewModel
                 doesBlock: (bool)doesBlock);
         }
 
-        public ICommand SetMessageToUser => _setMessageToUser ?? (_setMessageToUser = new RelayCommand(
-            execute: ExecuteSetMessageToUser));
+        public ICommand SetMessageToUser => _setMessageToUser ??= new RelayCommand(
+            execute: ExecuteSetMessageToUser);
 
         private void ExecuteSetMessageToUser(object parametr) 
         {
-            User.Message = CurrentUser.Draft.Message;
+            User.MessageCreater.TextMessage = CurrentUser.Draft.Message;
         }
 
-        public ICommand Typing => _typing ?? (_typing = new RelayCommandAsync(
-            execute: ExecuteTyping));
+        public ICommand Typing => _typing ??= new RelayCommandAsync(
+            execute: ExecuteTyping);
 
         private async Task ExecuteTyping(object parametr) 
         {
@@ -198,8 +201,8 @@ namespace Chat.Client.ViewModel
                 isTyping: true,
                 connectionId: CurrentUser.ConnectionId,
                 typingUserId: User.Id);
-
-            if (string.IsNullOrEmpty(User.Message))
+            
+            if (string.IsNullOrEmpty(User.MessageCreater.TextMessage))
             {
                 await _chatService.SendUserTypingStatusToUserAsync(
                     isTyping: false,
@@ -212,22 +215,14 @@ namespace Chat.Client.ViewModel
             }
         }
 
-        public ICommand StopTyping => _stopTyping ?? (_stopTyping = new RelayCommandAsync(
-            execute: ExecuteStopTyping));
+        public ICommand StopTyping => _stopTyping ??= new RelayCommandAsync(
+            execute: ExecuteStopTyping);
 
         private Task ExecuteStopTyping(object parametr) 
         {
             _timer.Start();
 
             return Task.CompletedTask;
-        }
-
-        public ICommand SetVisibilityToUserInfoVisibility => _setVisibilityToUserInfoVisibility ?? (_setVisibilityToUserInfoVisibility = new RelayCommand(
-            execute: ExecuteSetVisibilityToUserInfoVisibility));
-
-        private void ExecuteSetVisibilityToUserInfoVisibility(object visibility) 
-        {
-            UserInfoVisibility.BackgroundInfoVisibility = (Visibility)visibility;
         }
 
         private void SetEvents()
@@ -364,7 +359,7 @@ namespace Chat.Client.ViewModel
         {
             User.IsMuted = isMuted;
 
-            User.Message = string.Empty;
+            User.MessageCreater.TextMessage = string.Empty;
 
             foreach (ChatMemberViewModel user in Users)
             {
@@ -402,7 +397,7 @@ namespace Chat.Client.ViewModel
 
             if (CurrentUser is not null && CurrentUser.Equals(member))
             {
-                User.Message = string.Empty;
+                User.MessageCreater.TextMessage = string.Empty;
             }
         }
 
@@ -515,14 +510,14 @@ namespace Chat.Client.ViewModel
 
         private void SetMessageToCurrentUserFromUser(object sender, PropertyChangedEventArgs e) 
         {
-            if (CurrentUser is null || e.PropertyName == nameof(UserViewModel.Message))
+            if (CurrentUser is null || e.PropertyName == nameof(UserViewModel.MessageCreater.TextMessage))
             {
                 return;
             }
 
             UserViewModel user = sender as UserViewModel;
 
-            if (string.IsNullOrEmpty(user.Message))
+            if (string.IsNullOrEmpty(user.MessageCreater.TextMessage))
             {
                 CurrentUser.Draft.Message = null;
             }
@@ -533,7 +528,7 @@ namespace Chat.Client.ViewModel
                     CurrentUser.Draft.StartTypingTime = DateTime.Now;
                 }
 
-                CurrentUser.Draft.Message = user.Message;
+                CurrentUser.Draft.Message = user.MessageCreater.TextMessage;
             }
         }
 
@@ -549,7 +544,8 @@ namespace Chat.Client.ViewModel
             if (message.IsEditing)
             {
                 CurrentUser.EditMessage = message;
-                User.Message = message.Message;
+
+                User.MessageCreater.TextMessage = message.Message;
             }
             else 
             {

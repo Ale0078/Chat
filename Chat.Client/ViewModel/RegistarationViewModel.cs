@@ -82,8 +82,8 @@ namespace Chat.Client.ViewModel
             }
         }
 
-        public ICommand RegisterUser => _registerUser ?? (_registerUser = new RelayCommandAsync(
-            execute: ExecuteRegistrationUser));
+        public ICommand RegisterUser => _registerUser ??= new RelayCommandAsync(
+            execute: ExecuteRegistrationUser);
 
         private async Task ExecuteRegistrationUser(object parameters)
         {
@@ -96,8 +96,8 @@ namespace Chat.Client.ViewModel
             });
         }
 
-        public ICommand LoadPhoto => _loadPhoto ?? (_loadPhoto = new RelayCommand(
-            execute: ExecuteLoadPhote));
+        public ICommand LoadPhoto => _loadPhoto ??= new RelayCommand(
+            execute: ExecuteLoadPhote);
 
         private void ExecuteLoadPhote(object parametr) 
         {

@@ -97,9 +97,9 @@ namespace Chat.Client.Services
             await _connection.StartAsync();
         }
 
-        public async Task<ChatMessageModel> ReciveMessageUserAsync(Guid chatId, string fromUserId, string toUserId, string message, string connectionId) 
+        public async Task<ChatMessageModel> ReciveMessageUserAsync(string connectionId, ChatMessageModel chatMessage) 
         {
-            return await _connection.InvokeAsync<ChatMessageModel>("ReciveMessage", chatId, fromUserId, toUserId, message, connectionId);
+            return await _connection.InvokeAsync<ChatMessageModel>("ReciveMessage", connectionId, chatMessage);
         }
 
         public async Task<bool> SetBlockStateToUserAsync(string userId, string connectionId, bool isBlocked) 

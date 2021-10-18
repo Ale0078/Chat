@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading.Tasks;
 using System.Windows.Input;
 
 using Chat.Client.Commands;
@@ -17,6 +16,7 @@ namespace Chat.Client.ViewModel
         private DateTime _sendingTime;
         private bool _isEditing;
         private bool _isEdit;
+        private byte[] _byteFile;
 
         private ICommand _editMessage;
 
@@ -114,6 +114,17 @@ namespace Chat.Client.ViewModel
             set 
             {
                 _isEdit = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        public byte[] ByteFile 
+        {
+            get => _byteFile;
+            set 
+            {
+                _byteFile = value;
 
                 OnPropertyChanged();
             }

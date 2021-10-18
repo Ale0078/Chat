@@ -62,17 +62,8 @@ namespace Chat.Server.Hubs
             await base.OnDisconnectedAsync(exception);
         }
 
-        public async Task<ChatMessageModel> ReciveMessage(Guid chatId, string fromUserId, string toUserId, string message, string connectionId) 
+        public async Task<ChatMessageModel> ReciveMessage(string connectionId, ChatMessageModel chatMessage) 
         {
-            ChatMessageModel chatMessage = new()
-            {
-                ChatId = chatId,
-                FromUserId = fromUserId,
-                ToUserId = toUserId,
-                Message = message,
-                SendingTime = DateTime.Now
-            };
-            
             await _userService.AddChatMessageAsync(chatMessage);
 
             if (IsValidConnectionId(connectionId))
