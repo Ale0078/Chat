@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Chat.Client.AttachedProperties;
+using Chat.Client.ViewDatas;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;

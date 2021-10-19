@@ -21,6 +21,7 @@ namespace Chat.Client.ViewModel
         private bool _isAdmin;
         private bool _isMuted;
         private bool _isButtonEnabled;
+        private string _searchingUser;
 
         private ICommand _setNewPhoto;
 
@@ -98,6 +99,17 @@ namespace Chat.Client.ViewModel
             set 
             {
                 _isButtonEnabled = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        public string SearchingUser 
+        {
+            get => _searchingUser;
+            set 
+            {
+                _searchingUser = value;
 
                 OnPropertyChanged();
             }

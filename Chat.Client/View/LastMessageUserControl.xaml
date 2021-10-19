@@ -75,6 +75,76 @@
                             </Setter>
                         </MultiDataTrigger>
 
+                        <MultiDataTrigger>
+                            <MultiDataTrigger.Conditions>
+                                <Condition Binding="{Binding LastMessage.Message, Converter={StaticResource IsNull}}" Value="False"/>
+                                <Condition Binding="{Binding LastMessage.ByteFile, Converter={StaticResource IsNull}}" Value="False"/>
+                                <Condition Binding="{Binding LastMessage.IsFromCurrentUser}" Value="True"/>
+                            </MultiDataTrigger.Conditions>
+
+                            <Setter Property="ContentTemplate">
+                                <Setter.Value>
+                                    <DataTemplate DataType="{x:Type viewModels:ChatMemberViewModel}">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition extensions:FrameworkElementExtension.ActualWidth="0"/>
+                                            </Grid.ColumnDefinitions>
+
+                                            <TextBlock Text="You: Photo "
+                                                       FontWeight="Light"
+                                                       TextWrapping="NoWrap"
+                                                       TextTrimming="WordEllipsis"
+                                                       Foreground="#005BF7"
+                                                       Grid.Column="0"/>
+
+                                            <TextBlock Text="{Binding LastMessage.Message}"
+                                                       FontWeight="Light"
+                                                       TextWrapping="NoWrap"
+                                                       TextTrimming="WordEllipsis"
+                                                       Width="{Binding RelativeSource={RelativeSource AncestorType=Grid, AncestorLevel=1}, Path=(extensions:FrameworkElementExtension.ActualWidth)}"
+                                                       Grid.Column="1"/>
+                                        </Grid>
+                                    </DataTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </MultiDataTrigger>
+
+                        <MultiDataTrigger>
+                            <MultiDataTrigger.Conditions>
+                                <Condition Binding="{Binding LastMessage.Message, Converter={StaticResource IsNull}}" Value="False"/>
+                                <Condition Binding="{Binding LastMessage.ByteFile, Converter={StaticResource IsNull}}" Value="False"/>
+                                <Condition Binding="{Binding LastMessage.IsFromCurrentUser}" Value="False"/>
+                            </MultiDataTrigger.Conditions>
+
+                            <Setter Property="ContentTemplate">
+                                <Setter.Value>
+                                    <DataTemplate DataType="{x:Type viewModels:ChatMemberViewModel}">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition extensions:FrameworkElementExtension.ActualWidth="0"/>
+                                            </Grid.ColumnDefinitions>
+
+                                            <TextBlock Text="Photo "
+                                                       FontWeight="Light"
+                                                       TextWrapping="NoWrap"
+                                                       TextTrimming="WordEllipsis"
+                                                       Foreground="#005BF7"
+                                                       Grid.Column="0"/>
+
+                                            <TextBlock Text="{Binding LastMessage.Message}"
+                                                       FontWeight="Light"
+                                                       TextWrapping="NoWrap"
+                                                       TextTrimming="WordEllipsis"
+                                                       Width="{Binding RelativeSource={RelativeSource AncestorType=Grid, AncestorLevel=1}, Path=(extensions:FrameworkElementExtension.ActualWidth)}"
+                                                       Grid.Column="1"/>
+                                        </Grid>
+                                    </DataTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </MultiDataTrigger>
+
                         <DataTrigger Binding="{Binding Draft.Message, Converter={StaticResource IsNull}}" Value="False">
                             <Setter Property="ContentTemplate">
                                 <Setter.Value>

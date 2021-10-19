@@ -7,18 +7,25 @@
              xmlns:extensions="clr-namespace:Chat.Client.AttachedProperties"
              xmlns:controls="clr-namespace:Chat.Controls;assembly=Chat.Controls"
              xmlns:views="clr-namespace:Chat.Client.View"
+             xmlns:viewDatas="clr-namespace:Chat.Client.ViewDatas"
              mc:Ignorable="d" 
              d:DesignHeight="450" 
              d:DesignWidth="800"
              x:Name="Source">
     <UserControl.Resources>
-        <DoubleAnimation Storyboard.TargetName="Source"
-                         Storyboard.TargetProperty="Opacity"
-                         Duration="0:0:0.2"
-                         From="1"
-                         To="0"
-                         FillBehavior="HoldEnd"
-                         x:Key="FileMessageCancelAnimation"/>
+        <viewDatas:AnimationSource ControlTypeNameScope="{x:Type views:FileMessageCreaterUserControl}"
+                                   x:Key="Animation">
+            <viewDatas:AnimationSource.Animation>
+                <Storyboard>
+                    <DoubleAnimation Storyboard.TargetName="Source"
+                                     Storyboard.TargetProperty="Opacity"
+                                     Duration="0:0:0.2"
+                                     From="1"
+                                     To="0"
+                                     FillBehavior="HoldEnd"/>
+                </Storyboard>
+            </viewDatas:AnimationSource.Animation>
+        </viewDatas:AnimationSource>
     </UserControl.Resources>
     
     <Grid Background="#A0676767"
@@ -41,28 +48,23 @@
                 </Rectangle>
             </Border>
 
-            <TextBox Style="{StaticResource MaterialDesignFloatingHintTextBox}"
-                     materialDesign:TextFieldAssist.DecorationVisibility="Collapsed"
-                     materialDesign:TextFieldAssist.UnderlineBrush="#40A3FF"
-                     materialDesign:HintAssist.Hint="Caption"
-                     materialDesign:HintAssist.Foreground="#40A3FF"
-                     Text="{Binding User.MessageCreater.TextMessage, Mode=TwoWay}"
-                     FontWeight="Light"
-                     FontSize="18"
-                     BorderThickness="0, 0, 0, 1.5"
-                     BorderBrush="#40A3FF"
-                     Margin="20, 10"/>
+            <TextBox Style="{StaticResource TextBoxFileCaption}"
+                     Text="{Binding User.MessageCreater.TextMessage, Mode=TwoWay}"/>
 
             <Grid Margin="20, 0">
-                <controls:StartAnimationButton Style="{StaticResource CornerButtonAddFileMessage}"
-                                               Command="{Binding SendMessage}"
-                                               TimeLineAnimation="{StaticResource FileMessageCancelAnimation}"
-                                               TypeControlNameScope="{x:Type views:FileMessageCreaterUserControl}"/>
+                <Button Style="{StaticResource CornerButtonAddFileMessage}"
+                        Command="{Binding SendMessage}"
+                        extensions:FrameworkElementExtension.AnimationStoryboard="{StaticResource Animation}"
+                        extensions:FrameworkElementExtension.ControlToFindParentToAnimationStoryboard="{Binding ElementName=AddButton}"
+                        extensions:FrameworkElementExtension.DoesAnimationStartToAnimationStoryboard="{Binding User.MessageCreater.DoesHideCreater}"
+                        x:Name="AddButton"/>
 
-                <controls:StartAnimationButton Style="{StaticResource CornerButtonCancelFileMessage}"
-                                               Command="{Binding User.MessageCreater.Canecl}"
-                                               TimeLineAnimation="{StaticResource FileMessageCancelAnimation}"
-                                               TypeControlNameScope="{x:Type views:FileMessageCreaterUserControl}"/>
+                <Button Style="{StaticResource CornerButtonCancelFileMessage}"
+                        Command="{Binding User.MessageCreater.Canecl}"
+                        extensions:FrameworkElementExtension.AnimationStoryboard="{StaticResource Animation}"
+                        extensions:FrameworkElementExtension.ControlToFindParentToAnimationStoryboard="{Binding ElementName=CancelButton}"
+                        extensions:FrameworkElementExtension.DoesAnimationStartToAnimationStoryboard="{Binding User.MessageCreater.DoesHideCreater}"
+                        x:Name="CancelButton"/>
             </Grid>
         </StackPanel>
     </Grid>

@@ -38,11 +38,24 @@
                                      Foreground="{TemplateBinding Foreground}"
                                      TextWrapping="{TemplateBinding TextWrapping}"
                                      FontSize="{TemplateBinding FontSize}"
+                                     Text="{Binding User.SearchingUser, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                      BorderThickness="0"/>
                         </Grid>
                     </Border>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+    </Style>
+
+    <Style x:Key="TextBoxFileCaption" TargetType="{x:Type TextBox}" BasedOn="{StaticResource MaterialDesignFloatingHintTextBox}">
+        <Setter Property="Margin" Value="20, 10"/>
+        <Setter Property="BorderBrush" Value="#40A3FF"/>
+        <Setter Property="BorderThickness" Value="0, 0, 0, 1.5"/>
+        <Setter Property="FontSize" Value="18"/>
+        <Setter Property="FontWeight" Value="Light"/>
+        <Setter Property="materialDesign:HintAssist.Foreground" Value="#40A3FF"/>
+        <Setter Property="materialDesign:HintAssist.Hint" Value="Caption"/>
+        <Setter Property="materialDesign:TextFieldAssist.UnderlineBrush" Value="#40A3FF"/>
+        <Setter Property="materialDesign:TextFieldAssist.DecorationVisibility" Value="Collapsed"/>
     </Style>
 </ResourceDictionary>

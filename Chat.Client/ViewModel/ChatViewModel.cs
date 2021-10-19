@@ -25,6 +25,8 @@ namespace Chat.Client.ViewModel
         private ChatMemberViewModel _currentUser;
         private DispatcherTimer _timer;
         private ObservableCollection<ChatMemberViewModel> _users;
+        private ObservableCollection<ChatMemberViewModel> _usersBackup;
+        private bool _isBackupDoan;
 
         private ICommand _connect;
         private ICommand _sendMessage;
@@ -87,8 +89,7 @@ namespace Chat.Client.ViewModel
         }
 
         public ICommand SendMessage => _sendMessage ??= new RelayCommandAsync(
-            execute: ExecuteSendMessage
-            /*canExecute: CanExecuteSendMessage*/);
+            execute: ExecuteSendMessage);
 
         private async Task ExecuteSendMessage(object parametr) 
         {
@@ -101,8 +102,14 @@ namespace Chat.Client.ViewModel
                 await ExecuteChangeMessage();
             }
 
+            if (User.MessageCreater.FileMessage is not null)
+            {
+                User.MessageCreater.DoesHideCreater = true;
+                User.MessageCreater.DoesHideCreater = false;
+                User.MessageCreater.FileMessage = null;
+            }
+
             User.MessageCreater.TextMessage = string.Empty;
-            User.MessageCreater.FileMessage = null;
         }
 
         private async Task ExecuteSendMessage() 
@@ -142,13 +149,6 @@ namespace Chat.Client.ViewModel
             CurrentUser.EditMessage.Message = User.MessageCreater.TextMessage;
             CurrentUser.EditMessage.IsEditing = false;
         }
-
-        //private bool CanExecuteSendMessage(object parametr) 
-        //{
-        //    return !(string.IsNullOrWhiteSpace(User.MessageCreater.TextMessage) 
-        //            || string.IsNullOrEmpty(User.MessageCreater.TextMessage) 
-        //            || User.MessageCreater.FileMessage is not null);
-        //}
 
         public ICommand BlockUser => _blockUser ??= new RelayCommandAsync(
             execute: ExecuteBlockUser);
@@ -247,6 +247,7 @@ namespace Chat.Client.ViewModel
             _timer.Tick += OnTick;
 
             User.PropertyChanged += SetMessageToCurrentUserFromUser;
+            User.PropertyChanged += SetListOfUsersBySearchingString;
         }
 
         private void ConnectUserEventHandler(string userName, string connectionId) 
@@ -453,6 +454,15 @@ namespace Chat.Client.ViewModel
                     : _mapper.Map<ChatMessageViewModel>(chat.Messages.Last());
 
             user.Messages.SetPropertyChangedEventHandler(OnMessageChanged);
+
+            if (_isBackupDoan)
+            {
+                _usersBackup.Add(user);
+            }
+            else 
+            {
+                Users.Add(user);
+            }
         }
 
         private void SendUsersToCallerServerEventHandler(IEnumerable<UserModel> users) 
@@ -510,7 +520,7 @@ namespace Chat.Client.ViewModel
 
         private void SetMessageToCurrentUserFromUser(object sender, PropertyChangedEventArgs e) 
         {
-            if (CurrentUser is null || e.PropertyName == nameof(UserViewModel.MessageCreater.TextMessage))
+            if (CurrentUser is null || e.PropertyName != nameof(UserViewModel.MessageCreater.TextMessage))
             {
                 return;
             }
@@ -529,6 +539,34 @@ namespace Chat.Client.ViewModel
                 }
 
                 CurrentUser.Draft.Message = user.MessageCreater.TextMessage;
+            }
+        }
+
+        private void SetListOfUsersBySearchingString(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName != nameof(UserViewModel.SearchingUser))
+            {
+                return;
+            }
+
+            UserViewModel user = sender as UserViewModel;
+
+            if (string.IsNullOrEmpty(user.SearchingUser) || string.IsNullOrWhiteSpace(user.SearchingUser))
+            {
+                Users = _usersBackup;
+
+                _isBackupDoan = false;
+            }
+            else 
+            {
+                if (!_isBackupDoan)
+                {
+                    _usersBackup = Users;
+
+                    _isBackupDoan = true;
+                }
+
+                Users = new ObservableCollection<ChatMemberViewModel>(_usersBackup.Where(userModel => userModel.Name.Contains(user.SearchingUser)));
             }
         }
 

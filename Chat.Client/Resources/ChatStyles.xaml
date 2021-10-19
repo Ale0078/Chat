@@ -77,21 +77,6 @@
                                Height="Auto"
                                Text="{Binding Message}"/>
                 </StackPanel>
-                <!--<ContentControl Grid.Row="0"
-                                Content="{Binding}">
-                    <ContentControl.Style>
-                        <Style TargetType="{x:Type ContentControl}">
-                            <Style.Triggers>
-                                <MultiDataTrigger>
-                                    <MultiDataTrigger.Conditions>
-                                        <Condition Binding="{Binding }"
-                                    </MultiDataTrigger.Conditions>
-                                    
-                                </MultiDataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </ContentControl.Style>
-                </ContentControl>-->
 
                 <StackPanel Orientation="Horizontal"
                             Grid.Row="1"

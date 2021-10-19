@@ -13,6 +13,8 @@ namespace Chat.Client.ViewModel
 
         private string _textMessage;
         private byte[] _fileMessage;
+        private bool _doesHideCreater;
+        private bool _doesShowCreater;
 
         private ICommand _setFileMessage;
         private ICommand _cancel;
@@ -44,6 +46,28 @@ namespace Chat.Client.ViewModel
             }
         }
 
+        public bool DoesHideCreater 
+        {
+            get => _doesHideCreater;
+            set 
+            {
+                _doesHideCreater = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        public bool DoesShowCreater 
+        {
+            get => _doesShowCreater;
+            set 
+            {
+                _doesShowCreater = value;
+
+                OnPropertyChanged();
+            }
+        }
+
         public ICommand SetFileMessage => _setFileMessage ??= new RelayCommandAsync(
             execute: ExecuteSetFileMessaage);
 
@@ -58,6 +82,9 @@ namespace Chat.Client.ViewModel
                 return;
             }
 
+            DoesShowCreater = true;
+            DoesShowCreater = false;
+
             FileMessage = await File.ReadAllBytesAsync(source);
         }
 
@@ -68,6 +95,8 @@ namespace Chat.Client.ViewModel
         {
             TextMessage = string.Empty;
             FileMessage = null;
+            DoesHideCreater = true;
+            DoesHideCreater = false;
         }
     }
 }

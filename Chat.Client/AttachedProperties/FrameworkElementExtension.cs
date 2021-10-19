@@ -1,6 +1,8 @@
 ﻿using System.Windows;
 using System.Windows.Input;
 
+using Chat.Client.ViewDatas;
+
 namespace Chat.Client.AttachedProperties
 {
     public static class FrameworkElementExtension
@@ -10,6 +12,9 @@ namespace Chat.Client.AttachedProperties
         public static readonly DependencyProperty ActualWidthProperty;
         public static readonly DependencyProperty DoesOpacityChangeVisibilityProperty;
         public static readonly DependencyProperty IsKeyboardFocusSettedByMouseUpProperty;
+        public static readonly DependencyProperty AnimationStoryboardProperty;
+        public static readonly DependencyProperty ControlToFindParentToAnimationStoryboardProperty;
+        public static readonly DependencyProperty DoesAnimationStartToAnimationStoryboardProperty;
 
         static FrameworkElementExtension()
         {
@@ -41,6 +46,27 @@ namespace Chat.Client.AttachedProperties
                 ownerType: typeof(FrameworkElementExtension),
                 defaultMetadata: new FrameworkPropertyMetadata(
                     propertyChangedCallback: OnIsKeyboardFocusSettedByMouseUpChangedCallback));
+
+            AnimationStoryboardProperty = DependencyProperty.RegisterAttached(
+                name: "AnimationStoryboard",
+                propertyType: typeof(AnimationSource),
+                ownerType: typeof(FrameworkElementExtension),
+                defaultMetadata: new FrameworkPropertyMetadata(
+                    propertyChangedCallback: OnAnimationStoryboardPropertyChanged));
+
+            ControlToFindParentToAnimationStoryboardProperty = DependencyProperty.RegisterAttached(
+                name: "ControlToFindParentToAnimationStoryboard",
+                propertyType: typeof(FrameworkElement),
+                ownerType: typeof(FrameworkElementExtension),
+                defaultMetadata: new FrameworkPropertyMetadata(
+                    propertyChangedCallback: OnControlToFindParentToAnimationStoryboardChanged));
+
+            DoesAnimationStartToAnimationStoryboardProperty = DependencyProperty.RegisterAttached(
+                name: "DoesAnimationStartToAnimationStoryboard",
+                propertyType: typeof(bool),
+                ownerType: typeof(FrameworkElementExtension),
+                defaultMetadata: new FrameworkPropertyMetadata(
+                    propertyChangedCallback: OnDoesAnimationStartToAnimationStoryboardChanged));
         }
 
         private static void OnActualWidthChangedCallback(DependencyObject d, DependencyPropertyChangedEventArgs e) 
@@ -128,6 +154,47 @@ namespace Chat.Client.AttachedProperties
             Keyboard.Focus(sender as IInputElement);
         }
 
+        private static void OnAnimationStoryboardPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) 
+        {
+            FrameworkElement control = d as FrameworkElement;
+
+            if (control is null)
+            {
+                return;
+            }
+
+            if (GetControlToFindParentToAnimationStoryboard(control) is not null)
+            {
+                ((AnimationSource)e.NewValue).ControlToFindParent = GetControlToFindParentToAnimationStoryboard(control);
+            }
+
+            ((AnimationSource)e.NewValue).DoesAnimationStart = GetDoesAnimationStartToAnimationStoryboard(control);
+        }
+
+        private static void OnControlToFindParentToAnimationStoryboardChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) 
+        {
+            FrameworkElement control = d as FrameworkElement;
+
+            if (control is null || GetAnimationStoryboard(control) is null)
+            {
+                return;
+            }
+
+            GetAnimationStoryboard(control).ControlToFindParent = e.NewValue as FrameworkElement;
+        }
+
+        private static void OnDoesAnimationStartToAnimationStoryboardChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) 
+        {
+            FrameworkElement control = d as FrameworkElement;
+
+            if (control is null || GetAnimationStoryboard(control) is null)
+            {
+                return;
+            }
+
+            GetAnimationStoryboard(control).DoesAnimationStart = (bool)e.NewValue;
+        }
+
         private static void OnActualWidthChanged(object sender, RoutedEventArgs e) =>
             SetActualWidth((FrameworkElement)sender, ((FrameworkElement)sender).ActualWidth);
 
@@ -148,5 +215,23 @@ namespace Chat.Client.AttachedProperties
 
         public static void SetIsKeyboardFocusSettedByMouseUp(DependencyObject obj, bool value) =>
             obj.SetValue(IsKeyboardFocusSettedByMouseUpProperty, value);
+
+        public static AnimationSource GetAnimationStoryboard(DependencyObject obj) =>
+            (AnimationSource)obj.GetValue(AnimationStoryboardProperty);
+
+        public static void SetAnimationStoryboard(DependencyObject obj, AnimationSource value) =>
+            obj.SetValue(AnimationStoryboardProperty, value);
+
+        public static FrameworkElement GetControlToFindParentToAnimationStoryboard(DependencyObject obj) =>
+            (FrameworkElement)obj.GetValue(ControlToFindParentToAnimationStoryboardProperty);
+
+        public static void SetControlToFindParentToAnimationStoryboard(DependencyObject obj, FrameworkElement value) =>
+            obj.SetValue(ControlToFindParentToAnimationStoryboardProperty, value);
+
+        public static bool GetDoesAnimationStartToAnimationStoryboard(DependencyObject obj) =>
+            (bool)obj.GetValue(DoesAnimationStartToAnimationStoryboardProperty);
+
+        public static void SetDoesAnimationStartToAnimationStoryboard(DependencyObject obj, bool value) =>
+            obj.SetValue(DoesAnimationStartToAnimationStoryboardProperty, value);
     } 
 }
