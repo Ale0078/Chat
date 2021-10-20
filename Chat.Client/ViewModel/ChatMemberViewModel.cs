@@ -20,6 +20,7 @@ namespace Chat.Client.ViewModel
         private DraftViewModel _draft;
         private ChatMessageViewModel _lastMessage;
         private ChatMessageViewModel _editMessage;
+        private bool _isSelectedToAddToNewGruop;
 
         public ChatMemberViewModel()
         {
@@ -188,6 +189,17 @@ namespace Chat.Client.ViewModel
             set 
             {
                 _editMessage = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        public bool IsSelectedToAddToNewGruop 
+        {
+            get => _isSelectedToAddToNewGruop;
+            set 
+            {
+                _isSelectedToAddToNewGruop = value;
 
                 OnPropertyChanged();
             }

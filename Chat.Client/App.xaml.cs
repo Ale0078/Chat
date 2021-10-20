@@ -37,6 +37,7 @@ namespace Chat.Client
             services.AddSingleton<MainWindow>();
             services.AddSingleton<UserViewModel>();
             services.AddSingleton<MessageCreaterViewModel>();
+            services.AddSingleton<GroupCreaterViewModel>();
 
             services.AddAutoMapper(typeof(ChatMessageProfile), typeof(ChatMemberProfile));
         }

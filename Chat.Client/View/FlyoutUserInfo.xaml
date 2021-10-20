@@ -4,9 +4,27 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:extentions="clr-namespace:Chat.Client.AttachedProperties"
+             xmlns:viewData="clr-namespace:Chat.Client.ViewDatas"
+             xmlns:view="clr-namespace:Chat.Client.View"
              mc:Ignorable="d" 
              d:DesignWidth="250"
              x:Name="SourceToGetScale">
+    <UserControl.Resources>
+        <viewData:AnimationSource x:Key="GroupCreationStartAnimation"
+                                  ControlTypeNameScope="{x:Type view:ChatUserControl}">
+            <viewData:AnimationSource.Animation>
+                <Storyboard>
+                    <DoubleAnimation Storyboard.TargetName="GroupCreater"
+                                     Storyboard.TargetProperty="Opacity"
+                                     Duration="0:0:0.2"
+                                     From="0"
+                                     To="1"/>
+                </Storyboard>
+            </viewData:AnimationSource.Animation>
+        </viewData:AnimationSource>
+    </UserControl.Resources>
+    
     <Grid DataContext="{Binding ElementName=SourceToGetScale, Path=DataContext}">
         <Grid.RowDefinitions>
             <RowDefinition Height="120"/>
@@ -37,6 +55,10 @@
                     Margin="0, 10, 0, 0"
                     Grid.Row="1">
             <Button Style="{StaticResource ButtonUserInfo}"
+                    Command="{Binding StartCreateGroup}"
+                    extentions:FrameworkElementExtension.AnimationStoryboard="{StaticResource GroupCreationStartAnimation}"
+                    extentions:FrameworkElementExtension.ControlToFindParentToAnimationStoryboard="{Binding ElementName=ButtonGroup}"
+                    extentions:FrameworkElementExtension.DoesAnimationStartToAnimationStoryboard="{Binding DoesCreateGroup}"
                     x:Name="ButtonGroup">
                 <Grid Width="{Binding ElementName=ButtonGroup, Path=ActualWidth}"
                       Height="{Binding ElementName=ButtonGroup, Path=ActualHeight}">

@@ -22,20 +22,24 @@ namespace Chat.Client.ViewModel
         private bool _isMuted;
         private bool _isButtonEnabled;
         private string _searchingUser;
+        private bool _doesCreateGroup;
 
         private ICommand _setNewPhoto;
+        private ICommand _startCreateGroup;
 
-        public UserViewModel(ChatService chatService, IDialogService dialog, MessageCreaterViewModel messageCreater)
+        public UserViewModel(ChatService chatService, IDialogService dialog, MessageCreaterViewModel messageCreater, GroupCreaterViewModel groupCreater)
         {
             _chatService = chatService;
             _dialog = dialog;
 
             MessageCreater = messageCreater;
+            GroupCreater = groupCreater;
 
             messageCreater.PropertyChanged += OnTextMessagePropertyChanged;
         }
 
         public MessageCreaterViewModel MessageCreater { get; }
+        public GroupCreaterViewModel GroupCreater { get; }
 
         public string Id 
         {
@@ -115,6 +119,17 @@ namespace Chat.Client.ViewModel
             }
         }
 
+        public bool DoesCreateGroup 
+        {
+            get => _doesCreateGroup;
+            set 
+            {
+                _doesCreateGroup = value;
+
+                OnPropertyChanged();
+            }
+        }
+
         public ICommand SetNewPhoto => _setNewPhoto ?? (_setNewPhoto = new RelayCommandAsync(
             execute: ExecuteSetNewPhoto));
 
@@ -132,6 +147,15 @@ namespace Chat.Client.ViewModel
             Photo = await File.ReadAllBytesAsync(source);
 
             await _chatService.SendUserPhotoToAllUsersExceptChanged(Name, Photo);
+        }
+
+        public ICommand StartCreateGroup => _startCreateGroup ??= new RelayCommand(
+            execute: ExecuteStartCreateGroup);
+
+        private void ExecuteStartCreateGroup(object parametr) 
+        {
+            DoesCreateGroup = true;
+            DoesCreateGroup = false;
         }
 
         private void OnTextMessagePropertyChanged(object sender, PropertyChangedEventArgs e) 

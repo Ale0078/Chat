@@ -1,0 +1,229 @@
+﻿<UserControl x:Class="Chat.Client.View.GroupCreaterUserControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:viewModel="clr-namespace:Chat.Client.ViewModel"
+             xmlns:viewData="clr-namespace:Chat.Client.ViewDatas"
+             xmlns:view="clr-namespace:Chat.Client.View"
+             xmlns:extensions="clr-namespace:Chat.Client.AttachedProperties"
+             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:controls="clr-namespace:Chat.Controls;assembly=Chat.Controls"
+             mc:Ignorable="d" 
+             d:DesignHeight="600" 
+             d:DesignWidth="800"
+             x:Name="Source">
+    <UserControl.Resources>
+        <viewData:AnimationSource x:Key="GroupCreaterAnimation"
+                                  ControlTypeNameScope="{x:Type view:GroupCreaterUserControl}">
+            <viewData:AnimationSource.Animation>
+                <Storyboard>
+                    <DoubleAnimation Storyboard.TargetName="Source"
+                                     Storyboard.TargetProperty="Opacity"
+                                     Duration="0:0:0.3"
+                                     From="1"
+                                     To="0"/>
+                </Storyboard>
+            </viewData:AnimationSource.Animation>
+        </viewData:AnimationSource>
+    </UserControl.Resources>
+    
+    <Grid Background="#A0676767"
+          Opacity="{Binding ElementName=Source, Path=Opacity, Mode=TwoWay}">
+        <Grid Background="White"
+              Width="350"
+              Height="600">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="80"/>
+                <RowDefinition/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            
+            <Grid Margin="20, 20, 20, 5"
+                  Grid.Row="0">
+                <Ellipse Height="100"
+                         Width="100"
+                         HorizontalAlignment="Left"
+                         Style="{StaticResource EllipseStrokePhoto}">
+                    <Ellipse.Fill>
+                        <ImageBrush ImageSource="{Binding User.GroupCreater.GroupPhoto.ByteFile, Converter={StaticResource ConvertBytesToPhoto}}"/>
+                    </Ellipse.Fill>
+                </Ellipse>
+
+                <TextBox HorizontalAlignment="Right"
+                         Style="{StaticResource TextBoxGroupNameCraeter}"/>
+            </Grid>
+
+            <ItemsControl Grid.Row="1"
+                          ItemsSource="{Binding User.GroupCreater.GroupMembers}"
+                          Margin="0, 5">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate DataType="{x:Type viewModel:ChatMemberViewModel}">
+                            <materialDesign:Chip Content="{Binding Name}"
+                                                 Command="{Binding RelativeSource={RelativeSource AncestorType=view:GroupCreaterUserControl, Mode=FindAncestor}, Path=DataContext.User.GroupCreater.AddUserToGroupMembers}"
+                                                 CommandParameter="{Binding}"
+                                                 Height="40"
+                                                 Margin="2">
+                                <materialDesign:Chip.Icon>
+                                    <Image Source="{Binding Photo}"
+                                           Stretch="UniformToFill"/>
+                                </materialDesign:Chip.Icon>
+                            </materialDesign:Chip>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel Orientation="Horizontal"
+                                       Margin="10, 0"/>
+                        </ItemsPanelTemplate>    
+                    </ItemsControl.ItemsPanel>
+                    
+                    <ItemsControl.Template>
+                        <ControlTemplate TargetType="{x:Type ItemsControl}">
+                            <ScrollViewer>
+                                <ItemsPresenter/>
+                            </ScrollViewer>
+                        </ControlTemplate>
+                    </ItemsControl.Template>
+                </ItemsControl>
+
+            <ItemsControl Grid.Row="2"
+                          ItemsSource="{Binding Users}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate DataType="{x:Type viewModel:ChatMemberViewModel}">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+
+                            <Grid.Background>
+                                <SolidColorBrush Color="White"
+                                                     x:Name="UserBackground"/>
+                            </Grid.Background>
+
+                            <i:Interaction.Triggers>
+                                <i:EventTrigger EventName="MouseUp">
+                                    <i:InvokeCommandAction Command="{Binding RelativeSource={RelativeSource AncestorType=view:GroupCreaterUserControl, Mode=FindAncestor}, Path=DataContext.User.GroupCreater.AddUserToGroupMembers}"
+                                                           CommandParameter="{Binding}"/>
+                                </i:EventTrigger>
+                            </i:Interaction.Triggers>
+
+                            <Ellipse Width="50"
+                                     Height="50"
+                                     Margin="15, 0, 5, 5"
+                                     Grid.Column="0">
+                                <Ellipse.Fill>
+                                    <ImageBrush ImageSource="{Binding Photo, Converter={StaticResource ConvertBytesToPhoto}}"
+                                                Stretch="UniformToFill"/>
+                                </Ellipse.Fill>
+                            </Ellipse>
+
+                            <Grid Grid.Column="1"
+                                  Margin="0, 0, 15, 5">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition/>
+                                    <RowDefinition/>
+                                </Grid.RowDefinitions>
+
+                                <TextBlock Text="{Binding Name}"
+                                           FontSize="16"
+                                           VerticalAlignment="Center"
+                                           Grid.Row="0"/>
+
+                                <ContentControl Content="{Binding}"
+                                                VerticalAlignment="Center"
+                                                Grid.Row="1">
+                                    <ContentControl.Style>
+                                        <Style TargetType="{x:Type ContentControl}">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsLogin}" Value="True">
+                                                    <Setter Property="ContentTemplate">
+                                                        <Setter.Value>
+                                                            <DataTemplate>
+                                                                <TextBlock Text="Is Online"
+                                                                           Foreground="#005BF7"
+                                                                           FontSize="16"
+                                                                           FontWeight="Light"/>
+                                                            </DataTemplate>
+                                                        </Setter.Value>
+                                                    </Setter>
+                                                </DataTrigger>
+
+                                                <DataTrigger Binding="{Binding IsLogin}" Value="False">
+                                                    <Setter Property="ContentTemplate">
+                                                        <Setter.Value>
+                                                            <DataTemplate>
+                                                                <controls:TimeBlock TimeToCountdown="{Binding DisconnectTime, UpdateSourceTrigger=PropertyChanged}"
+                                                                                    DoesStartTimer="True"
+                                                                                    FontSize="16"
+                                                                                    Foreground="#747577"
+                                                                                    FontWeight="Light"/>
+                                                            </DataTemplate>
+                                                        </Setter.Value>
+                                                    </Setter>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </ContentControl.Style>
+                                </ContentControl>
+                            </Grid>
+
+                            <Grid.Triggers>
+                                <EventTrigger RoutedEvent="{x:Static Grid.MouseEnterEvent}">
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <ColorAnimation Storyboard.TargetName="UserBackground"
+                                                            Storyboard.TargetProperty="Color"
+                                                            Duration="0:0:0.2"
+                                                            From="White"
+                                                            To="#605CB0FF"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </EventTrigger>
+
+                                <EventTrigger RoutedEvent="{x:Static Grid.MouseLeaveEvent}">
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <ColorAnimation Storyboard.TargetName="UserBackground"
+                                                            Storyboard.TargetProperty="Color"
+                                                            Duration="0:0:0.2"
+                                                            From="#605CB0FF"
+                                                            To="White"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </EventTrigger>
+                            </Grid.Triggers>
+                        </Grid>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+
+                <ItemsControl.Template>
+                    <ControlTemplate TargetType="{x:Type ItemsControl}">
+                        <ScrollViewer>
+                            <ItemsPresenter/>
+                        </ScrollViewer>
+                    </ControlTemplate>
+                </ItemsControl.Template>
+            </ItemsControl>
+
+            <Grid Margin="10, 5"
+                  Grid.Row="3">
+                <Button Style="{StaticResource CornerButtonAddFileMessage}"
+                        extensions:FrameworkElementExtension.AnimationStoryboard="{StaticResource GroupCreaterAnimation}"
+                        extensions:FrameworkElementExtension.ControlToFindParentToAnimationStoryboard="{Binding ElementName=AddButton}"
+                        extensions:FrameworkElementExtension.DoesAnimationStartToAnimationStoryboard="{Binding User.GroupCreater.DoesCloseWindow}"
+                        x:Name="AddButton"/>
+
+                <Button Style="{StaticResource CornerButtonCancelFileMessage}"
+                        Command="{Binding User.GroupCreater.CloseWindow}"
+                        extensions:FrameworkElementExtension.ControlToFindParentToAnimationStoryboard="{Binding ElementName=CancelButton}"
+                        extensions:FrameworkElementExtension.DoesAnimationStartToAnimationStoryboard="{Binding User.GroupCreater.DoesCloseWindow}"
+                        x:Name="CancelButton"/>
+            </Grid>
+        </Grid>
+    </Grid>
+</UserControl>

@@ -175,7 +175,7 @@
                                              Opacity="0"
                                              DataContext="{Binding}"
                                              x:Name="FileMessage"/>
-
+        
         <Grid Grid.Column="0"
               Grid.ColumnSpan="3"
               Grid.Row="0"
@@ -190,5 +190,13 @@
 
             <views:FlyoutUserInfo DataContext="{Binding User}"/>
         </Grid>
+
+        <views:GroupCreaterUserControl Grid.Column="0"
+                                       Grid.Row="0"
+                                       Grid.ColumnSpan="3"
+                                       Grid.RowSpan="2"
+                                       Opacity="0"
+                                       DataContext="{Binding}"
+                                       x:Name="GroupCreater"/>
     </Grid>
 </UserControl>

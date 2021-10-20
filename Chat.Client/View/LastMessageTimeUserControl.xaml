@@ -18,8 +18,8 @@
                                 <Setter.Value>
                                     <DataTemplate DataType="{x:Type viewModels:ChatMemberViewModel}">
                                         <TextBlock Text="{Binding LastMessage.SendingTime, StringFormat={}{0:t}}"
-                                                           FontSize="10"
-                                                           Foreground="#A6A6A6"/>
+                                                   FontSize="10"
+                                                   Foreground="#A6A6A6"/>
                                     </DataTemplate>
                                 </Setter.Value>
                             </Setter>
@@ -30,8 +30,8 @@
                                 <Setter.Value>
                                     <DataTemplate DataType="{x:Type viewModels:ChatMemberViewModel}">
                                         <TextBlock Text="{Binding Draft.StartTypingTime, StringFormat={}{0:t}}"
-                                                           FontSize="10"
-                                                           Foreground="#A6A6A6"/>
+                                                   FontSize="10"
+                                                   Foreground="#A6A6A6"/>
                                     </DataTemplate>
                                 </Setter.Value>
                             </Setter>
