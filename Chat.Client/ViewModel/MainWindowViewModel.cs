@@ -4,6 +4,7 @@ using System.Windows.Input;
 using Chat.Client.Services;
 using Chat.Client.Commands;
 using Chat.Models;
+using Chat.Client.ViewModel.Base;
 
 namespace Chat.Client.ViewModel
 {
@@ -66,7 +67,7 @@ namespace Chat.Client.ViewModel
 
         private void SendTokenEventHandler(string token) 
         {
-            _chatService.Token = token;
+            _chatService.SetToken(token);
         }
 
         private void SendUserStateEventHandler(UserState state) 

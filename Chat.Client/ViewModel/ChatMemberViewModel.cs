@@ -1,15 +1,14 @@
 ﻿using System;
-using System.Collections.ObjectModel;
+
+using Chat.Client.ViewModel.Base;
 
 namespace Chat.Client.ViewModel
 {
-    public class ChatMemberViewModel : ViewModelBase
+    public class ChatMemberViewModel : MemberViewModelBase
     {
         private string _id;
-        private string _name;
         private string _connectionId;
         private Guid _chatId;
-        private byte[] _photo;
         private DateTime _disconnectTime;
         private bool _isAdmin;
         private bool _isLogin;
@@ -17,17 +16,10 @@ namespace Chat.Client.ViewModel
         private bool _isMuted;
         private bool _isClientBlockedByMember;
         private bool _isTyping;
-        private DraftViewModel _draft;
-        private ChatMessageViewModel _lastMessage;
-        private ChatMessageViewModel _editMessage;
         private bool _isSelectedToAddToNewGruop;
 
-        public ChatMemberViewModel()
-        {
-            Draft = new DraftViewModel();
-        }
-
-        public ObservableCollection<ChatMessageViewModel> Messages { get; set; }
+        public ChatMemberViewModel() : base()
+        { }
 
         public string Id 
         {
@@ -35,17 +27,6 @@ namespace Chat.Client.ViewModel
             set 
             {
                 _id = value;
-
-                OnPropertyChanged();
-            }
-        }
-
-        public string Name 
-        {
-            get => _name;
-            set 
-            {
-                _name = value;
 
                 OnPropertyChanged();
             }
@@ -68,17 +49,6 @@ namespace Chat.Client.ViewModel
             set 
             {
                 _chatId = value;
-
-                OnPropertyChanged();
-            }
-        }
-
-        public byte[] Photo 
-        {
-            get => _photo;
-            set 
-            {
-                _photo = value;
 
                 OnPropertyChanged();
             }
@@ -156,39 +126,6 @@ namespace Chat.Client.ViewModel
             set 
             {
                 _isTyping = value;
-
-                OnPropertyChanged();
-            }
-        }
-
-        public DraftViewModel Draft
-        {
-            get => _draft;
-            set
-            {
-                _draft = value;
-
-                OnPropertyChanged();
-            }
-        }
-
-        public ChatMessageViewModel LastMessage 
-        {
-            get => _lastMessage;
-            set 
-            {
-                _lastMessage = value;
-
-                OnPropertyChanged();
-            }
-        }
-
-        public ChatMessageViewModel EditMessage 
-        {
-            get => _editMessage;
-            set 
-            {
-                _editMessage = value;
 
                 OnPropertyChanged();
             }

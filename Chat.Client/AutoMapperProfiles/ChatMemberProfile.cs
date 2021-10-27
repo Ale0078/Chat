@@ -33,6 +33,12 @@ namespace Chat.Client.AutoMapperProfiles
                     destinationMember: user => user.Messages,
                     memberOptions: options => options.MapFrom(
                         mapExpression: chatMember => mapper.Map<ObservableCollection<ChatViewModel>>(chatMember.Messages)));
+
+            CreateMap<GroupUser, GroupUserViewModel>();
+            CreateMap<GroupUserViewModel, GroupUser>();
+
+            CreateMap<GroupUserViewModel, ChatMemberViewModel>();
+            CreateMap<ChatMemberViewModel, GroupUserViewModel>();
         }
 
         private IMapper GetMessageMapper() =>

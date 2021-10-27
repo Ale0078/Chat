@@ -3,12 +3,15 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 
 using Chat.Models;
+using Chat.Interfaces.BaseInterfaces;
 
 namespace Chat.Interfaces
 {
-    public interface IChat//ToDo: change naming
+    public interface IChat : IGroupChat//ToDo: change naming
     {
         Task SendConnectionsIdToCaller(IEnumerable<UserConnection> connectionsId);
+
+        Task SendConnectionIdToCaller(string connectionId);
 
         Task Connect(string userName, string connectionId);
 

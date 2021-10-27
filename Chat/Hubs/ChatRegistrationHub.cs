@@ -19,11 +19,6 @@ namespace Chat.Server.Hubs
             _userService = userService;
         }
 
-        public override Task OnDisconnectedAsync(Exception exception)
-        {
-            return base.OnDisconnectedAsync(exception);
-        }
-
         public async Task<bool> Register(RegisterUserModel model)//ToDo: drag to one hub
         {
             if (!await _userService.AddUserAsync(model))

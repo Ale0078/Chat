@@ -7,11 +7,18 @@ namespace Chat.Entities
     public class User : IdentityUser
     {
         public bool IsBlocked { get; set; }
+
         public bool IsMuted { get; set; }
+
         public byte[] Photo { get; set; }
+
         public DateTime DisconnectTime { get; set; }
+
         public virtual List<Chatter> Chatters { get; set; }
+
         public virtual List<BlockedUser> BlockedUsers { get; set; }
+
+        public virtual List<Group> Groups { get; set; }
 
         public User() : base()
         {

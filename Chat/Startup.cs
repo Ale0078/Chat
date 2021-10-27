@@ -76,7 +76,9 @@ namespace Chat.Server
 
 
             services.AddTransient<IUserService, UserService>();
-            services.AddAutoMapper(typeof(UserProfile), typeof(MessageProfile), typeof(ChatProfile), typeof(BlockedProfile));
+            services.AddTransient<IGroupService, GroupService>();
+
+            services.AddAutoMapper(typeof(UserProfile), typeof(MessageProfile), typeof(ChatProfile), typeof(BlockedProfile), typeof(GroupProfile));
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

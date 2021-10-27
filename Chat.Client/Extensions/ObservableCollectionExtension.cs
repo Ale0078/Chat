@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 
-using Chat.Client.ViewModel;
+using Chat.Client.ViewModel.Base;
 
 namespace Chat.Client.Extensions
 {
@@ -13,7 +13,7 @@ namespace Chat.Client.Extensions
         private static int TimeId { get; set; }
 
         public static ObservableCollection<T> GetSortedCollectionByLastMessage<T>(this ObservableCollection<T> items) 
-            where T : ChatMemberViewModel
+            where T : MemberViewModelBase
         {
             SortedList<DateTimeToSort, T> sortedList = new(items.ToDictionary(
                 keySelector: item => 

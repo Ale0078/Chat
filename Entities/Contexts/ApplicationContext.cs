@@ -10,12 +10,11 @@ namespace Chat.Entities.Contexts
         public DbSet<Chatter> Chatters { get; set; }
         public DbSet<Block> Blocks { get; set; }
         public DbSet<BlockedUser> BlockedUsers { get; set; }
+        public DbSet<Group> Groups { get; set; }
+        public DbSet<GroupMessage> GroupMessages { get; set; }
 
         public ApplicationContext(DbContextOptions<ApplicationContext> options)
-            : base(options)
-        {
-            Database.EnsureCreated();
-        }
+            : base(options) { }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

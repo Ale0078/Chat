@@ -1,5 +1,7 @@
 ﻿using System;
 
+using Chat.Client.ViewModel.Base;
+
 namespace Chat.Client.ViewModel
 {
     public class DraftViewModel : ViewModelBase

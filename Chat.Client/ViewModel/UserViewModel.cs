@@ -7,17 +7,17 @@ using System.Windows.Input;
 using Chat.Client.Services;
 using Chat.Client.Services.Interfaces;
 using Chat.Client.Commands;
+using Chat.Client.ViewModel.Base;
 
 namespace Chat.Client.ViewModel
 {
-    public class UserViewModel : ViewModelBase
+    public class UserViewModel : UserViewModelBase
     {
         private readonly ChatService _chatService;
         private readonly IDialogService _dialog;
 
         private string _id;
-        private string _name;
-        private byte[] _photo;
+        private string _connectionId;
         private bool _isAdmin;
         private bool _isMuted;
         private bool _isButtonEnabled;
@@ -27,7 +27,8 @@ namespace Chat.Client.ViewModel
         private ICommand _setNewPhoto;
         private ICommand _startCreateGroup;
 
-        public UserViewModel(ChatService chatService, IDialogService dialog, MessageCreaterViewModel messageCreater, GroupCreaterViewModel groupCreater)
+        public UserViewModel(ChatService chatService, IDialogService dialog, 
+            MessageCreaterViewModel messageCreater, GroupCreaterViewModel groupCreater)
         {
             _chatService = chatService;
             _dialog = dialog;
@@ -52,23 +53,12 @@ namespace Chat.Client.ViewModel
             }
         }
 
-        public string Name
+        public string ConnectionId 
         {
-            get => _name;
-            set
-            {
-                _name = value;
-
-                OnPropertyChanged();
-            }
-        }
-
-        public byte[] Photo 
-        {
-            get => _photo;
+            get => _connectionId;
             set 
             {
-                _photo = value;
+                _connectionId = value;
 
                 OnPropertyChanged();
             }

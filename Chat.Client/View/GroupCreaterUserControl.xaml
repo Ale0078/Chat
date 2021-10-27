@@ -53,7 +53,8 @@
                 </Ellipse>
 
                 <TextBox HorizontalAlignment="Right"
-                         Style="{StaticResource TextBoxGroupNameCraeter}"/>
+                         Style="{StaticResource TextBoxGroupNameCraeter}"
+                         Text="{Binding User.GroupCreater.GroupName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
             </Grid>
 
             <ItemsControl Grid.Row="1"
@@ -102,7 +103,7 @@
 
                             <Grid.Background>
                                 <SolidColorBrush Color="White"
-                                                     x:Name="UserBackground"/>
+                                                 x:Name="UserBackground"/>
                             </Grid.Background>
 
                             <i:Interaction.Triggers>
@@ -213,6 +214,7 @@
             <Grid Margin="10, 5"
                   Grid.Row="3">
                 <Button Style="{StaticResource CornerButtonAddFileMessage}"
+                        Command="{Binding CreateGroup}"
                         extensions:FrameworkElementExtension.AnimationStoryboard="{StaticResource GroupCreaterAnimation}"
                         extensions:FrameworkElementExtension.ControlToFindParentToAnimationStoryboard="{Binding ElementName=AddButton}"
                         extensions:FrameworkElementExtension.DoesAnimationStartToAnimationStoryboard="{Binding User.GroupCreater.DoesCloseWindow}"

@@ -12,6 +12,7 @@ using Chat.Client.Services;
 using Chat.Client.Commands;
 using Chat.Models;
 using Chat.Client.Extensions;
+using Chat.Client.ViewModel.Base;
 
 namespace Chat.Client.ViewModel
 {
@@ -19,13 +20,14 @@ namespace Chat.Client.ViewModel
     {
         private readonly IMapper _mapper;
         private readonly ChatService _chatService;
+        private readonly ChatGroupService _chatGroupService;
         private readonly RegistrationChatService _registrationChatService;
         private readonly List<ChatMemberViewModel> _blockedUsers;
 
-        private ChatMemberViewModel _currentUser;
+        private MemberViewModelBase _currentUser;
         private DispatcherTimer _timer;
-        private ObservableCollection<ChatMemberViewModel> _users;
-        private ObservableCollection<ChatMemberViewModel> _usersBackup;
+        private ObservableCollection<MemberViewModelBase> _users;
+        private ObservableCollection<MemberViewModelBase> _usersBackup;
         private bool _isBackupDoan;
 
         private ICommand _connect;
@@ -36,16 +38,18 @@ namespace Chat.Client.ViewModel
         private ICommand _setMessageToUser;
         private ICommand _typing;
         private ICommand _stopTyping;
+        private ICommand _createGroup;
 
-        public ChatViewModel(ChatService chatService, RegistrationChatService registrationChatService, UserViewModel user,
-            IMapper mapper)
+        public ChatViewModel(ChatService chatService, ChatGroupService chatGroupService,
+            RegistrationChatService registrationChatService, UserViewModel user, IMapper mapper)
         {
             _mapper = mapper;
             _chatService = chatService;
+            _chatGroupService = chatGroupService;
             _registrationChatService = registrationChatService;
             User = user;
 
-            Users = new ObservableCollection<ChatMemberViewModel>();
+            Users = new ObservableCollection<MemberViewModelBase>();
             _blockedUsers = new List<ChatMemberViewModel>();
 
             _timer = new DispatcherTimer()
@@ -58,7 +62,7 @@ namespace Chat.Client.ViewModel
 
         public UserViewModel User { get; }
 
-        public ObservableCollection<ChatMemberViewModel> Users 
+        public ObservableCollection<MemberViewModelBase> Users 
         {
             get => _users;
             set 
@@ -69,7 +73,7 @@ namespace Chat.Client.ViewModel
             } 
         }
         
-        public ChatMemberViewModel CurrentUser 
+        public MemberViewModelBase CurrentUser 
         {
             get => _currentUser;
             set 
@@ -79,6 +83,8 @@ namespace Chat.Client.ViewModel
                 OnPropertyChanged();
             }
         }
+
+        #region Commands
 
         public ICommand Connect => _connect ??= new RelayCommandAsync(
             execute: ExecuteConnectEvent);
@@ -114,13 +120,16 @@ namespace Chat.Client.ViewModel
 
         private async Task ExecuteSendMessage() 
         {
+            ChatMemberViewModel user = Users.First(user => user.Name == CurrentUser.Name) as ChatMemberViewModel;
+            ChatMemberViewModel currentUser = CurrentUser as ChatMemberViewModel;
+
             ChatMessageModel sendingMessage = await _chatService.ReciveMessageUserAsync(
-                connectionId: Users.First(user => user.Name == CurrentUser.Name).ConnectionId,
+                connectionId: user.ConnectionId,
                 chatMessage: new ChatMessageModel 
                 {
-                    ChatId = CurrentUser.ChatId,
+                    ChatId = currentUser.ChatId,
                     FromUserId = User.Id,
-                    ToUserId = CurrentUser.Id,
+                    ToUserId = currentUser.Id,
                     Message = User.MessageCreater.TextMessage,
                     ByteFile = User.MessageCreater.FileMessage,
                     SendingTime = DateTime.Now
@@ -139,8 +148,10 @@ namespace Chat.Client.ViewModel
 
         private async Task ExecuteChangeMessage() 
         {
+            ChatMemberViewModel currentUser = CurrentUser as ChatMemberViewModel;
+
             await _chatService.SetMessageToChatMessageAsync(
-                connectionId: CurrentUser.ConnectionId,
+                connectionId: currentUser.ConnectionId,
                 userId: User.Id,
                 messageId: CurrentUser.EditMessage.Id,
                 message: User.MessageCreater.TextMessage);
@@ -155,9 +166,11 @@ namespace Chat.Client.ViewModel
 
         public async Task ExecuteBlockUser(object isBlocked) 
         {
+            ChatMemberViewModel currentUser = CurrentUser as ChatMemberViewModel;
+
             await _chatService.SetBlockStateToUserAsync(
-                userId: CurrentUser.Id,
-                connectionId: CurrentUser.ConnectionId,
+                userId: currentUser.Id,
+                connectionId: currentUser.ConnectionId,
                 isBlocked: (bool)isBlocked);
         }
 
@@ -166,9 +179,11 @@ namespace Chat.Client.ViewModel
 
         private async Task ExecuteMuteUser(object isMuted) 
         {
+            ChatMemberViewModel currentUser = CurrentUser as ChatMemberViewModel;
+
             await _chatService.SetMuteStateToUserAsync(
-                userId: CurrentUser.Id,
-                connectionId: CurrentUser.ConnectionId,
+                userId: currentUser.Id,
+                connectionId: currentUser.ConnectionId,
                 isMuted: (bool)isMuted);
         }
 
@@ -177,18 +192,25 @@ namespace Chat.Client.ViewModel
 
         private async Task ExecuteSetBlackListState(object doesBlock) 
         {
+            ChatMemberViewModel currentUser = CurrentUser as ChatMemberViewModel;
+
             await _chatService.SendBlackListStateAsync(
                 userId: User.Id,
-                connectionId: CurrentUser.ConnectionId,
-                blockedUserId: CurrentUser.Id,
+                connectionId: currentUser.ConnectionId,
+                blockedUserId: currentUser.Id,
                 doesBlock: (bool)doesBlock);
         }
 
         public ICommand SetMessageToUser => _setMessageToUser ??= new RelayCommand(
             execute: ExecuteSetMessageToUser);
 
-        private void ExecuteSetMessageToUser(object parametr) 
+        private void ExecuteSetMessageToUser(object parametr)
         {
+            if (CurrentUser is null)
+            {
+                return;
+            }
+
             User.MessageCreater.TextMessage = CurrentUser.Draft.Message;
         }
 
@@ -197,16 +219,18 @@ namespace Chat.Client.ViewModel
 
         private async Task ExecuteTyping(object parametr) 
         {
+            ChatMemberViewModel currentUser = CurrentUser as ChatMemberViewModel;
+
             await _chatService.SendUserTypingStatusToUserAsync(
                 isTyping: true,
-                connectionId: CurrentUser.ConnectionId,
+                connectionId: currentUser.ConnectionId,
                 typingUserId: User.Id);
             
             if (string.IsNullOrEmpty(User.MessageCreater.TextMessage))
             {
                 await _chatService.SendUserTypingStatusToUserAsync(
                     isTyping: false,
-                    connectionId: CurrentUser.ConnectionId,
+                    connectionId: currentUser.ConnectionId,
                     typingUserId: User.Id);
             }
             else
@@ -225,6 +249,27 @@ namespace Chat.Client.ViewModel
             return Task.CompletedTask;
         }
 
+        public ICommand CreateGroup => _createGroup ??= new RelayCommandAsync(
+            execute: ExecuteCreateGroup);
+
+        private async Task ExecuteCreateGroup(object parametr) 
+        {
+            User.GroupCreater.SetOwnerGroup(new GroupUserViewModel
+            {
+                Id = User.Id,
+                Name = User.Name,
+                Photo = User.Photo,
+                ConnectionId = User.ConnectionId
+            });
+
+            Users.Add(await User.GroupCreater.CreateGroup());
+
+            User.GroupCreater.DoesCloseWindow = true;
+            User.GroupCreater.DoesCloseWindow = false;
+        }
+
+        #endregion 
+
         private void SetEvents()
         {
             _chatService.ConnectUser += ConnectUserEventHandler;
@@ -238,24 +283,32 @@ namespace Chat.Client.ViewModel
             _chatService.SendTypingStatusToUserServerHandler += SendTypingStatusToUserServerEventHandler;
             _chatService.SetNewPhotoToUserServerHandler += SetNewPhotoToUserServerEventHandler;
             _chatService.ChangeMessageToUserServerHandler += ChangeMessageToUserServerEventHandler;
+            _chatService.SendConnectionIdToCallerServerHandler += OnSendConnectionIdToCallerServerEventHandler;
 
             _registrationChatService.RegisterUserToOthersServerHandler += RegisterUserToOthersServerEventHandler;
             _registrationChatService.SendUsersToCallerServerHandler += SendUsersToCallerServerEventHandler;
             _registrationChatService.SendUserToCallerServerHandler += SendUserToCallerServerEventHandler;
             _registrationChatService.SendBlockersToCallerServerHandler += SendBlockersToCallerServerEventHandler;
 
+            _chatGroupService.SendGorupToGroupMembersAsyncServerHandler += OnSendGorupToGroupMembersAsyncServerEventHandler;
+            _chatGroupService.SendMessageToGroupMembersAsyncServerHandler += OnSendMessageToGroupMembersAsyncServerEventHandler;
+            _chatGroupService.SendNewGroupMemberToGroupMembersAsyncServerHandler += OnSendNewGroupMemberToGroupMembersAsyncServerEventHandler;
+            _chatGroupService.RemoveGroupMembertToGroupMembersAsyncServerHandler += OnRemoveGroupMembertToGroupMembersAsyncServerEventHandler;
+
             _timer.Tick += OnTick;
 
-            User.PropertyChanged += SetMessageToCurrentUserFromUser;
+            User.MessageCreater.PropertyChanged += SetMessageToCurrentUserFromUser;
             User.PropertyChanged += SetListOfUsersBySearchingString;
         }
+
+        #region ChatService EventHandlers
 
         private void ConnectUserEventHandler(string userName, string connectionId) 
         {
             ChatMemberViewModel connectedUser = Users.FirstOrDefault(user =>
             {
                 return user.Name == userName;
-            });
+            }) as ChatMemberViewModel;
 
             connectedUser.IsLogin = true;
             connectedUser.ConnectionId = connectionId;
@@ -266,7 +319,7 @@ namespace Chat.Client.ViewModel
             ChatMemberViewModel logoutedUser = Users.FirstOrDefault(user =>
             {
                 return user.Name == userName;
-            });
+            }) as ChatMemberViewModel;
 
             if (logoutedUser is null)
             {
@@ -286,8 +339,10 @@ namespace Chat.Client.ViewModel
         {
             ChatMemberViewModel userSender = Users.First(user =>
             {
-                return user.ChatId.Equals(message.ChatId);
-            });
+                ChatMemberViewModel member = user as ChatMemberViewModel;
+
+                return member.ChatId.Equals(message.ChatId);
+            }) as ChatMemberViewModel;
 
             userSender.Messages.AddViewModel(
                 item: _mapper.Map<ChatMessageViewModel>(message),
@@ -305,7 +360,7 @@ namespace Chat.Client.ViewModel
                 ChatMemberViewModel user = Users.FirstOrDefault(model =>
                 {
                     return model.Name == connection.UserName;
-                });
+                }) as ChatMemberViewModel;
 
                 if (user is null)
                 {
@@ -324,8 +379,10 @@ namespace Chat.Client.ViewModel
         {
             ChatMemberViewModel chatMember = Users.FirstOrDefault(user =>
             {
-                return user.Id == userId;
-            });
+                ChatMemberViewModel member = user as ChatMemberViewModel;
+
+                return member.Id == userId;
+            }) as ChatMemberViewModel;
 
             if (chatMember is null)
             {
@@ -372,8 +429,10 @@ namespace Chat.Client.ViewModel
         {
             ChatMemberViewModel member = Users.First(user =>
             {
-                return user.Id == userId;
-            });
+                ChatMemberViewModel member = user as ChatMemberViewModel;
+
+                return member.Id == userId;
+            }) as ChatMemberViewModel;
 
             if (member is null)
             {
@@ -390,8 +449,10 @@ namespace Chat.Client.ViewModel
         {
             ChatMemberViewModel member = Users.First(user =>
             {
-                return user.Id == block.UserId;
-            });
+                ChatMemberViewModel member = user as ChatMemberViewModel;
+
+                return member.Id == block.UserId;
+            }) as ChatMemberViewModel;
 
             member.IsClientBlockedByMember = block.DoesBlocked;
             member.Draft.Message = null;
@@ -406,8 +467,10 @@ namespace Chat.Client.ViewModel
         {
             ChatMemberViewModel user = Users.First(userModel =>
             {
-                return userModel.Id == typingUserId;
-            });
+                ChatMemberViewModel member = userModel as ChatMemberViewModel;
+
+                return member.Id == typingUserId;
+            }) as ChatMemberViewModel;
 
             user.IsTyping = isTyping;
         }
@@ -417,7 +480,7 @@ namespace Chat.Client.ViewModel
             ChatMemberViewModel user = Users.First(userModel =>
             {
                 return userModel.Name == userName;
-            });
+            }) as ChatMemberViewModel;
 
             user.Photo = photo;
         }
@@ -426,17 +489,28 @@ namespace Chat.Client.ViewModel
         {
             ChatMemberViewModel user = Users.First(userModel =>
             {
-                return userModel.Id == userId;
-            });
+                ChatMemberViewModel member = userModel as ChatMemberViewModel;
+
+                return member.Id == userId;
+            }) as ChatMemberViewModel;
 
             ChatMessageViewModel chatMessage = user.Messages.First(messageModel =>
             {
                 return messageModel.Id == messageId;
-            });
+            }) as ChatMessageViewModel;
 
             chatMessage.Message = message;
             chatMessage.IsEdit = true;
         }
+
+        private void OnSendConnectionIdToCallerServerEventHandler(string connectionId) 
+        {
+            User.ConnectionId = connectionId;
+        }
+
+        #endregion
+
+        #region RegistrationChatService EventHandlers
 
         private void RegisterUserToOthersServerEventHandler(FullUserModel newUser)
         {
@@ -448,7 +522,7 @@ namespace Chat.Client.ViewModel
             ChatMemberViewModel user = _mapper.Map<ChatMemberViewModel>(newUser);
 
             user.ChatId = chat.Id;
-            user.Messages = _mapper.Map<ObservableCollection<ChatMessageViewModel>>(chat.Messages);
+            user.Messages = _mapper.Map<ObservableCollection<MessageViewModelBase>>(chat.Messages);
             user.LastMessage = chat.Messages.Count == 0
                     ? new ChatMessageViewModel()
                     : _mapper.Map<ChatMessageViewModel>(chat.Messages.Last());
@@ -493,6 +567,17 @@ namespace Chat.Client.ViewModel
             User.IsAdmin = user.IsAdmin;
             User.IsMuted = user.IsMuted;
             User.Photo = user.Photo;
+
+            foreach (GroupModel group in user.Groups)
+            {
+                GroupViewModel groupViewModel = _mapper.Map<GroupViewModel>(group);
+
+                groupViewModel.LastMessage = groupViewModel.Messages is null || groupViewModel.Messages.Count == 0
+                    ? new GroupMessageViewModel()
+                    : groupViewModel.Messages.Last();
+
+                Users.Add(groupViewModel);
+            }
         }
 
         private void SendBlockersToCallerServerEventHandler(IEnumerable<BlockModel> blocks) 
@@ -501,22 +586,64 @@ namespace Chat.Client.ViewModel
             {
                 ChatMemberViewModel member = Users.FirstOrDefault(user =>
                 {
-                    return user.Id == block.UserId;
-                });
+                    ChatMemberViewModel member = user as ChatMemberViewModel;
+
+                    return member.Id == block.UserId;
+                }) as ChatMemberViewModel;
 
                 member.IsClientBlockedByMember = block.DoesBlocked;
             }
         }
 
+        #endregion
+
+        #region ChatGroupService EventHandlers
+
+        private void OnSendGorupToGroupMembersAsyncServerEventHandler(GroupModel group) 
+        {
+            Users.Add(_mapper.Map<GroupViewModel>(group));
+        }
+
+        private void OnSendMessageToGroupMembersAsyncServerEventHandler(GroupMessageModel messageModel) 
+        {
+            GroupViewModel group = GetGroupViewModelById(messageModel.GroupId);
+
+            GroupMessageViewModel message = _mapper.Map<GroupMessageViewModel>(messageModel);
+
+            message.IsFromCurrentUser = User.Id == messageModel.SenderId;
+
+            group.Messages.Add(message);
+        }
+
+        private void OnSendNewGroupMemberToGroupMembersAsyncServerEventHandler(GroupUser user, string groupName) 
+        {
+            GroupViewModel group = GetGroupViewModelByName(groupName);
+
+            group.Users.Add(_mapper.Map<GroupUserViewModel>(user));
+        }
+
+        private void OnRemoveGroupMembertToGroupMembersAsyncServerEventHandler(GroupUser user, string groupName) 
+        {
+            GroupViewModel group = GetGroupViewModelByName(groupName);
+
+            group.Users.Remove(group.Users.First(userInGroup => userInGroup.Id == user.Id));
+        }
+
+        #endregion
+
         private async void OnTick(object sender, EventArgs e) 
         {
+            ChatMemberViewModel currentUser = CurrentUser as ChatMemberViewModel;
+
             await _chatService.SendUserTypingStatusToUserAsync(
                 isTyping: false,
-                connectionId: CurrentUser.ConnectionId,
+                connectionId: currentUser.ConnectionId,
                 typingUserId: User.Id);
 
             _timer.Stop();
         }
+
+        #region OnPropertyChanged Handlers
 
         private void SetMessageToCurrentUserFromUser(object sender, PropertyChangedEventArgs e) 
         {
@@ -525,9 +652,9 @@ namespace Chat.Client.ViewModel
                 return;
             }
 
-            UserViewModel user = sender as UserViewModel;
+            MessageCreaterViewModel messageCreater = sender as MessageCreaterViewModel;
 
-            if (string.IsNullOrEmpty(user.MessageCreater.TextMessage))
+            if (string.IsNullOrEmpty(messageCreater.TextMessage))
             {
                 CurrentUser.Draft.Message = null;
             }
@@ -538,7 +665,7 @@ namespace Chat.Client.ViewModel
                     CurrentUser.Draft.StartTypingTime = DateTime.Now;
                 }
 
-                CurrentUser.Draft.Message = user.MessageCreater.TextMessage;
+                CurrentUser.Draft.Message = messageCreater.TextMessage;
             }
         }
 
@@ -566,7 +693,7 @@ namespace Chat.Client.ViewModel
                     _isBackupDoan = true;
                 }
 
-                Users = new ObservableCollection<ChatMemberViewModel>(_usersBackup.Where(userModel => userModel.Name.Contains(user.SearchingUser)));
+                Users = new ObservableCollection<MemberViewModelBase>(_usersBackup.Where(userModel => userModel.Name.Contains(user.SearchingUser)));
             }
         }
 
@@ -590,5 +717,33 @@ namespace Chat.Client.ViewModel
                 CurrentUser.EditMessage = null;
             }
         }
+
+        #endregion
+
+        private GroupViewModel GetGroupViewModelByName(string groupName) =>
+            Users.FirstOrDefault(member =>
+            {
+                GroupViewModel group = member as GroupViewModel;
+
+                if (group is null)
+                {
+                    return false;
+                }
+
+                return group.Name == groupName;
+            }) as GroupViewModel;
+
+        private GroupViewModel GetGroupViewModelById(Guid id) =>
+            Users.FirstOrDefault(member =>
+            {
+                GroupViewModel group = member as GroupViewModel;
+
+                if (group is null)
+                {
+                    return false;
+                }
+
+                return group.Id == id;
+            }) as GroupViewModel;
     }
 }

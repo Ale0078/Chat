@@ -4,6 +4,7 @@ using System.Windows.Input;
 
 using Chat.Client.Services.Interfaces;
 using Chat.Client.Commands;
+using Chat.Client.ViewModel.Base;
 
 namespace Chat.Client.ViewModel
 {

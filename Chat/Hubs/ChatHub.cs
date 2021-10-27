@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.SignalR;
@@ -19,15 +20,17 @@ namespace Chat.Server.Hubs
         private static List<UserConnection> _connections;
 
         private readonly IUserService _userService;
+        private readonly IGroupService _groupService;
 
         static ChatHub()
         {
             _connections = new List<UserConnection>();
         }
 
-        public ChatHub(IUserService userService)
+        public ChatHub(IUserService userService, IGroupService groupService)
         {
             _userService = userService;
+            _groupService = groupService;
         }
 
         public override async Task OnConnectedAsync()
@@ -38,7 +41,10 @@ namespace Chat.Server.Hubs
                 userName: Context.User.Identity.Name,
                 connectionId: Context.ConnectionId);
 
+            await AddOrRemoveUserFromGroup(async groupName => await Groups.AddToGroupAsync(Context.ConnectionId, groupName));
+
             await Clients.Caller.SendConnectionsIdToCaller(_connections);
+            await Clients.Caller.SendConnectionIdToCaller(Context.ConnectionId);
 
             _connections.Add(new UserConnection
             {
@@ -58,6 +64,8 @@ namespace Chat.Server.Hubs
             {
                 return connection.UserName == Context.User.Identity.Name;
             }));
+
+            await AddOrRemoveUserFromGroup(async groupName => await Groups.RemoveFromGroupAsync(Context.ConnectionId, groupName));
 
             await base.OnDisconnectedAsync(exception);
         }
@@ -139,7 +147,7 @@ namespace Chat.Server.Hubs
             if (IsValidConnectionId(connectionId))
             {
                 await Clients.Client(connectionId).ChangeMuteStateUserToUser(isMuted);
-
+                
                 await Clients.AllExcept(connectionId).ChangeMuteStateUserToAllUsersExceptMuted(userId, isMuted);
             }
             else 
@@ -150,7 +158,79 @@ namespace Chat.Server.Hubs
             return await _userService.SetBlockOrMuteStateAsync(userId, isMuted, false);
         }
 
+        public async Task AddToGroup(GroupUser user, string groupName)//ToDo: send group to new user
+        {
+            if (await _groupService.AddGroupUserToGroup(user, groupName))
+            {
+                await Clients.OthersInGroup(groupName).SendNewGroupMemberToGroupMembersAsync(user, groupName);
+            }
+
+            if (IsValidConnectionId(user.ConnectionId))
+            {
+                await Groups.AddToGroupAsync(user.ConnectionId, groupName);
+            }
+        }
+
+        public async Task RemoveFromGroup(GroupUser user, string groupName)//ToDo: remove group from removed user
+        {
+            if (await _groupService.RemoveGroupUserFromGroup(user, groupName))
+            {
+                await Clients.OthersInGroup(groupName).RemoveGroupMembertToGroupMembersAsync(user, groupName);
+            }
+
+            if (IsValidConnectionId(user.ConnectionId))
+            {
+                await Groups.RemoveFromGroupAsync(user.ConnectionId, groupName);
+            }
+        }
+
+        public async Task<GroupModel> CreateGroup(string groupName, byte[] groupPhoto, List<GroupUser> users)
+        {
+            GroupModel group = await _groupService.CreateGroupAsync(
+                groupName: groupName,
+                groupPhoto: groupPhoto,
+                users: users);
+
+            foreach (GroupUser user in users)
+            {
+                if (string.IsNullOrEmpty(user.ConnectionId))
+                {
+                    continue;
+                }
+
+                await Groups.AddToGroupAsync(user.ConnectionId, groupName);
+            }
+
+            await Clients.OthersInGroup(groupName).SendGroupToGroupMembersAsync(group);
+
+            await Groups.AddToGroupAsync(Context.ConnectionId, groupName);
+
+            return group;
+        }
+
+        public async Task<GroupMessageModel> SendGroupMessage(string groupName, GroupMessageModel message)
+        {
+            GroupMessageModel groupMessage = await _groupService.CreateGroupMessageAsync(message);
+
+            await Clients.OthersInGroup(groupName).SendMessageToGroupMembersAsync(groupMessage);
+
+            return groupMessage;
+        }
+
         private bool IsValidConnectionId(string connectionId) =>
             connectionId is not null && !connectionId.IsConnectionIdEmpty();
+
+        private async Task AddOrRemoveUserFromGroup(Func<string, Task> addOrRemoveUserFunc)
+        {
+            List<string> groupNames = await _groupService.GetListOfGroupNamesByUserNameAsync(Context.User.Identity.Name);
+
+            if (groupNames.Any())
+            {
+                foreach (string groupName in groupNames)
+                {
+                    await addOrRemoveUserFunc(groupName);
+                }
+            }
+        }
     }
 }

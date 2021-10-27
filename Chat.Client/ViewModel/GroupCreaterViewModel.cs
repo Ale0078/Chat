@@ -1,14 +1,23 @@
 ﻿using System.IO;
+using System.Linq;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Threading.Tasks;
 using System.Windows.Input;
+using AutoMapper;
 
 using Chat.Client.Commands;
 using Chat.Client.Datas;
+using Chat.Client.ViewModel.Base;
+using Chat.Client.Services;
+using Chat.Models;
 
 namespace Chat.Client.ViewModel
 {
     public class GroupCreaterViewModel : ViewModelBase
     {
+        private readonly IMapper _mapper;
+        private readonly ChatGroupService _groupService;
         private readonly ReferenceByteFile _defaulPhoto;
 
         private string _groupName;
@@ -18,8 +27,11 @@ namespace Chat.Client.ViewModel
         private ICommand _closeWidow;
         private ICommand _addUserToGroupMembers;
 
-        public GroupCreaterViewModel()
+        public GroupCreaterViewModel(IMapper mapper, ChatGroupService groupService)
         {
+            _mapper = mapper;
+            _groupService = groupService;
+
             _defaulPhoto = new ReferenceByteFile
             {
                 ByteFile = File.ReadAllBytes("../../../Images/GroupIconImage.png")
@@ -27,10 +39,10 @@ namespace Chat.Client.ViewModel
 
             GroupPhoto = _defaulPhoto;
 
-            GroupMembers = new ObservableCollection<ChatMemberViewModel>();
+            GroupMembers = new ObservableCollection<GroupUserViewModel>();
         }
 
-        public ObservableCollection<ChatMemberViewModel> GroupMembers { get; set; }
+        public ObservableCollection<GroupUserViewModel> GroupMembers { get; set; }
 
         public string GroupName 
         {
@@ -85,18 +97,31 @@ namespace Chat.Client.ViewModel
         {
             ChatMemberViewModel user = chatMember as ChatMemberViewModel;
 
-            if (user.IsSelectedToAddToNewGruop)
+            if (user is null)
             {
-                user.IsSelectedToAddToNewGruop = false;
+                //user.IsSelectedToAddToNewGruop = false;
 
-                GroupMembers.Remove(user);
+                GroupMembers.Remove(chatMember as GroupUserViewModel);
             }
             else 
             {
-                user.IsSelectedToAddToNewGruop = true;
+                //user.IsSelectedToAddToNewGruop = true;
 
-                GroupMembers.Add(user);
+                GroupMembers.Add(_mapper.Map<GroupUserViewModel>(user));
             }
+        }
+
+        public void SetOwnerGroup(GroupUserViewModel owner) 
+        {
+            GroupMembers.Add(owner);
+        }
+
+        public async Task<GroupViewModel> CreateGroup()
+        {
+            return _mapper.Map<GroupViewModel>(await _groupService.CreateNewGroupAsync(
+                groupName: GroupName,
+                groupPhoto: GroupPhoto.ByteFile,
+                users: _mapper.Map<List<GroupUser>>(GroupMembers.ToList())));
         }
     }
 }

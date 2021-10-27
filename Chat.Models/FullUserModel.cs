@@ -14,11 +14,13 @@ namespace Chat.Models
         public DateTime DisconnectTime { get; set; }
         public List<ChatModel> Chats { get; set; }
         public List<BlockModel> BlockModels { get; set; }
+        public List<GroupModel> Groups { get; set; }
 
         public FullUserModel()
         {
             Chats = new List<ChatModel>();
             BlockModels = new List<BlockModel>();
+            Groups = new List<GroupModel>();
         }
     }
 }

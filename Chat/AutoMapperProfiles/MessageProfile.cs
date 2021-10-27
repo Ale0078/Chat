@@ -36,6 +36,9 @@ namespace Chat.Server.AutoMapperProfiles
                     destinationMember: messageModel => messageModel.SendingTime,
                     memberOptions: options => options.MapFrom(
                         mapExpression: message => message.Time));
+
+            CreateMap<GroupMessageModel, GroupMessage>();
+            CreateMap<GroupMessage, GroupMessageModel>();
         }
     }
 }

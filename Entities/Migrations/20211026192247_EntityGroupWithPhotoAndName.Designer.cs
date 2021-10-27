@@ -4,14 +4,16 @@ using Chat.Entities.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Chat.Entities.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    partial class ApplicationContextModelSnapshot : ModelSnapshot
+    [Migration("20211026192247_EntityGroupWithPhotoAndName")]
+    partial class EntityGroupWithPhotoAndName
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -174,9 +176,6 @@ namespace Chat.Entities.Migrations
 
                     b.Property<string>("SenderId")
                         .HasColumnType("nvarchar(450)");
-
-                    b.Property<DateTime>("SendingTime")
-                        .HasColumnType("datetime2");
 
                     b.Property<string>("TextMessage")
                         .HasColumnType("nvarchar(max)");

@@ -28,7 +28,9 @@ namespace Chat.Client
         {
             services.AddSingleton<ChatService>();
             services.AddSingleton<RegistrationChatService>();
+            services.AddSingleton<ChatGroupService>();
             services.AddSingleton<IDialogService, DialogService>();
+            services.AddSingleton<IChutConnection, ChutConnection>();
 
             services.AddSingleton<MainWindowViewModel>();
             services.AddSingleton<LoginViewModel>();
@@ -39,7 +41,7 @@ namespace Chat.Client
             services.AddSingleton<MessageCreaterViewModel>();
             services.AddSingleton<GroupCreaterViewModel>();
 
-            services.AddAutoMapper(typeof(ChatMessageProfile), typeof(ChatMemberProfile));
+            services.AddAutoMapper(typeof(ChatMessageProfile), typeof(ChatMemberProfile), typeof(ChatGroupProfile));
         }
 
         private void OnStartup(object sernder, StartupEventArgs e) 
