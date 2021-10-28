@@ -13,15 +13,6 @@
              Focusable="False"
              BorderThickness="0, 1, 0, 0"
              BorderBrush="LightGray">
-    <UserControl.Resources>
-        <DoubleAnimation Storyboard.TargetName="FileMessage"
-                         Storyboard.TargetProperty="Opacity"
-                         Duration="0:0:0.2"
-                         From="0"
-                         To="1"
-                         x:Key="FileMessageAnimation"/>
-    </UserControl.Resources>
-    
     <i:Interaction.Triggers>
         <i:EventTrigger>
             <i:InvokeCommandAction Command="{Binding Connect}"/>
@@ -84,8 +75,8 @@
                  Grid.Row="1"
                  ItemsSource="{Binding Users, UpdateSourceTrigger=PropertyChanged}"
                  SelectedItem="{Binding CurrentUser, Mode=TwoWay}"
-                 ItemTemplate="{StaticResource UsersTemplate}"
-                 ItemContainerStyle="{StaticResource ListBoxItemTemplate}"
+                 ItemTemplateSelector="{StaticResource UsersTemplateSeloctor}"
+                 ItemContainerStyle="{StaticResource ListBoxItemTemplateSelector}"
                  ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                  ScrollViewer.VerticalScrollBarVisibility="Auto"
                  Focusable="False"
@@ -127,8 +118,7 @@
                             <Setter Property="ContentTemplate">
                                 <Setter.Value>
                                     <DataTemplate>
-                                        <views:MessagesUserControl TypeControlNameScopeToFileMessage="{x:Type views:ChatUserControl}"
-                                                                   TimeLineAnimationToFileMessage="{StaticResource FileMessageAnimation}"/>
+                                        <views:MessagesUserControl/>
                                     </DataTemplate>
                                 </Setter.Value>
                             </Setter>

@@ -15,6 +15,7 @@ namespace Chat.Client.ViewModel.Base
         }
 
         public ObservableCollection<MessageViewModelBase> Messages { get; set; }
+        public bool IsGroup { get; set; }
 
         public DraftViewModel Draft
         {

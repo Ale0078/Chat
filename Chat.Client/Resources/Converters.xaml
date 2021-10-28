@@ -5,4 +5,5 @@
     <converters:NullToBoolean x:Key="IsNull"/>
     <converters:ColorToSolidColorBrush x:Key="ColotToBrush"/>
     <converters:BoolToVisibilityCollapsed x:Key="ConverterBoolToVisibilityCollapsed"/>
+    <converters:ArrayNullOrEmtyToBoolean x:Key="IsArrayNullOrEmpty"/>
 </ResourceDictionary>

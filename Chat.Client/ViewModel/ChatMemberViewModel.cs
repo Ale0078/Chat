@@ -16,10 +16,11 @@ namespace Chat.Client.ViewModel
         private bool _isMuted;
         private bool _isClientBlockedByMember;
         private bool _isTyping;
-        private bool _isSelectedToAddToNewGruop;
 
         public ChatMemberViewModel() : base()
-        { }
+        {
+            IsGroup = false;
+        }
 
         public string Id 
         {
@@ -126,17 +127,6 @@ namespace Chat.Client.ViewModel
             set 
             {
                 _isTyping = value;
-
-                OnPropertyChanged();
-            }
-        }
-
-        public bool IsSelectedToAddToNewGruop 
-        {
-            get => _isSelectedToAddToNewGruop;
-            set 
-            {
-                _isSelectedToAddToNewGruop = value;
 
                 OnPropertyChanged();
             }

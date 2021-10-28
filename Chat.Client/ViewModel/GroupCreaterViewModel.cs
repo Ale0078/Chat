@@ -99,14 +99,10 @@ namespace Chat.Client.ViewModel
 
             if (user is null)
             {
-                //user.IsSelectedToAddToNewGruop = false;
-
                 GroupMembers.Remove(chatMember as GroupUserViewModel);
             }
             else 
             {
-                //user.IsSelectedToAddToNewGruop = true;
-
                 GroupMembers.Add(_mapper.Map<GroupUserViewModel>(user));
             }
         }

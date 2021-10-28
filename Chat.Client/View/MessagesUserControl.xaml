@@ -56,57 +56,8 @@
                                FontSize="20"
                                FontWeight="Medium"/>
 
-                    <ContentControl Content="{Binding CurrentUser}">
-                        <ContentControl.Style>
-                            <Style TargetType="{x:Type ContentControl}">
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding CurrentUser.IsLogin}" Value="True">
-                                        <Setter Property="ContentTemplate">
-                                            <Setter.Value>
-                                                <DataTemplate>
-                                                    <TextBlock Text="Is Online"
-                                                               Foreground="#005BF7"
-                                                               FontSize="12"
-                                                               FontWeight="Light"/>
-                                                </DataTemplate>
-                                            </Setter.Value>
-                                        </Setter>
-                                    </DataTrigger>
-
-                                    <DataTrigger Binding="{Binding CurrentUser.IsLogin}" Value="False">
-                                        <Setter Property="ContentTemplate">
-                                            <Setter.Value>
-                                                <DataTemplate>
-                                                    <time:TimeBlock TimeToCountdown="{Binding DisconnectTime, UpdateSourceTrigger=PropertyChanged}"
-                                                                    DoesStartTimer="True"
-                                                                    FontSize="12"
-                                                                    Foreground="#747577"
-                                                                    FontWeight="Light"/>
-                                                </DataTemplate>
-                                            </Setter.Value>
-                                        </Setter>
-                                    </DataTrigger>
-
-                                    <DataTrigger Binding="{Binding CurrentUser.IsTyping}" Value="True">
-                                        <Setter Property="ContentTemplate">
-                                            <Setter.Value>
-                                                <DataTemplate>
-                                                    <StackPanel Orientation="Horizontal">
-                                                        <TextBlock Text="Is typing"
-                                                                   FontSize="12"
-                                                                   Foreground="#005BF7"
-                                                                   FontWeight="Light"/>
-
-                                                        <views:AnimatedType Padding="0, 4, 0, 0"/>
-                                                    </StackPanel>
-                                                </DataTemplate>
-                                            </Setter.Value>
-                                        </Setter>
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </ContentControl.Style>
-                    </ContentControl>
+                    <ContentControl Content="{Binding CurrentUser}"
+                                    ContentTemplateSelector="{StaticResource UserOnlineStatusAndGroupMembersAmountSelector}"/>
                 </StackPanel>
 
                 <Menu HorizontalAlignment="Right"
@@ -196,6 +147,7 @@
                 extensions:FrameworkElementExtension.ControlToFindParentToAnimationStoryboard="{Binding ElementName=FileMessageButton}"
                 extensions:FrameworkElementExtension.DoesAnimationStartToAnimationStoryboard="{Binding User.MessageCreater.DoesShowCreater}"/>
 
+        <!-- Заглушка, нужно будет изменить !!! -->
         <TextBox Grid.Row="3"
                  Grid.Column="1"
                  Text="{Binding User.MessageCreater.TextMessage, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
@@ -211,6 +163,7 @@
                 </i:EventTrigger>
             </i:Interaction.Triggers>
         </TextBox>
+        <!-- Конец заглушки -->
 
         <Button Grid.Row="3"
                 Grid.Column="2"

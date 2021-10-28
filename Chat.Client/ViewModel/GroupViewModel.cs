@@ -11,6 +11,8 @@ namespace Chat.Client.ViewModel
 
         public GroupViewModel() : base()
         {
+            IsGroup = true;
+
             Users = new ObservableCollection<GroupUserViewModel>();
         }
 

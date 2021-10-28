@@ -10,7 +10,9 @@
              Height="Auto"
              Width="Auto">
     <Grid>
-        <ContentControl Content="{Binding}">
+        <ContentControl Content="{Binding}"
+                        ContentTemplateSelector="{StaticResource LastMessageUserGroupSelector}"/>
+        <!--<ContentControl Content="{Binding}">
             <ContentControl.Style>
                 <Style TargetType="{x:Type ContentControl}">
                     <Style.Triggers>
@@ -78,7 +80,7 @@
                         <MultiDataTrigger>
                             <MultiDataTrigger.Conditions>
                                 <Condition Binding="{Binding LastMessage.Message, Converter={StaticResource IsNull}}" Value="False"/>
-                                <Condition Binding="{Binding LastMessage.ByteFile, Converter={StaticResource IsNull}}" Value="False"/>
+                                <Condition Binding="{Binding LastMessage.ByteFile, Converter={StaticResource IsArrayNullOrEmpty}}" Value="False"/>
                                 <Condition Binding="{Binding LastMessage.IsFromCurrentUser}" Value="True"/>
                             </MultiDataTrigger.Conditions>
 
@@ -113,7 +115,7 @@
                         <MultiDataTrigger>
                             <MultiDataTrigger.Conditions>
                                 <Condition Binding="{Binding LastMessage.Message, Converter={StaticResource IsNull}}" Value="False"/>
-                                <Condition Binding="{Binding LastMessage.ByteFile, Converter={StaticResource IsNull}}" Value="False"/>
+                                <Condition Binding="{Binding LastMessage.ByteFile, Converter={StaticResource IsArrayNullOrEmpty}}" Value="False"/>
                                 <Condition Binding="{Binding LastMessage.IsFromCurrentUser}" Value="False"/>
                             </MultiDataTrigger.Conditions>
 
@@ -207,6 +209,6 @@
                     </Style.Triggers>
                 </Style>
             </ContentControl.Style>
-        </ContentControl>
+        </ContentControl>-->
     </Grid>
 </UserControl>

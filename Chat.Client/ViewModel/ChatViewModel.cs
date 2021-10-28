@@ -101,7 +101,14 @@ namespace Chat.Client.ViewModel
         {
             if (CurrentUser.EditMessage is null)
             {
-                await ExecuteSendMessage();
+                if (CurrentUser is GroupViewModel)
+                {
+                    await ExecuteSendGroupMessage();
+                }
+                else
+                {
+                    await ExecuteSendMessage();
+                }
             }
             else 
             {
@@ -142,6 +149,37 @@ namespace Chat.Client.ViewModel
                 handler: OnMessageChanged);
 
             CurrentUser.LastMessage = _mapper.Map<ChatMessageViewModel>(sendingMessage);
+
+            Users = Users.GetSortedCollectionByLastMessage();
+        }
+
+        private async Task ExecuteSendGroupMessage() 
+        {
+            GroupViewModel group = CurrentUser as GroupViewModel;
+
+            GroupMessageModel messageModel = await _chatGroupService.SendGroupMessageAsync(
+                groupName: CurrentUser.Name,
+                message: new GroupMessageModel
+                {
+                    GroupId = group.Id,
+                    SenderId = User.Id,
+                    FileMessage = User.MessageCreater.FileMessage,
+                    TextMessage = User.MessageCreater.TextMessage,
+                    SendingTime = DateTime.Now,
+                    IsEdit = false
+                });
+
+            GroupMessageViewModel sendingMessage = _mapper.Map<GroupMessageViewModel>(messageModel);
+
+            sendingMessage.IsFromCurrentUser = true;
+
+            CurrentUser.Messages.AddViewModel(
+                item: sendingMessage,
+                handler: OnMessageChanged);
+
+            CurrentUser.LastMessage = sendingMessage;
+
+            ((GroupMessageViewModel)CurrentUser.LastMessage).LastMessageSender = GetLastMessageSenderToGroup(group);
 
             Users = Users.GetSortedCollectionByLastMessage();
         }
@@ -221,6 +259,11 @@ namespace Chat.Client.ViewModel
         {
             ChatMemberViewModel currentUser = CurrentUser as ChatMemberViewModel;
 
+            if (currentUser is null) // ToDo: Remove IT!!!
+            {
+                return;
+            }
+
             await _chatService.SendUserTypingStatusToUserAsync(
                 isTyping: true,
                 connectionId: currentUser.ConnectionId,
@@ -244,6 +287,11 @@ namespace Chat.Client.ViewModel
 
         private Task ExecuteStopTyping(object parametr) 
         {
+            if (CurrentUser is GroupViewModel)//ToDo: Remove IT!!!!
+            {
+                return Task.CompletedTask;
+            }
+
             _timer.Start();
 
             return Task.CompletedTask;
@@ -570,11 +618,35 @@ namespace Chat.Client.ViewModel
 
             foreach (GroupModel group in user.Groups)
             {
-                GroupViewModel groupViewModel = _mapper.Map<GroupViewModel>(group);
+                GroupViewModel groupViewModel = new GroupViewModel
+                {
+                    Id = group.Id,
+                    Name = group.Name,
+                    Photo = group.Photo,
+                    Users = _mapper.Map<ObservableCollection<GroupUserViewModel>>(group.Users)
+                };
 
-                groupViewModel.LastMessage = groupViewModel.Messages is null || groupViewModel.Messages.Count == 0
-                    ? new GroupMessageViewModel()
-                    : groupViewModel.Messages.Last();
+                foreach (GroupMessageModel message in group.GroupMessages)
+                {
+                    GroupMessageViewModel groupMessage = _mapper.Map<GroupMessageViewModel>(message);
+
+                    groupMessage.IsFromCurrentUser = message.SenderId == User.Id;
+
+                    groupViewModel.Messages.AddViewModel(
+                        item: groupMessage,
+                        handler: OnMessageChanged);
+                }
+
+                if (groupViewModel.Messages is null || groupViewModel.Messages.Count == 0)
+                {
+                    groupViewModel.LastMessage = new GroupMessageViewModel();
+                }
+                else 
+                {
+                    groupViewModel.LastMessage = groupViewModel.Messages.Last();
+
+                    ((GroupMessageViewModel)groupViewModel.LastMessage).LastMessageSender = GetLastMessageSenderToGroup(groupViewModel);
+                }
 
                 Users.Add(groupViewModel);
             }
@@ -613,6 +685,12 @@ namespace Chat.Client.ViewModel
             message.IsFromCurrentUser = User.Id == messageModel.SenderId;
 
             group.Messages.Add(message);
+
+            group.LastMessage = message;
+
+            ((GroupMessageViewModel)group.LastMessage).LastMessageSender = GetLastMessageSenderToGroup(group);
+
+            Users = Users.GetSortedCollectionByLastMessage();
         }
 
         private void OnSendNewGroupMemberToGroupMembersAsyncServerEventHandler(GroupUser user, string groupName) 
@@ -699,12 +777,12 @@ namespace Chat.Client.ViewModel
 
         private void OnMessageChanged(object sender, PropertyChangedEventArgs e) 
         {
-            if (CurrentUser is null || e.PropertyName != nameof(ChatMessageViewModel.IsEditing))
+            if (CurrentUser is null || e.PropertyName != nameof(MessageViewModelBase.IsEditing))
             {
                 return;
             }
 
-            ChatMessageViewModel message = sender as ChatMessageViewModel;
+            MessageViewModelBase message = sender as MessageViewModelBase;
 
             if (message.IsEditing)
             {
@@ -745,5 +823,18 @@ namespace Chat.Client.ViewModel
 
                 return group.Id == id;
             }) as GroupViewModel;
+
+        private GroupUserViewModel GetLastMessageSenderToGroup(GroupViewModel group) 
+        {
+            foreach (GroupUserViewModel groupUser in group.Users)
+            {
+                if (groupUser.Id == group.LastMessage.FromUserId)
+                {
+                    return groupUser;
+                }
+            }
+
+            return null;
+        }
     }
 }

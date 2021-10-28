@@ -7,13 +7,11 @@ namespace Chat.Client.TemplateSelectors
 {
     public class ListOfUsersSelector : DataTemplateSelector
     {
-        public DataTemplate DefaultUserTemplate { get; set; }
-        public DataTemplate BlockedUserTemplate { get; set; }
+        public DataTemplate UserTemplate { get; set; }
+        public DataTemplate GroupTemplate { get; set; }
 
-        public override DataTemplate SelectTemplate(object item, DependencyObject container) => (ChatMemberViewModel)item switch
-        {
-            { IsBlocked: true } => DefaultUserTemplate,
-            _ => DefaultUserTemplate
-        };
+        public override DataTemplate SelectTemplate(object item, DependencyObject container) => item is ChatMemberViewModel
+            ? UserTemplate
+            : GroupTemplate;
     }
 }

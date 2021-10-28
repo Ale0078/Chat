@@ -41,7 +41,7 @@ namespace Chat.Client
             services.AddSingleton<MessageCreaterViewModel>();
             services.AddSingleton<GroupCreaterViewModel>();
 
-            services.AddAutoMapper(typeof(ChatMessageProfile), typeof(ChatMemberProfile), typeof(ChatGroupProfile));
+            services.AddAutoMapper(typeof(ChatGroupProfile), typeof(ChatMessageProfile), typeof(ChatMemberProfile));
         }
 
         private void OnStartup(object sernder, StartupEventArgs e) 

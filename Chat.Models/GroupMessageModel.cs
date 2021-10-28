@@ -7,7 +7,7 @@ namespace Chat.Models
         public Guid Id { get; set; }
         public string TextMessage { get; set; }
         public byte[] FileMessage { get; set; }
-        public bool IsEdite { get; set; }
+        public bool IsEdit { get; set; }
         public string SenderId { get; set; }
         public Guid GroupId { get; set; }
         public DateTime SendingTime { get; set; }

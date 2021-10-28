@@ -1,0 +1,84 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:viewModel="clr-namespace:Chat.Client.ViewModel">
+    <ControlTemplate x:Key="ListBoxItemUserTemplate"
+                     TargetType="{x:Type ListBoxItem}">
+        <Border Background="{TemplateBinding Background}"
+                ToolTipService.Placement="MousePoint"
+                Focusable="False">
+
+            <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalAlignment}"
+                              VerticalAlignment="{TemplateBinding VerticalAlignment}"
+                              SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+
+            <Border.Style>
+                <Style TargetType="{x:Type Border}">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsLogin}" Value="True">
+                            <Setter Property="ToolTip" Value="Is Login"/>
+                        </DataTrigger>
+
+                        <DataTrigger Binding="{Binding IsLogin}" Value="False">
+                            <Setter Property="ToolTip" Value="Is Disconnected"/>
+                        </DataTrigger>
+
+                        <DataTrigger Binding="{Binding IsClientBlockedByMember}" Value="True">
+                            <Setter Property="ToolTip" Value="Is Added To Black List"/>
+                        </DataTrigger>
+
+                        <DataTrigger Binding="{Binding IsMuted}" Value="True">
+                            <Setter Property="ToolTip" Value="Is Muted"/>
+                        </DataTrigger>
+
+                        <DataTrigger Binding="{Binding IsBlocked}" Value="True">
+                            <Setter Property="ToolTip" Value="Is Blocked"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Border.Style>
+        </Border>
+
+        <ControlTemplate.Triggers>
+            <Trigger Property="IsSelected" Value="True">
+                <Setter Property="Background" Value="#7099DA00"/>
+            </Trigger>
+
+            <Trigger Property="IsSelected" Value="False">
+                <Setter Property="Background" Value="White"/>
+            </Trigger>
+        </ControlTemplate.Triggers>
+    </ControlTemplate>
+
+    <ControlTemplate x:Key="ListBoxItemGroupTemplate"
+                     TargetType="{x:Type ListBoxItem}">
+        <Border Background="{TemplateBinding Background}"
+                ToolTipService.Placement="MousePoint"
+                Focusable="False">
+            <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalAlignment}"
+                              VerticalAlignment="{TemplateBinding VerticalAlignment}"
+                              SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+        </Border>
+
+        <ControlTemplate.Triggers>
+            <Trigger Property="IsSelected" Value="True">
+                <Setter Property="Background" Value="#7099DA00"/>
+            </Trigger>
+
+            <Trigger Property="IsSelected" Value="False">
+                <Setter Property="Background" Value="White"/>
+            </Trigger>
+        </ControlTemplate.Triggers>
+    </ControlTemplate>
+
+    <Style x:Key="ListBoxItemTemplateSelector" TargetType="{x:Type ListBoxItem}">
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding IsGroup}" Value="{StaticResource False}">
+                <Setter Property="Template" Value="{StaticResource ListBoxItemUserTemplate}"/>
+            </DataTrigger>
+
+            <DataTrigger Binding="{Binding IsGroup}" Value="{StaticResource True}">
+                <Setter Property="Template" Value="{StaticResource ListBoxItemGroupTemplate}"/>
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
+</ResourceDictionary>
