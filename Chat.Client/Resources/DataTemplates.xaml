@@ -1,5 +1,6 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
                     xmlns:views="clr-namespace:Chat.Client.View"
                     xmlns:viewModels="clr-namespace:Chat.Client.ViewModel"
                     xmlns:selectors="clr-namespace:Chat.Client.TemplateSelectors"
@@ -402,10 +403,6 @@
                                               HorizontalAlignment="Right"
                                               Margin="0, 0, 5, 0"/>
 
-            <!--<views:LastMessageUserControl DataContext="{Binding}"
-                                          Grid.Column="1"
-                                          Grid.Row="1"
-                                          HorizontalAlignment="Left"/>-->
             <ContentControl Content="{Binding}"
                             ContentTemplateSelector="{StaticResource LastMessageUserGroupSelector}"
                             Grid.Column="1"
@@ -457,10 +454,6 @@
                                               HorizontalAlignment="Right"
                                               Margin="0, 0, 5, 0"/>
 
-            <!--<views:LastMessageUserControl DataContext="{Binding}"
-                                          Grid.Column="1"
-                                          Grid.Row="1"
-                                          HorizontalAlignment="Left"/>-->
             <ContentControl Content="{Binding}"
                             ContentTemplateSelector="{StaticResource LastMessageUserGroupSelector}"
                             Grid.Column="1"
@@ -529,4 +522,383 @@
     <selectors:ListOfUsersSelector x:Key="UserOnlineStatusAndGroupMembersAmountSelector"
                                    UserTemplate="{StaticResource UserOnlineStatusTempale}"
                                    GroupTemplate="{StaticResource GroupMembersAmoutTemplate}"/>
+
+    <DataTemplate x:Key="UserToAddToGroupTemplate" DataType="{x:Type viewModels:ChatMemberViewModel}">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+
+            <Grid.Background>
+                <SolidColorBrush Color="White"
+                                 x:Name="UserBackground"/>
+            </Grid.Background>
+
+            <i:Interaction.Triggers>
+                <i:EventTrigger EventName="MouseUp">
+                    <i:InvokeCommandAction Command="{Binding RelativeSource={RelativeSource AncestorType=views:GroupCreaterUserControl, Mode=FindAncestor}, Path=DataContext.User.GroupCreater.AddUserToGroupMembers}"
+                                           CommandParameter="{Binding}"/>
+                </i:EventTrigger>
+            </i:Interaction.Triggers>
+
+            <Ellipse Width="50"
+                     Height="50"
+                     Margin="15, 0, 5, 5"
+                     Grid.Column="0">
+                <Ellipse.Fill>
+                    <ImageBrush ImageSource="{Binding Photo, Converter={StaticResource ConvertBytesToPhoto}}"
+                                                Stretch="UniformToFill"/>
+                </Ellipse.Fill>
+            </Ellipse>
+
+            <Grid Grid.Column="1"
+                  Margin="0, 0, 15, 5">
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+
+                <TextBlock Text="{Binding Name}"
+                           FontSize="16"
+                           VerticalAlignment="Center"
+                           Grid.Row="0"/>
+
+                <ContentControl Content="{Binding}"
+                                VerticalAlignment="Center"
+                                Grid.Row="1">
+                    <ContentControl.Style>
+                        <Style TargetType="{x:Type ContentControl}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsLogin}" Value="True">
+                                    <Setter Property="ContentTemplate">
+                                        <Setter.Value>
+                                            <DataTemplate>
+                                                <TextBlock Text="Is Online"
+                                                           Style="{StaticResource TextBlockUserIsOnline}"/>
+                                            </DataTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </DataTrigger>
+
+                                <DataTrigger Binding="{Binding IsLogin}" Value="False">
+                                    <Setter Property="ContentTemplate">
+                                        <Setter.Value>
+                                            <DataTemplate>
+                                                <controls:TimeBlock TimeToCountdown="{Binding DisconnectTime, UpdateSourceTrigger=PropertyChanged}"
+                                                                    DoesStartTimer="True"
+                                                                    Style="{StaticResource TextBlockUserIsDisconnected}"/>
+                                            </DataTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </ContentControl.Style>
+                </ContentControl>
+            </Grid>
+
+            <Grid.Triggers>
+                <EventTrigger RoutedEvent="{x:Static Grid.MouseEnterEvent}">
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <ColorAnimation Storyboard.TargetName="UserBackground"
+                                            Storyboard.TargetProperty="Color"
+                                            Duration="0:0:0.2"
+                                            From="White"
+                                            To="#605CB0FF"/>
+                        </Storyboard>
+                    </BeginStoryboard>
+                </EventTrigger>
+
+                <EventTrigger RoutedEvent="{x:Static Grid.MouseLeaveEvent}">
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <ColorAnimation Storyboard.TargetName="UserBackground"
+                                            Storyboard.TargetProperty="Color"
+                                            Duration="0:0:0.2"
+                                            From="#605CB0FF"
+                                            To="White"/>
+                        </Storyboard>
+                    </BeginStoryboard>
+                </EventTrigger>
+            </Grid.Triggers>
+        </Grid>
+    </DataTemplate>
+
+    <DataTemplate x:Key="GroupToAddToGroupTemplate"/>
+
+    <selectors:ListOfUsersSelector x:Key="GroupAddingMembersTemplate"
+                                   UserTemplate="{StaticResource UserToAddToGroupTemplate}"
+                                   GroupTemplate="{StaticResource GroupToAddToGroupTemplate}"/>
+
+    <DataTemplate x:Key="MessagesTemplate" DataType="{x:Type viewModels:ChatMessageViewModel}">
+        <Border Style="{StaticResource BorderUserMessageTemplate}"
+                Focusable="False"
+                x:Name="ChatSource">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="6*"/>
+                    <RowDefinition Height="1*"/>
+                </Grid.RowDefinitions>
+
+                <Grid.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="Edit"
+                                  Command="{Binding EditMessage}"
+                                  CommandParameter="{StaticResource True}"
+                                  Visibility="{Binding IsFromCurrentUser, Converter={StaticResource ConverterBoolToVisibilityCollapsed}}"/>
+                    </ContextMenu>
+                </Grid.ContextMenu>
+
+                <StackPanel Orientation="Vertical"
+                            Grid.Row="0">
+                    <Image Source="{Binding ByteFile, Converter={StaticResource ConvertBytesToPhoto}}"
+                           Stretch="Uniform"
+                           MaxHeight="200"
+                           MaxWidth="300"/>
+
+                    <TextBlock Grid.Row="0"
+                               TextWrapping="Wrap"
+                               FontWeight="Light"
+                               FontSize="16"
+                               Height="Auto"
+                               Text="{Binding Message}"/>
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal"
+                            Grid.Row="1"
+                            Width="Auto">
+                    <TextBlock Text="edited "
+                               Style="{StaticResource TextBlockSendingtimeMessageWhite}"
+                               Visibility="{Binding IsEdit, Converter={StaticResource ConverterBoolToVisibilityCollapsed}}"/>
+
+                    <TextBlock Text="{Binding SendingTime, StringFormat={}{0:t}}"
+                               Style="{StaticResource TextBlockSendingtimeMessageWhite}"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+    </DataTemplate>
+
+    <DataTemplate x:Key="DefaultGroupMessageTemplate" DataType="{x:Type viewModels:GroupMessageViewModel}">
+        <Border Style="{StaticResource BorderGroupMessageTemplate}"
+                Focusable="False"
+                x:Name="ChatSource">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="6*"/>
+                    <RowDefinition Height="1*"/>
+                </Grid.RowDefinitions>
+
+                <Grid.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="Edit"
+                                  Command="{Binding EditMessage}"
+                                  CommandParameter="{StaticResource True}"
+                                  Visibility="{Binding IsFromCurrentUser, Converter={StaticResource ConverterBoolToVisibilityCollapsed}}"/>
+                    </ContextMenu>
+                </Grid.ContextMenu>
+
+                <StackPanel Orientation="Vertical"
+                            Grid.Row="0">
+                    <Image Source="{Binding ByteFile, Converter={StaticResource ConvertBytesToPhoto}}"
+                           Stretch="Uniform"
+                           MaxHeight="200"
+                           MaxWidth="300"/>
+
+                    <TextBlock Grid.Row="0"
+                               TextWrapping="Wrap"
+                               FontWeight="Light"
+                               FontSize="16"
+                               Height="Auto"
+                               Text="{Binding Message}"/>
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal"
+                            Grid.Row="1"
+                            Width="Auto">
+                    <TextBlock Text="edited "
+                               Style="{StaticResource TextBlockSendingtimeMessageGroupMessage}"
+                               Visibility="{Binding IsEdit, Converter={StaticResource ConverterBoolToVisibilityCollapsed}}"/>
+
+                    <TextBlock Text="{Binding SendingTime, StringFormat={}{0:t}}"
+                               Style="{StaticResource TextBlockSendingtimeMessageGroupMessage}"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+    </DataTemplate>
+
+    <DataTemplate x:Key="CurrentClientLasGroupMessageTemplate" DataType="{x:Type viewModels:GroupMessageViewModel}">
+        <Grid Style="{StaticResource GridCurrentUserGroupMessage}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <Border Style="{StaticResource BorderLastGroupMessageTemplate}"
+                    Grid.Column="0"
+                    Focusable="False"
+                    x:Name="ChatSource">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="6*"/>
+                        <RowDefinition Height="1*"/>
+                    </Grid.RowDefinitions>
+
+                    <Grid.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Header="Edit"
+                                      Command="{Binding EditMessage}"
+                                      CommandParameter="{StaticResource True}"
+                                      Visibility="{Binding IsFromCurrentUser, Converter={StaticResource ConverterBoolToVisibilityCollapsed}}"/>
+                        </ContextMenu>
+                    </Grid.ContextMenu>
+
+                    <StackPanel Orientation="Vertical"
+                                Grid.Row="0">
+                        <Image Source="{Binding ByteFile, Converter={StaticResource ConvertBytesToPhoto}}"
+                               Stretch="Uniform"
+                               MaxHeight="200"
+                               MaxWidth="300"/>
+
+                        <TextBlock Grid.Row="0"
+                                   TextWrapping="Wrap"
+                                   FontWeight="Light"
+                                   FontSize="16"
+                                   Height="Auto"
+                                   Text="{Binding Message}"/>
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal"
+                                Grid.Row="1"
+                                Width="Auto">
+                        <TextBlock Text="edited "
+                                   Style="{StaticResource TextBlockSendingtimeMessageWhite}"
+                                   Visibility="{Binding IsEdit, Converter={StaticResource ConverterBoolToVisibilityCollapsed}}"/>
+
+                        <TextBlock Text="{Binding SendingTime, StringFormat={}{0:t}}"
+                                   Style="{StaticResource TextBlockSendingtimeMessageWhite}"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <Path Grid.Column="1"
+                  Style="{StaticResource PathCornerTriangleToGroupMessageFromCurrentUser}"
+                  Data="M -1,10 V 0 C -1,0 1,9 10,10 H 0"/>
+
+            <Ellipse Style="{StaticResource EllipseUserPhotoToGroupMessage}"
+                     Grid.Column="2">
+                <Ellipse.Fill>
+                    <ImageBrush ImageSource="{Binding LastMessageSender.Photo, Converter={StaticResource ConvertBytesToPhoto}}"
+                                Stretch="UniformToFill"/>
+                </Ellipse.Fill>
+            </Ellipse>
+        </Grid>
+    </DataTemplate>
+
+    <DataTemplate x:Key="OtherLasGroupMessageTemplate" DataType="{x:Type viewModels:GroupMessageViewModel}">
+        <Grid Style="{StaticResource GridOtherUsersGroupMessage}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <Ellipse Style="{StaticResource EllipseUserPhotoToGroupMessage}"
+                     Grid.Column="0">
+                <Ellipse.Fill>
+                    <ImageBrush ImageSource="{Binding LastMessageSender.Photo, Converter={StaticResource ConvertBytesToPhoto}}"
+                                Stretch="UniformToFill"/>
+                </Ellipse.Fill>
+            </Ellipse>
+
+            <Path Grid.Column="1"
+                  Style="{StaticResource PathCornerTriangleToGroupMessageFromOthers}"
+                  Data="M 0,10 H 10 V 0 C 10,0 9,9 0,10"/>
+
+            <Border Style="{StaticResource BorderLastGroupMessageTemplate}"
+                    Grid.Column="2"
+                    Focusable="False"
+                    x:Name="ChatSource">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="6*"/>
+                        <RowDefinition Height="1*"/>
+                    </Grid.RowDefinitions>
+
+                    <Grid.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Header="Edit"
+                                      Command="{Binding EditMessage}"
+                                      CommandParameter="{StaticResource True}"
+                                      Visibility="{Binding IsFromCurrentUser, Converter={StaticResource ConverterBoolToVisibilityCollapsed}}"/>
+                        </ContextMenu>
+                    </Grid.ContextMenu>
+
+                    <StackPanel Orientation="Vertical"
+                                Grid.Row="0">
+                        <Image Source="{Binding ByteFile, Converter={StaticResource ConvertBytesToPhoto}}"
+                               Stretch="Uniform"
+                               MaxHeight="200"
+                               MaxWidth="300"/>
+
+                        <TextBlock Grid.Row="0"
+                                   TextWrapping="Wrap"
+                                   FontWeight="Light"
+                                   FontSize="16"
+                                   Height="Auto"
+                                   Text="{Binding Message}"/>
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal"
+                                Grid.Row="1"
+                                Width="Auto">
+                        <TextBlock Text="edited "
+                                   Style="{StaticResource TextBlockSendingtimeMessageGray}"
+                                   Visibility="{Binding IsEdit, Converter={StaticResource ConverterBoolToVisibilityCollapsed}}"/>
+
+                        <TextBlock Text="{Binding SendingTime, StringFormat={}{0:t}}"
+                                   Style="{StaticResource TextBlockSendingtimeMessageGray}"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+        </Grid>
+    </DataTemplate>
+
+    <DataTemplate x:Key="GroupMessagesTemplate" DataType="{x:Type viewModels:GroupMessageViewModel}">
+        <ContentControl Content="{Binding}">
+            <ContentControl.Style>
+                <Style TargetType="{x:Type ContentControl}">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsItLastMessageFromSender}" Value="False">
+                            <Setter Property="ContentTemplate" Value="{StaticResource DefaultGroupMessageTemplate}"/>
+                        </DataTrigger>
+
+                        <MultiDataTrigger>
+                            <MultiDataTrigger.Conditions>
+                                <Condition Binding="{Binding IsItLastMessageFromSender}" Value="True"/>
+                                <Condition Binding="{Binding IsFromCurrentUser}" Value="False"/>
+                            </MultiDataTrigger.Conditions>
+
+                            <Setter Property="ContentTemplate" Value="{StaticResource OtherLasGroupMessageTemplate}"/>
+                        </MultiDataTrigger>
+
+                        <MultiDataTrigger>
+                            <MultiDataTrigger.Conditions>
+                                <Condition Binding="{Binding IsItLastMessageFromSender}" Value="True"/>
+                                <Condition Binding="{Binding IsFromCurrentUser}" Value="True"/>
+                            </MultiDataTrigger.Conditions>
+
+                            <Setter Property="ContentTemplate" Value="{StaticResource CurrentClientLasGroupMessageTemplate}"/>
+                        </MultiDataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </ContentControl.Style>
+        </ContentControl>
+    </DataTemplate>
+
+    <selectors:MessageTemplateSelector MessageTemplate="{StaticResource MessagesTemplate}"
+                                       GroupMessageTemplate="{StaticResource GroupMessagesTemplate}"
+                                       x:Key="MessageTemplateSelector"/>
 </ResourceDictionary>

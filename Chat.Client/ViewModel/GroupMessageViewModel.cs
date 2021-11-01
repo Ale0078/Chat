@@ -8,6 +8,7 @@ namespace Chat.Client.ViewModel
     {
         private Guid _groupId;
         private UserViewModelBase _lastMessageSender;
+        private bool _isItLastMessageFromSender;
 
         public Guid GroupId 
         {
@@ -26,6 +27,17 @@ namespace Chat.Client.ViewModel
             set 
             {
                 _lastMessageSender = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        public bool IsItLastMessageFromSender 
+        {
+            get => _isItLastMessageFromSender;
+            set 
+            {
+                _isItLastMessageFromSender = value;
 
                 OnPropertyChanged();
             }

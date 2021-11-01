@@ -103,14 +103,14 @@
                 </Menu>
             </Grid>
         </Border>
-
+        
         <ItemsControl Grid.ColumnSpan="3"
                       Grid.Column="0"
                       Grid.Row="1"
                       BorderThickness="0, 0, 0, 1"
                       BorderBrush="LightGray"
                       ItemsSource="{Binding CurrentUser.Messages}"
-                      ItemTemplate="{StaticResource MessagesTemplate}"
+                      ItemTemplateSelector="{StaticResource MessageTemplateSelector}"
                       Template="{StaticResource MessagesScrolViewer}"
                       Focusable="False"
                       Background="{StaticResource YellowGrenYellowGradient}"/>
@@ -148,21 +148,59 @@
                 extensions:FrameworkElementExtension.DoesAnimationStartToAnimationStoryboard="{Binding User.MessageCreater.DoesShowCreater}"/>
 
         <!-- Заглушка, нужно будет изменить !!! -->
-        <TextBox Grid.Row="3"
-                 Grid.Column="1"
-                 Text="{Binding User.MessageCreater.TextMessage, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                 Name="Message"
-                 Style="{StaticResource TextBoxToMessage}">
-            <i:Interaction.Triggers>
-                <i:EventTrigger EventName="TextChanged">
-                    <i:InvokeCommandAction Command="{Binding Typing}"/>
-                </i:EventTrigger>
+        <ContentControl Content="{Binding}"
+                        Grid.Row="3"
+                        Grid.Column="1">
+            <ContentControl.Style>
+                <Style TargetType="{x:Type ContentControl}">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding CurrentUser.IsGroup}" Value="False">
+                            <Setter Property="ContentTemplate">
+                                <Setter.Value>
+                                    <DataTemplate>
+                                        <TextBox Text="{Binding User.MessageCreater.TextMessage, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                 Name="Message"
+                                                 Style="{StaticResource TextBoxToMessage}">
+                                            <i:Interaction.Triggers>
+                                                <i:EventTrigger EventName="TextChanged">
+                                                    <i:InvokeCommandAction Command="{Binding Typing}"/>
+                                                </i:EventTrigger>
 
-                <i:EventTrigger EventName="KeyUp">
-                    <i:InvokeCommandAction Command="{Binding StopTyping}"/>
-                </i:EventTrigger>
-            </i:Interaction.Triggers>
-        </TextBox>
+                                                <i:EventTrigger EventName="KeyUp">
+                                                    <i:InvokeCommandAction Command="{Binding StopTyping}"/>
+                                                </i:EventTrigger>
+                                            </i:Interaction.Triggers>
+                                        </TextBox>
+                                    </DataTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </DataTrigger>
+
+                        <DataTrigger Binding="{Binding CurrentUser.IsGroup}" Value="True">
+                            <Setter Property="ContentTemplate">
+                                <Setter.Value>
+                                    <DataTemplate>
+                                        <TextBox Text="{Binding User.MessageCreater.TextMessage, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                 Name="Message"
+                                                 Style="{StaticResource TextBoxToMessageBase}">
+                                            <i:Interaction.Triggers>
+                                                <i:EventTrigger EventName="TextChanged">
+                                                    <i:InvokeCommandAction Command="{Binding Typing}"/>
+                                                </i:EventTrigger>
+
+                                                <i:EventTrigger EventName="KeyUp">
+                                                    <i:InvokeCommandAction Command="{Binding StopTyping}"/>
+                                                </i:EventTrigger>
+                                            </i:Interaction.Triggers>
+                                        </TextBox>
+                                    </DataTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </ContentControl.Style>
+        </ContentControl>
         <!-- Конец заглушки -->
 
         <Button Grid.Row="3"

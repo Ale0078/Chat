@@ -177,6 +177,13 @@ namespace Chat.Client.ViewModel
                 item: sendingMessage,
                 handler: OnMessageChanged);
 
+            if (CurrentUser.LastMessage.FromUserId == sendingMessage.FromUserId)
+            {
+                ((GroupMessageViewModel)CurrentUser.LastMessage).IsItLastMessageFromSender = false;
+            }
+
+            sendingMessage.IsItLastMessageFromSender = true;
+
             CurrentUser.LastMessage = sendingMessage;
 
             ((GroupMessageViewModel)CurrentUser.LastMessage).LastMessageSender = GetLastMessageSenderToGroup(group);
@@ -626,15 +633,27 @@ namespace Chat.Client.ViewModel
                     Users = _mapper.Map<ObservableCollection<GroupUserViewModel>>(group.Users)
                 };
 
+                GroupMessageViewModel buffer = new();
+
                 foreach (GroupMessageModel message in group.GroupMessages)
                 {
                     GroupMessageViewModel groupMessage = _mapper.Map<GroupMessageViewModel>(message);
 
                     groupMessage.IsFromCurrentUser = message.SenderId == User.Id;
 
+                    if (buffer.FromUserId == groupMessage.FromUserId)
+                    {
+                        buffer.IsItLastMessageFromSender = false;
+                    }
+
+                    groupMessage.IsItLastMessageFromSender = true;
+                    groupMessage.LastMessageSender = GetGroupUser(groupViewModel, groupMessage.FromUserId);
+
                     groupViewModel.Messages.AddViewModel(
                         item: groupMessage,
                         handler: OnMessageChanged);
+
+                    buffer = groupMessage;
                 }
 
                 if (groupViewModel.Messages is null || groupViewModel.Messages.Count == 0)
@@ -643,7 +662,9 @@ namespace Chat.Client.ViewModel
                 }
                 else 
                 {
-                    groupViewModel.LastMessage = groupViewModel.Messages.Last();
+                    MessageViewModelBase newLastMessage = groupViewModel.Messages.Last();
+
+                    groupViewModel.LastMessage = newLastMessage;
 
                     ((GroupMessageViewModel)groupViewModel.LastMessage).LastMessageSender = GetLastMessageSenderToGroup(groupViewModel);
                 }
@@ -685,6 +706,13 @@ namespace Chat.Client.ViewModel
             message.IsFromCurrentUser = User.Id == messageModel.SenderId;
 
             group.Messages.Add(message);
+
+            if (group.LastMessage.FromUserId == message.FromUserId)
+            {
+                ((GroupMessageViewModel)group.LastMessage).IsItLastMessageFromSender = false;
+            }
+
+            message.IsItLastMessageFromSender = true;
 
             group.LastMessage = message;
 
@@ -831,6 +859,19 @@ namespace Chat.Client.ViewModel
                 if (groupUser.Id == group.LastMessage.FromUserId)
                 {
                     return groupUser;
+                }
+            }
+
+            return null;
+        }
+
+        private UserViewModelBase GetGroupUser(GroupViewModel group, string userId) 
+        {
+            foreach (GroupUserViewModel user in group.Users)
+            {
+                if (user.Id == userId)
+                {
+                    return user;
                 }
             }
 

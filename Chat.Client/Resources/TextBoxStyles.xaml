@@ -71,7 +71,7 @@
         <Setter Property="materialDesign:HintAssist.Hint" Value="Name"/>
     </Style>
 
-    <Style x:Key="TextBoxToBaseMessage" TargetType="{x:Type TextBox}" BasedOn="{StaticResource MaterialDesignTextBox}">
+    <Style x:Key="TextBoxToMessageBase" TargetType="{x:Type TextBox}" BasedOn="{StaticResource MaterialDesignTextBox}">
         <Setter Property="AcceptsReturn" Value="True"/>
         <Setter Property="MinHeight" Value="40"/>
         <Setter Property="MaxHeight" Value="100"/>
@@ -87,7 +87,7 @@
         <Setter Property="BorderThickness" Value="0"/>
     </Style>
 
-    <Style x:Key="TextBoxToMessage" TargetType="{x:Type TextBox}" BasedOn="{StaticResource TextBoxToBaseMessage}">
+    <Style x:Key="TextBoxToMessage" TargetType="{x:Type TextBox}" BasedOn="{StaticResource TextBoxToMessageBase}">
         <Style.Triggers>
             <DataTrigger Binding="{Binding CurrentUser}" Value="{x:Null}">
                 <Setter Property="IsEnabled" Value="False"/>

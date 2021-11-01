@@ -1,0 +1,22 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Style x:Key="PathDefaultCornerTriangleToGroupMessage" TargetType="{x:Type Path}">
+        <Setter Property="VerticalAlignment" Value="Bottom"/>
+        <Setter Property="Height" Value="10"/>
+        <Setter Property="Width" Value="10"/>
+        <Setter Property="Effect">
+            <Setter.Value>
+                <DropShadowEffect Opacity="0.2"
+                                  Color="#5d5b5d"/>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="PathCornerTriangleToGroupMessageFromCurrentUser" TargetType="{x:Type Path}" BasedOn="{StaticResource PathDefaultCornerTriangleToGroupMessage}">
+        <Setter Property="Fill" Value="#858cfb"/>
+    </Style>
+
+    <Style x:Key="PathCornerTriangleToGroupMessageFromOthers" TargetType="{x:Type Path}" BasedOn="{StaticResource PathDefaultCornerTriangleToGroupMessage}">
+        <Setter Property="Fill" Value="White"/>
+    </Style>
+</ResourceDictionary>

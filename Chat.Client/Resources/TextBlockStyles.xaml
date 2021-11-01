@@ -56,4 +56,29 @@
     <Style x:Key="TextBlockCuttableDraft" TargetType="{x:Type TextBlock}" BasedOn="{StaticResource TextBlockCuttableLightText}">
         <Setter Property="Foreground" Value="Red"/>
     </Style>
+
+    <Style x:Key="TextBlockSendingTimeMessageBase" TargetType="{x:Type TextBlock}">
+        <Setter Property="FontSize" Value="8"/>
+        <Setter Property="TextAlignment" Value="Right"/>
+    </Style>
+
+    <Style x:Key="TextBlockSendingtimeMessageWhite" TargetType="{x:Type TextBlock}" BasedOn="{StaticResource TextBlockSendingTimeMessageBase}">
+        <Setter Property="Foreground" Value="White"/>
+    </Style>
+
+    <Style x:Key="TextBlockSendingtimeMessageGray" TargetType="{x:Type TextBlock}" BasedOn="{StaticResource TextBlockSendingTimeMessageBase}">
+        <Setter Property="Foreground" Value="Gray"/>
+    </Style>
+
+    <Style x:Key="TextBlockSendingtimeMessageGroupMessage" TargetType="{x:Type TextBlock}" BasedOn="{StaticResource TextBlockSendingTimeMessageBase}">
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding IsFromCurrentUser}" Value="True">
+                <Setter Property="Foreground" Value="White"/>        
+            </DataTrigger>
+
+            <DataTrigger Binding="{Binding IsFromCurrentUser}" Value="False">
+                <Setter Property="Foreground" Value="Gray"/>
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
 </ResourceDictionary>

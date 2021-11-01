@@ -45,4 +45,10 @@
         <Setter Property="VerticalAlignment" Value="Bottom"/>
         <Setter Property="HorizontalAlignment" Value="Right"/>
     </Style>
+
+    <Style x:Key="EllipseUserPhotoToGroupMessage" TargetType="{x:Type Ellipse}" BasedOn="{StaticResource EllipseStrokePhoto}">
+        <Setter Property="Height" Value="30"/>
+        <Setter Property="Width" Value="30"/>
+        <Setter Property="VerticalAlignment" Value="Bottom"/>
+    </Style>
 </ResourceDictionary>
