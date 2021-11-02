@@ -25,6 +25,7 @@ namespace Chat.Client.ViewModel
         private readonly List<ChatMemberViewModel> _blockedUsers;
 
         private MemberViewModelBase _currentUser;
+        private ChatMemberViewModel _userToSendTypingStatus;
         private DispatcherTimer _timer;
         private ObservableCollection<MemberViewModelBase> _users;
         private ObservableCollection<MemberViewModelBase> _usersBackup;
@@ -246,10 +247,10 @@ namespace Chat.Client.ViewModel
                 doesBlock: (bool)doesBlock);
         }
 
-        public ICommand SetMessageToUser => _setMessageToUser ??= new RelayCommand(
+        public ICommand SetMessageToUser => _setMessageToUser ??= new RelayCommandAsync(
             execute: ExecuteSetMessageToUser);
 
-        private void ExecuteSetMessageToUser(object parametr)
+        private async Task ExecuteSetMessageToUser(object parametr)
         {
             if (CurrentUser is null)
             {
@@ -257,6 +258,19 @@ namespace Chat.Client.ViewModel
             }
 
             User.MessageCreater.TextMessage = CurrentUser.Draft.Message;
+
+            if (_userToSendTypingStatus is null 
+                || string.IsNullOrEmpty(_userToSendTypingStatus.ConnectionId))
+            {
+                return;
+            }
+
+            _timer.Stop();
+
+            await _chatService.SendUserTypingStatusToUserAsync(
+                isTyping: false,
+                connectionId: _userToSendTypingStatus.ConnectionId,
+                typingUserId: User.Id);
         }
 
         public ICommand Typing => _typing ??= new RelayCommandAsync(
@@ -270,6 +284,13 @@ namespace Chat.Client.ViewModel
             {
                 return;
             }
+
+            if (string.IsNullOrEmpty(currentUser.ConnectionId))
+            {
+                return;
+            }
+
+            _userToSendTypingStatus = currentUser;
 
             await _chatService.SendUserTypingStatusToUserAsync(
                 isTyping: true,
@@ -295,6 +316,11 @@ namespace Chat.Client.ViewModel
         private Task ExecuteStopTyping(object parametr) 
         {
             if (CurrentUser is GroupViewModel)//ToDo: Remove IT!!!!
+            {
+                return Task.CompletedTask;
+            }
+
+            if (string.IsNullOrEmpty(((ChatMemberViewModel)CurrentUser).ConnectionId))
             {
                 return Task.CompletedTask;
             }
@@ -524,6 +550,11 @@ namespace Chat.Client.ViewModel
             {
                 ChatMemberViewModel member = userModel as ChatMemberViewModel;
 
+                if (member is null)
+                {
+                    return false;
+                }
+
                 return member.Id == typingUserId;
             }) as ChatMemberViewModel;
 
@@ -694,7 +725,11 @@ namespace Chat.Client.ViewModel
 
         private void OnSendGorupToGroupMembersAsyncServerEventHandler(GroupModel group) 
         {
-            Users.Add(_mapper.Map<GroupViewModel>(group));
+            GroupViewModel newGroup = _mapper.Map<GroupViewModel>(group);
+
+            newGroup.LastMessage = new GroupMessageViewModel();
+
+            Users.Add(newGroup);
         }
 
         private void OnSendMessageToGroupMembersAsyncServerEventHandler(GroupMessageModel messageModel) 

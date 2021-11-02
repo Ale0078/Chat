@@ -82,9 +82,7 @@ namespace Chat.Client.ViewModel
 
         private void ExecuteCloseWindow(object parametr) 
         {
-            GroupMembers.Clear();
-            GroupName = string.Empty;
-            GroupPhoto = _defaulPhoto;
+            ClearGroupCreater();
 
             DoesCloseWindow = true;
             DoesCloseWindow = false;
@@ -114,10 +112,28 @@ namespace Chat.Client.ViewModel
 
         public async Task<GroupViewModel> CreateGroup()
         {
-            return _mapper.Map<GroupViewModel>(await _groupService.CreateNewGroupAsync(
+            try
+            {
+                GroupViewModel newGroup = _mapper.Map<GroupViewModel>(await _groupService.CreateNewGroupAsync(
                 groupName: GroupName,
                 groupPhoto: GroupPhoto.ByteFile,
                 users: _mapper.Map<List<GroupUser>>(GroupMembers.ToList())));
+
+                newGroup.LastMessage = new GroupMessageViewModel();
+
+                return newGroup;
+            }
+            finally 
+            {
+                ClearGroupCreater();
+            }
+        }
+
+        private void ClearGroupCreater() 
+        {
+            GroupMembers.Clear();
+            GroupName = string.Empty;
+            GroupPhoto = _defaulPhoto;
         }
     }
 }

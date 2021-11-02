@@ -25,6 +25,8 @@
         <Setter Property="Focusable" Value="False"/>
         <Setter Property="VerticalAlignment" Value="Center"/>
         <Setter Property="HorizontalAlignment" Value="Left"/>
+        <Setter Property="TextWrapping" Value="NoWrap"/>
+        <Setter Property="TextTrimming" Value="WordEllipsis"/>
     </Style>
 
     <Style x:Key="TextBlockUserOnlineStatus" TargetType="{x:Type TextBlock}">

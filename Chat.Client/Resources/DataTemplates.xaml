@@ -391,17 +391,26 @@
                 <Ellipse Style="{StaticResource EllipseStatusUserFromList}"/>
             </Grid>
 
-            <TextBlock Style="{StaticResource TextBlockMemberNameFromList}"
-                           Grid.Column="1"
+            <Grid Grid.Column="1"
+                  Grid.ColumnSpan="2"
+                  Grid.Row="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                
+                <TextBlock Style="{StaticResource TextBlockMemberNameFromList}"
+                           Grid.Column="0"
                            Grid.Row="0"
                            Text="{Binding Name}"/>
 
-            <views:LastMessageTimeUserControl DataContext="{Binding}"
-                                              Grid.Row="0"
-                                              Grid.Column="2"
-                                              VerticalAlignment="Center"
-                                              HorizontalAlignment="Right"
-                                              Margin="0, 0, 5, 0"/>
+                <views:LastMessageTimeUserControl DataContext="{Binding}"
+                                                  Grid.Row="0"
+                                                  Grid.Column="1"
+                                                  VerticalAlignment="Center"
+                                                  HorizontalAlignment="Right"
+                                                  Margin="0, 0, 5, 0"/>
+            </Grid>
 
             <ContentControl Content="{Binding}"
                             ContentTemplateSelector="{StaticResource LastMessageUserGroupSelector}"
@@ -436,24 +445,31 @@
                 </Ellipse>
             </Grid>
 
-            <StackPanel Grid.Column="1"
-                        Grid.Row="0"
-                        Orientation="Horizontal">
+            <Grid Grid.Column="1"
+                  Grid.ColumnSpan="2"
+                  Grid.Row="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
                 <materialDesign:PackIcon Kind="AccountGroup" 
                                          VerticalAlignment="Bottom"
-                                         Margin="0, 0, 3, 4"/>
-                
+                                         Margin="0, 0, 3, 4"
+                                         Grid.Column="0"/>
+
                 <TextBlock Style="{StaticResource TextBlockMemberNameFromList}"
-                           Text="{Binding Name}"/>
-            </StackPanel>
+                           Text="{Binding Name}"
+                           Grid.Column="1"/>
 
-            <views:LastMessageTimeUserControl DataContext="{Binding}"
-                                              Grid.Row="0"
-                                              Grid.Column="2"
-                                              VerticalAlignment="Center"
-                                              HorizontalAlignment="Right"
-                                              Margin="0, 0, 5, 0"/>
-
+                <views:LastMessageTimeUserControl DataContext="{Binding}"
+                                                  Grid.Column="2"
+                                                  VerticalAlignment="Center"
+                                                  HorizontalAlignment="Right"
+                                                  Margin="0, 0, 5, 0"/>
+            </Grid>
+            
             <ContentControl Content="{Binding}"
                             ContentTemplateSelector="{StaticResource LastMessageUserGroupSelector}"
                             Grid.Column="1"
