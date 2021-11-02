@@ -129,8 +129,6 @@ namespace Chat.Client.ViewModel
 
             if (string.IsNullOrEmpty(source))
             {
-                MessageBox.Show("Invaled photo");//ToDo: Custom message box
-
                 return;
             }
 

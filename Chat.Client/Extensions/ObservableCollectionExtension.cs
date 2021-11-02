@@ -38,11 +38,14 @@ namespace Chat.Client.Extensions
             return new ObservableCollection<T>(sortedList.Values.Reverse());
         }
 
-        public static void AddViewModel<T>(this ObservableCollection<T> items, T item, PropertyChangedEventHandler handler)
+        public static void AddViewModel<T>(this ObservableCollection<T> items, T item, params PropertyChangedEventHandler[] handlers)
             where T : ViewModelBase
         {
-            item.PropertyChanged -= handler;
-            item.PropertyChanged += handler;
+            foreach (PropertyChangedEventHandler handler in handlers)
+            {
+                item.PropertyChanged -= handler;
+                item.PropertyChanged += handler;
+            }
 
             items.Add(item);
         }

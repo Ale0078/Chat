@@ -147,7 +147,7 @@ namespace Chat.Client.ViewModel
 
             CurrentUser.Messages.AddViewModel(
                 item: _mapper.Map<ChatMessageViewModel>(sendingMessage),
-                handler: OnMessageChanged);
+                handlers: OnMessageChanged);
 
             CurrentUser.LastMessage = _mapper.Map<ChatMessageViewModel>(sendingMessage);
 
@@ -176,7 +176,7 @@ namespace Chat.Client.ViewModel
 
             CurrentUser.Messages.AddViewModel(
                 item: sendingMessage,
-                handler: OnMessageChanged);
+                handlers: OnMessageChanged);
 
             if (CurrentUser.LastMessage.FromUserId == sendingMessage.FromUserId)
             {
@@ -380,6 +380,7 @@ namespace Chat.Client.ViewModel
 
             User.MessageCreater.PropertyChanged += SetMessageToCurrentUserFromUser;
             User.PropertyChanged += SetListOfUsersBySearchingString;
+            User.PropertyChanged += OnUserPhotoChanged;
         }
 
         #region ChatService EventHandlers
@@ -427,7 +428,7 @@ namespace Chat.Client.ViewModel
 
             userSender.Messages.AddViewModel(
                 item: _mapper.Map<ChatMessageViewModel>(message),
-                handler: OnMessageChanged);
+                handlers: OnMessageChanged);
 
             userSender.LastMessage = _mapper.Map<ChatMessageViewModel>(message);
 
@@ -569,6 +570,20 @@ namespace Chat.Client.ViewModel
             }) as ChatMemberViewModel;
 
             user.Photo = photo;
+
+            foreach (MemberViewModelBase member in Users)
+            {
+                if (member is GroupViewModel group)
+                {
+                    foreach (GroupUserViewModel groupUser in group.Users)
+                    {
+                        if (groupUser.Id == user.Id)
+                        {
+                            groupUser.Photo = photo;
+                        }
+                    }
+                }
+            }
         }
 
         private void ChangeMessageToUserServerEventHandler(string userId, Guid messageId, string message) 
@@ -682,7 +697,7 @@ namespace Chat.Client.ViewModel
 
                     groupViewModel.Messages.AddViewModel(
                         item: groupMessage,
-                        handler: OnMessageChanged);
+                        handlers: OnMessageChanged);
 
                     buffer = groupMessage;
                 }
@@ -856,6 +871,28 @@ namespace Chat.Client.ViewModel
             else 
             {
                 CurrentUser.EditMessage = null;
+            }
+        }
+
+        private void OnUserPhotoChanged(object sender, PropertyChangedEventArgs e) 
+        {
+            if (e.PropertyName != nameof(User.Photo))
+            {
+                return;
+            }
+
+            foreach (MemberViewModelBase member in Users)
+            {
+                if (member is GroupViewModel group)
+                {
+                    foreach (GroupUserViewModel groupUser in group.Users)
+                    {
+                        if (groupUser.Id == User.Id)
+                        {
+                            groupUser.Photo = User.Photo;
+                        }
+                    }
+                }
             }
         }
 
