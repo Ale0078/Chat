@@ -1,20 +1,18 @@
-﻿using System;
-
-using Chat.Client.ViewModel.Base;
+﻿using Chat.Client.ViewModel.Base;
 
 namespace Chat.Client.ViewModel
 {
-    public class GroupUserViewModel : UserViewModelBase
+    public class GroupUserViewModel : ViewModelBase
     {
         private string _id;
-        private string _connectionId;
-        private DateTime _disconnectTime;
+        private UserViewModelBase _user;
 
 
-        public string Id 
+
+        public string Id
         {
             get => _id;
-            set 
+            set
             {
                 _id = value;
 
@@ -22,23 +20,12 @@ namespace Chat.Client.ViewModel
             }
         }
 
-        public string ConnectionId 
+        public UserViewModelBase User 
         {
-            get => _connectionId;
+            get => _user;
             set 
             {
-                _connectionId = value;
-
-                OnPropertyChanged();
-            }
-        }
-
-        public DateTime DisconnectTime 
-        {
-            get => _disconnectTime;
-            set 
-            {
-                _disconnectTime = value;
+                _user = value;
 
                 OnPropertyChanged();
             }

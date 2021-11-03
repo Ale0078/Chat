@@ -62,14 +62,14 @@
                           ItemsSource="{Binding User.GroupCreater.GroupMembers}"
                           Margin="0, 5">
                     <ItemsControl.ItemTemplate>
-                        <DataTemplate DataType="{x:Type viewModel:ChatMemberViewModel}">
-                            <materialDesign:Chip Content="{Binding Name}"
+                        <DataTemplate DataType="{x:Type viewModel:GroupUserViewModel}">
+                            <materialDesign:Chip Content="{Binding User.Name}"
                                                  Command="{Binding RelativeSource={RelativeSource AncestorType=view:GroupCreaterUserControl, Mode=FindAncestor}, Path=DataContext.User.GroupCreater.AddUserToGroupMembers}"
                                                  CommandParameter="{Binding}"
                                                  Height="40"
                                                  Margin="2">
                                 <materialDesign:Chip.Icon>
-                                    <Image Source="{Binding Photo}"
+                                    <Image Source="{Binding User.Photo}"
                                            Stretch="UniformToFill"/>
                                 </materialDesign:Chip.Icon>
                             </materialDesign:Chip>

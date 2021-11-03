@@ -109,7 +109,7 @@ namespace Chat.Server.Services
             }
 
             group.Users.Remove(
-                item: group.Users.Find(entityUser => entityUser.UserName == user.Name));
+                item: group.Users.Find(entityUser => entityUser.Id == user.Id));
 
             _dbContext.Update(group);
 

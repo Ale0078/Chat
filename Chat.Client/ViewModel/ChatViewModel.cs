@@ -347,9 +347,7 @@ namespace Chat.Client.ViewModel
             User.GroupCreater.SetOwnerGroup(new GroupUserViewModel
             {
                 Id = User.Id,
-                Name = User.Name,
-                Photo = User.Photo,
-                ConnectionId = User.ConnectionId
+                User = User
             });
 
             Users.Add(await User.GroupCreater.CreateGroup());
@@ -390,7 +388,6 @@ namespace Chat.Client.ViewModel
 
             User.MessageCreater.PropertyChanged += SetMessageToCurrentUserFromUser;
             User.PropertyChanged += SetListOfUsersBySearchingString;
-            User.PropertyChanged += OnUserPhotoChanged;
         }
 
         #region ChatService EventHandlers
@@ -580,20 +577,6 @@ namespace Chat.Client.ViewModel
             }) as ChatMemberViewModel;
 
             user.Photo = photo;
-
-            foreach (MemberViewModelBase member in Users)
-            {
-                if (member is GroupViewModel group)
-                {
-                    foreach (GroupUserViewModel groupUser in group.Users)
-                    {
-                        if (groupUser.Id == user.Id)
-                        {
-                            groupUser.Photo = photo;
-                        }
-                    }
-                }
-            }
         }
 
         private void ChangeMessageToUserServerEventHandler(string userId, Guid messageId, string message) 
@@ -657,6 +640,24 @@ namespace Chat.Client.ViewModel
                 ChatMemberViewModel member = _mapper.Map<ChatMemberViewModel>(user);
 
                 member.Messages.SetPropertyChangedEventHandler(OnMessageChanged);
+
+                foreach (MemberViewModelBase memberGroup in Users)
+                {
+                    if (memberGroup is GroupViewModel group)
+                    {
+                        foreach (GroupUserViewModel groupUser in group.Users)
+                        {
+                            if (groupUser.Id == member.Id)
+                            {
+                                groupUser.User = member;
+                            }
+                            else if (groupUser.Id == User.Id) 
+                            {
+                                groupUser.User = User;
+                            }
+                        }
+                    }
+                }
 
                 if (user.IsBlocked && !User.IsAdmin)
                 {
@@ -753,6 +754,24 @@ namespace Chat.Client.ViewModel
             GroupViewModel newGroup = _mapper.Map<GroupViewModel>(group);
 
             newGroup.LastMessage = new GroupMessageViewModel();
+
+            foreach (MemberViewModelBase member in Users)
+            {
+                if (member is ChatMemberViewModel user)
+                {
+                    foreach (GroupUserViewModel groupUser in newGroup.Users)
+                    {
+                        if (groupUser.Id == user.Id)
+                        {
+                            groupUser.User = user;
+                        }
+                        else if (groupUser.Id == User.Id)
+                        {
+                            groupUser.User = User;
+                        }
+                    }
+                }
+            }
 
             Users.Add(newGroup);
         }
@@ -897,28 +916,6 @@ namespace Chat.Client.ViewModel
             }
         }
 
-        private void OnUserPhotoChanged(object sender, PropertyChangedEventArgs e) 
-        {
-            if (e.PropertyName != nameof(User.Photo))
-            {
-                return;
-            }
-
-            foreach (MemberViewModelBase member in Users)
-            {
-                if (member is GroupViewModel group)
-                {
-                    foreach (GroupUserViewModel groupUser in group.Users)
-                    {
-                        if (groupUser.Id == User.Id)
-                        {
-                            groupUser.Photo = User.Photo;
-                        }
-                    }
-                }
-            }
-        }
-
         #endregion
 
         #region Halper Functions
@@ -962,7 +959,7 @@ namespace Chat.Client.ViewModel
             return null;
         }
 
-        private UserViewModelBase GetGroupUser(GroupViewModel group, string userId) 
+        private GroupUserViewModel GetGroupUser(GroupViewModel group, string userId) 
         {
             foreach (GroupUserViewModel user in group.Users)
             {

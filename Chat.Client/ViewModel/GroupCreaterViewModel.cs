@@ -101,7 +101,11 @@ namespace Chat.Client.ViewModel
             }
             else 
             {
-                GroupMembers.Add(_mapper.Map<GroupUserViewModel>(user));
+                GroupUserViewModel groupUser = _mapper.Map<GroupUserViewModel>(user);
+
+                groupUser.User = user;
+
+                GroupMembers.Add(groupUser);
             }
         }
 
@@ -135,6 +139,11 @@ namespace Chat.Client.ViewModel
                 users: _mapper.Map<List<GroupUser>>(GroupMembers.ToList())));
 
                 newGroup.LastMessage = new GroupMessageViewModel();
+
+                for (int userIndex = 0; userIndex < newGroup.Users.Count; userIndex++)
+                {
+                    newGroup.Users[userIndex].User = GroupMembers[userIndex].User;
+                }
 
                 return newGroup;
             }

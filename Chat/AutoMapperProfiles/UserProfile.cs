@@ -36,17 +36,8 @@ namespace Chat.Server.AutoMapperProfiles
                     memberOptions: options => options.MapFrom(
                         mapExpression: user => user.UserName));
 
-            CreateMap<User, GroupUser>()
-                .ForMember(
-                    destinationMember: groupUser => groupUser.Name,
-                    memberOptions: options => options.MapFrom(
-                        mapExpression: user => user.UserName));
-
-            CreateMap<GroupUser, User>()
-                .ForMember(
-                    destinationMember: user => user.UserName,
-                    memberOptions: options => options.MapFrom(
-                        mapExpression: groupUser => groupUser.Name));
+            CreateMap<User, GroupUser>();
+            CreateMap<GroupUser, User>();
         }
     }
 }

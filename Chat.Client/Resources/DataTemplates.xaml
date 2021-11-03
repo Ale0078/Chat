@@ -198,7 +198,7 @@
 
                             <Setter Property="ContentTemplate">
                                 <Setter.Value>
-                                    <DataTemplate DataType="{x:Type viewModels:ChatMemberViewModel}">
+                                    <DataTemplate DataType="{x:Type viewModels:GroupViewModel}">
                                         <Grid>
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="Auto"/>
@@ -227,7 +227,7 @@
 
                             <Setter Property="ContentTemplate">
                                 <Setter.Value>
-                                    <DataTemplate DataType="{x:Type viewModels:ChatMemberViewModel}">
+                                    <DataTemplate DataType="{x:Type viewModels:GroupViewModel}">
                                         <Grid>
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="Auto"/>
@@ -235,7 +235,7 @@
                                                 <ColumnDefinition extensions:FrameworkElementExtension.ActualWidth="0"/>
                                             </Grid.ColumnDefinitions>
 
-                                            <TextBlock Text="{Binding LastMessage.LastMessageSender.Name, StringFormat={}{0}:}"
+                                            <TextBlock Text="{Binding LastMessage.LastMessageSender.User.Name, StringFormat={}{0}:}"
                                                        Grid.Column="0"
                                                        Style="{StaticResource TextBlockCuttableNameUser}"/>
 
@@ -261,7 +261,7 @@
 
                             <Setter Property="ContentTemplate">
                                 <Setter.Value>
-                                    <DataTemplate DataType="{x:Type viewModels:ChatMemberViewModel}">
+                                    <DataTemplate DataType="{x:Type viewModels:GroupViewModel}">
                                         <Grid>
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="Auto"/>
@@ -291,7 +291,7 @@
 
                             <Setter Property="ContentTemplate">
                                 <Setter.Value>
-                                    <DataTemplate DataType="{x:Type viewModels:ChatMemberViewModel}">
+                                    <DataTemplate DataType="{x:Type viewModels:GroupViewModel}">
                                         <Grid>
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="Auto"/>
@@ -319,7 +319,7 @@
                         <DataTrigger Binding="{Binding Draft.Message, Converter={StaticResource IsNull}}" Value="False">
                             <Setter Property="ContentTemplate">
                                 <Setter.Value>
-                                    <DataTemplate DataType="{x:Type viewModels:ChatMemberViewModel}">
+                                    <DataTemplate DataType="{x:Type viewModels:GroupViewModel}">
                                         <Grid>
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="Auto"/>
@@ -806,7 +806,7 @@
             <Ellipse Style="{StaticResource EllipseUserPhotoToGroupMessage}"
                      Grid.Column="2">
                 <Ellipse.Fill>
-                    <ImageBrush ImageSource="{Binding LastMessageSender.Photo, Converter={StaticResource ConvertBytesToPhoto}}"
+                    <ImageBrush ImageSource="{Binding LastMessageSender.User.Photo, Converter={StaticResource ConvertBytesToPhoto}}"
                                 Stretch="UniformToFill"/>
                 </Ellipse.Fill>
             </Ellipse>
@@ -824,7 +824,7 @@
             <Ellipse Style="{StaticResource EllipseUserPhotoToGroupMessage}"
                      Grid.Column="0">
                 <Ellipse.Fill>
-                    <ImageBrush ImageSource="{Binding LastMessageSender.Photo, Converter={StaticResource ConvertBytesToPhoto}}"
+                    <ImageBrush ImageSource="{Binding LastMessageSender.User.Photo, Converter={StaticResource ConvertBytesToPhoto}}"
                                 Stretch="UniformToFill"/>
                 </Ellipse.Fill>
             </Ellipse>

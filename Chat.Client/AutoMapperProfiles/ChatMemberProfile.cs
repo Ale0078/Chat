@@ -35,7 +35,13 @@ namespace Chat.Client.AutoMapperProfiles
                         mapExpression: chatMember => mapper.Map<ObservableCollection<ChatViewModel>>(chatMember.Messages)));
 
             CreateMap<GroupUser, GroupUserViewModel>();
-            CreateMap<GroupUserViewModel, GroupUser>();
+            CreateMap<GroupUserViewModel, GroupUser>()
+                .ForMember(
+                    destinationMember: groupUser => groupUser.ConnectionId,
+                    memberOptions: options => options.MapFrom(
+                        mapExpression: groupUserViewModel => groupUserViewModel.User is ChatMemberViewModel 
+                            ? ((ChatMemberViewModel)groupUserViewModel.User).ConnectionId
+                            : ((UserViewModel)groupUserViewModel.User).ConnectionId));
 
             CreateMap<GroupUserViewModel, ChatMemberViewModel>();
             CreateMap<ChatMemberViewModel, GroupUserViewModel>();
