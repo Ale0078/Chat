@@ -160,7 +160,7 @@ namespace Chat.Server.Hubs
 
         public async Task AddToGroup(GroupUser user, string groupName)//ToDo: send group to new user
         {
-            if (await _groupService.AddGroupUserToGroup(user, groupName))
+            if (await _groupService.AddGroupUserToGroupAsync(user, groupName))
             {
                 await Clients.OthersInGroup(groupName).SendNewGroupMemberToGroupMembersAsync(user, groupName);
             }
@@ -173,7 +173,7 @@ namespace Chat.Server.Hubs
 
         public async Task RemoveFromGroup(GroupUser user, string groupName)//ToDo: remove group from removed user
         {
-            if (await _groupService.RemoveGroupUserFromGroup(user, groupName))
+            if (await _groupService.RemoveGroupUserFromGroupAsync(user, groupName))
             {
                 await Clients.OthersInGroup(groupName).RemoveGroupMembertToGroupMembersAsync(user, groupName);
             }
@@ -215,6 +215,13 @@ namespace Chat.Server.Hubs
             await Clients.OthersInGroup(groupName).SendMessageToGroupMembersAsync(groupMessage);
 
             return groupMessage;
+        }
+
+        public async Task ChangeGroupMessage(string groupName, Guid messageId, string message) 
+        {
+            await Clients.OthersInGroup(groupName).ChangeGroupMessageAsync(groupName, messageId, message);
+
+            await _groupService.ChangeMessageAsync(messageId, message);
         }
 
         private bool IsValidConnectionId(string connectionId) =>

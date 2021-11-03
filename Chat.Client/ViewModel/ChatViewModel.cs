@@ -194,13 +194,22 @@ namespace Chat.Client.ViewModel
 
         private async Task ExecuteChangeMessage() 
         {
-            ChatMemberViewModel currentUser = CurrentUser as ChatMemberViewModel;
 
-            await _chatService.SetMessageToChatMessageAsync(
-                connectionId: currentUser.ConnectionId,
-                userId: User.Id,
-                messageId: CurrentUser.EditMessage.Id,
-                message: User.MessageCreater.TextMessage);
+            if (CurrentUser is ChatMemberViewModel currentUser)
+            {
+                await _chatService.SetMessageToChatMessageAsync(
+                    connectionId: currentUser.ConnectionId,
+                    userId: User.Id,
+                    messageId: CurrentUser.EditMessage.Id,
+                    message: User.MessageCreater.TextMessage);
+            }
+            else 
+            {
+                await _chatGroupService.ChangeMessageAsync(
+                    groupName: CurrentUser.Name,
+                    messageId: CurrentUser.EditMessage.Id,
+                    message: User.MessageCreater.TextMessage);
+            }
 
             CurrentUser.EditMessage.IsEdit = true;
             CurrentUser.EditMessage.Message = User.MessageCreater.TextMessage;
@@ -375,6 +384,7 @@ namespace Chat.Client.ViewModel
             _chatGroupService.SendMessageToGroupMembersAsyncServerHandler += OnSendMessageToGroupMembersAsyncServerEventHandler;
             _chatGroupService.SendNewGroupMemberToGroupMembersAsyncServerHandler += OnSendNewGroupMemberToGroupMembersAsyncServerEventHandler;
             _chatGroupService.RemoveGroupMembertToGroupMembersAsyncServerHandler += OnRemoveGroupMembertToGroupMembersAsyncServerEventHandler;
+            _chatGroupService.ChangedGrouMessageToGroupMembersAsyncServerHanler += ChangedGrouMessageToGroupMembersAsyncServerEventHanler;
 
             _timer.Tick += OnTick;
 
@@ -785,6 +795,19 @@ namespace Chat.Client.ViewModel
             group.Users.Remove(group.Users.First(userInGroup => userInGroup.Id == user.Id));
         }
 
+        private void ChangedGrouMessageToGroupMembersAsyncServerEventHanler(string groupName, Guid messageId, string message) 
+        {
+            GroupViewModel group = GetGroupViewModelByName(groupName);
+
+            GroupMessageViewModel groupMessage = group.Messages.First(groupMessage =>
+            {
+                return groupMessage.Id == messageId;
+            }) as GroupMessageViewModel;
+
+            groupMessage.Message = message;
+            groupMessage.IsEdit = true;
+        }
+
         #endregion
 
         private async void OnTick(object sender, EventArgs e) 
@@ -898,6 +921,8 @@ namespace Chat.Client.ViewModel
 
         #endregion
 
+        #region Halper Functions
+
         private GroupViewModel GetGroupViewModelByName(string groupName) =>
             Users.FirstOrDefault(member =>
             {
@@ -949,5 +974,7 @@ namespace Chat.Client.ViewModel
 
             return null;
         }
+
+        #endregion
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 using Chat.Models;
@@ -13,8 +14,10 @@ namespace Chat.Server.Services.Interfaces
 
         Task<GroupMessageModel> CreateGroupMessageAsync(GroupMessageModel message);
 
-        Task<bool> AddGroupUserToGroup(GroupUser user, string groupName);
+        Task<bool> AddGroupUserToGroupAsync(GroupUser user, string groupName);
 
-        Task<bool> RemoveGroupUserFromGroup(GroupUser user, string groupName);
+        Task<bool> RemoveGroupUserFromGroupAsync(GroupUser user, string groupName);
+
+        Task ChangeMessageAsync(Guid id, string message);
     }
 }

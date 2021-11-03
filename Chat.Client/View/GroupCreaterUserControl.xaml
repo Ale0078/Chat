@@ -43,14 +43,15 @@
             
             <Grid Margin="20, 20, 20, 5"
                   Grid.Row="0">
-                <Ellipse Height="100"
-                         Width="100"
-                         HorizontalAlignment="Left"
-                         Style="{StaticResource EllipseStrokePhoto}">
+                <Ellipse Style="{StaticResource EllipseGroupPhoto}">
                     <Ellipse.Fill>
-                        <ImageBrush ImageSource="{Binding User.GroupCreater.GroupPhoto.ByteFile, Converter={StaticResource ConvertBytesToPhoto}}"/>
+                        <ImageBrush ImageSource="{Binding User.GroupCreater.GroupPhoto, Converter={StaticResource ConvertBytesToPhoto}}"
+                                    Stretch="UniformToFill"/>
                     </Ellipse.Fill>
                 </Ellipse>
+
+                <Button Style="{StaticResource ButtonToSetPhotoToGroup}"
+                        Command="{Binding User.GroupCreater.SetPhoto}"/>
 
                 <TextBox HorizontalAlignment="Right"
                          Style="{StaticResource TextBoxGroupNameCraeter}"

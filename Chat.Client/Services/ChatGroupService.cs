@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.SignalR.Client;
 
 using Chat.Client.Services.Interfaces;
 using Chat.Models;
-using Chat.Interfaces;
+using Chat.Interfaces.BaseInterfaces;
 
 namespace Chat.Client.Services
 {
@@ -17,26 +17,31 @@ namespace Chat.Client.Services
         public event Action<GroupMessageModel> SendMessageToGroupMembersAsyncServerHandler;
         public event Action<GroupUser, string> SendNewGroupMemberToGroupMembersAsyncServerHandler;
         public event Action<GroupUser, string> RemoveGroupMembertToGroupMembersAsyncServerHandler;
+        public event Action<string, Guid, string> ChangedGrouMessageToGroupMembersAsyncServerHanler;
 
         public ChatGroupService(IChutConnection connection)
         {
             _connection = connection;
 
             _connection.Connection.On<GroupModel>(
-                methodName: nameof(IChat.SendGroupToGroupMembersAsync),
+                methodName: nameof(IGroupChat.SendGroupToGroupMembersAsync),
                 handler: group => SendGorupToGroupMembersAsyncServerHandler?.Invoke(group));
 
             _connection.Connection.On<GroupMessageModel>(
-                methodName: nameof(IChat.SendMessageToGroupMembersAsync),
+                methodName: nameof(IGroupChat.SendMessageToGroupMembersAsync),
                 handler: message => SendMessageToGroupMembersAsyncServerHandler?.Invoke(message));
 
             _connection.Connection.On<GroupUser, string>(
-                methodName: nameof(IChat.SendNewGroupMemberToGroupMembersAsync),
+                methodName: nameof(IGroupChat.SendNewGroupMemberToGroupMembersAsync),
                 handler: (user, groupName) => SendNewGroupMemberToGroupMembersAsyncServerHandler?.Invoke(user, groupName));
 
             _connection.Connection.On<GroupUser, string>(
-                methodName: nameof(IChat.RemoveGroupMembertToGroupMembersAsync),
+                methodName: nameof(IGroupChat.RemoveGroupMembertToGroupMembersAsync),
                 handler: (user, groupName) => RemoveGroupMembertToGroupMembersAsyncServerHandler?.Invoke(user, groupName));
+
+            _connection.Connection.On<string, Guid, string>(
+                methodName: nameof(IGroupChat.ChangeGroupMessageAsync),
+                handler: (groupName, messageId, message) => ChangedGrouMessageToGroupMembersAsyncServerHanler?.Invoke(groupName, messageId, message));
         }
 
         public async Task AddUserToGroupAsync(GroupUser user, string groupName) 
@@ -57,6 +62,11 @@ namespace Chat.Client.Services
         public async Task<GroupMessageModel> SendGroupMessageAsync(string groupName, GroupMessageModel message) 
         {
             return await _connection.Connection.InvokeAsync<GroupMessageModel>("SendGroupMessage", groupName, message);
+        }
+
+        public async Task ChangeMessageAsync(string groupName, Guid messageId, string message) 
+        {
+            await _connection.Connection.InvokeAsync("ChangeGroupMessage", groupName, messageId, message);
         }
     }
 }

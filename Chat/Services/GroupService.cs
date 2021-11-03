@@ -81,7 +81,7 @@ namespace Chat.Server.Services
             return _mapper.Map<GroupMessageModel>(groupMessage.Entity);
         }
 
-        public async Task<bool> AddGroupUserToGroup(GroupUser user, string groupName)
+        public async Task<bool> AddGroupUserToGroupAsync(GroupUser user, string groupName)
         {
             Group group = _dbContext.Groups.FirstOrDefault(group => group.Name == groupName);
 
@@ -99,7 +99,7 @@ namespace Chat.Server.Services
             return true;
         }
 
-        public async Task<bool> RemoveGroupUserFromGroup(GroupUser user, string groupName)
+        public async Task<bool> RemoveGroupUserFromGroupAsync(GroupUser user, string groupName)
         {
             Group group = _dbContext.Groups.FirstOrDefault(group => group.Name == groupName);
 
@@ -116,6 +116,18 @@ namespace Chat.Server.Services
             await _dbContext.SaveChangesAsync();
 
             return true;
+        }
+
+        public async Task ChangeMessageAsync(Guid id, string message) 
+        {
+            GroupMessage groupMessage = _dbContext.GroupMessages.First(message => message.Id == id);
+
+            groupMessage.TextMessage = message;
+            groupMessage.IsEdit = true;
+
+            _dbContext.GroupMessages.Update(groupMessage);
+
+            await _dbContext.SaveChangesAsync();
         }
     }
 }

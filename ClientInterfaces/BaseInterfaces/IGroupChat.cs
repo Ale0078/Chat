@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 
 using Chat.Models;
 
@@ -13,5 +14,7 @@ namespace Chat.Interfaces.BaseInterfaces
         Task SendNewGroupMemberToGroupMembersAsync(GroupUser user, string groupName);
 
         Task RemoveGroupMembertToGroupMembersAsync(GroupUser user, string groupName);
+
+        Task ChangeGroupMessageAsync(string groupName, Guid messageId, string message);
     }
 }

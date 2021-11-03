@@ -30,11 +30,6 @@ namespace Chat.Server.Services//ToDo: use include to all entities
 
         public async Task<bool> AddChatMessageAsync(ChatMessageModel message)
         {
-            if (message is null || string.IsNullOrEmpty(message.Message))
-            {
-                return false;
-            }
-
             await _dbContext.ChatMessages.AddAsync(_mapper.Map<ChatMessage>(message));
 
             await _dbContext.SaveChangesAsync();

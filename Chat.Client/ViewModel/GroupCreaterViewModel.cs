@@ -7,9 +7,9 @@ using System.Windows.Input;
 using AutoMapper;
 
 using Chat.Client.Commands;
-using Chat.Client.Datas;
 using Chat.Client.ViewModel.Base;
 using Chat.Client.Services;
+using Chat.Client.Services.Interfaces;
 using Chat.Models;
 
 namespace Chat.Client.ViewModel
@@ -18,24 +18,24 @@ namespace Chat.Client.ViewModel
     {
         private readonly IMapper _mapper;
         private readonly ChatGroupService _groupService;
-        private readonly ReferenceByteFile _defaulPhoto;
+        private readonly byte[] _defaulPhoto;
+        private readonly IDialogService _dialogService;
 
         private string _groupName;
-        private ReferenceByteFile _groupPhoto;
+        private byte[] _groupPhoto;
         private bool _doesCloseWindow;
 
         private ICommand _closeWidow;
         private ICommand _addUserToGroupMembers;
+        private ICommand _setPhoto;
 
-        public GroupCreaterViewModel(IMapper mapper, ChatGroupService groupService)
+        public GroupCreaterViewModel(IMapper mapper, ChatGroupService groupService, IDialogService dialogService)
         {
             _mapper = mapper;
             _groupService = groupService;
+            _dialogService = dialogService;
 
-            _defaulPhoto = new ReferenceByteFile
-            {
-                ByteFile = File.ReadAllBytes("../../../Images/GroupIconImage.png")
-            };
+            _defaulPhoto = File.ReadAllBytes("../../../Images/GroupIconImage.png");
 
             GroupPhoto = _defaulPhoto;
 
@@ -55,7 +55,7 @@ namespace Chat.Client.ViewModel
             }
         }
 
-        public ReferenceByteFile GroupPhoto 
+        public byte[] GroupPhoto 
         {
             get => _groupPhoto;
             set 
@@ -105,6 +105,21 @@ namespace Chat.Client.ViewModel
             }
         }
 
+        public ICommand SetPhoto => _setPhoto ??= new RelayCommandAsync(
+            execute: ExecuteSetPhoto);
+
+        private async Task ExecuteSetPhoto(object parametr) 
+        {
+            string source = _dialogService.OpenFile("Choose image", "Images (*.jpg;*png)|*.jpg;*png");
+
+            if (string.IsNullOrEmpty(source))
+            {
+                return;
+            }
+
+            GroupPhoto = await File.ReadAllBytesAsync(source);
+        }
+
         public void SetOwnerGroup(GroupUserViewModel owner) 
         {
             GroupMembers.Add(owner);
@@ -116,7 +131,7 @@ namespace Chat.Client.ViewModel
             {
                 GroupViewModel newGroup = _mapper.Map<GroupViewModel>(await _groupService.CreateNewGroupAsync(
                 groupName: GroupName,
-                groupPhoto: GroupPhoto.ByteFile,
+                groupPhoto: GroupPhoto,
                 users: _mapper.Map<List<GroupUser>>(GroupMembers.ToList())));
 
                 newGroup.LastMessage = new GroupMessageViewModel();

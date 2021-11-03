@@ -14,7 +14,7 @@ namespace Chat.Entities
         public byte[] FileMessage { get; set; }
 
         [Required]
-        public bool IsEdite { get; set; }
+        public bool IsEdit { get; set; }
 
         public string SenderId { get; set; }
 
