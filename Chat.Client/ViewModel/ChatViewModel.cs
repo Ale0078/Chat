@@ -650,6 +650,8 @@ namespace Chat.Client.ViewModel
                             if (groupUser.Id == member.Id)
                             {
                                 groupUser.User = member;
+                                //groupUser.User.PropertyChanged -= group.OnUserOnlineStatusChanged;
+                                //groupUser.User.PropertyChanged += group.OnUserOnlineStatusChanged;
                             }
                             else if (groupUser.Id == User.Id) 
                             {
@@ -671,7 +673,7 @@ namespace Chat.Client.ViewModel
 
             Users = Users.GetSortedCollectionByLastMessage();
         }
-
+        
         private void SendUserToCallerServerEventHandler(FullUserModel user) 
         {
             User.Id = user.Id;

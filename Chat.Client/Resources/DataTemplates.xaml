@@ -531,8 +531,43 @@
     </DataTemplate>
 
     <DataTemplate x:Key="GroupMembersAmoutTemplate" DataType="{x:Type viewModels:GroupViewModel}">
-        <TextBlock Text="{Binding Users.Count, StringFormat={}{0} members}"
-                   Style="{StaticResource TextBlockUserIsDisconnected}"/>
+        <ContentControl Content="{Binding}">
+            <ContentControl.Style>
+                <Style TargetType="{x:Type ContentControl}">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding UserOnlineCounter, Converter={StaticResource IntMoreThanOne}}" Value="True">
+                            <Setter Property="ContentTemplate">
+                                <Setter.Value>
+                                    <DataTemplate DataType="{x:Type viewModels:GroupViewModel}">
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="{Binding Users.Count, StringFormat={}{0} members}"
+                                                       Style="{StaticResource TextBlockUserIsDisconnected}"/>
+
+                                            <TextBlock Text=", "
+                                                       Style="{StaticResource TextBlockUserIsDisconnected}"/>
+
+                                            <TextBlock Text="{Binding UserOnlineCounter, StringFormat={}{0} onlines}"
+                                                       Style="{StaticResource TextBlockUserIsDisconnected}"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </DataTrigger>
+
+                        <DataTrigger Binding="{Binding UserOnlineCounter, Converter={StaticResource IntMoreThanOne}}" Value="False">
+                            <Setter Property="ContentTemplate">
+                                <Setter.Value>
+                                    <DataTemplate DataType="{x:Type viewModels:GroupViewModel}">
+                                        <TextBlock Text="{Binding Users.Count, StringFormat={}{0} members}"
+                                                   Style="{StaticResource TextBlockUserIsDisconnected}"/>
+                                    </DataTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </ContentControl.Style>
+        </ContentControl>
     </DataTemplate>
 
     <selectors:ListOfUsersSelector x:Key="UserOnlineStatusAndGroupMembersAmountSelector"

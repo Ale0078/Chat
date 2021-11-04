@@ -60,6 +60,15 @@ namespace Chat.Client.Extensions
             }
         }
 
+        public static void UnsubsribePropertyChangedEventHandler<T>(this ObservableCollection<T> items, PropertyChangedEventHandler handler)
+            where T : ViewModelBase
+        {
+            foreach (T item in items)
+            {
+                item.PropertyChanged -= handler;
+            }
+        }
+
         private struct DateTimeToSort : IComparable
         {
             public int Id { get; set; }
