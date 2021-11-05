@@ -71,7 +71,7 @@
         <Setter Property="materialDesign:HintAssist.Hint" Value="Name"/>
     </Style>
 
-    <Style x:Key="TextBoxToMessageBase" TargetType="{x:Type TextBox}" BasedOn="{StaticResource MaterialDesignTextBox}">
+    <!--<Style x:Key="TextBoxToMessageBase" TargetType="{x:Type TextBox}" BasedOn="{StaticResource MaterialDesignTextBox}">
         <Setter Property="AcceptsReturn" Value="True"/>
         <Setter Property="MinHeight" Value="40"/>
         <Setter Property="MaxHeight" Value="100"/>
@@ -133,5 +133,5 @@
                 <Setter Property="materialDesign:HintAssist.Hint" Value="Write a message..."/>
             </MultiDataTrigger>
         </Style.Triggers>
-    </Style>
+    </Style>-->
 </ResourceDictionary>

@@ -154,7 +154,9 @@ namespace Chat.Client.ViewModel
                 return;
             }
 
-            if (string.IsNullOrEmpty(messageCreater.TextMessage) || string.IsNullOrWhiteSpace(messageCreater.TextMessage))
+            if (string.IsNullOrEmpty(messageCreater.TextMessage) 
+                || string.IsNullOrWhiteSpace(messageCreater.TextMessage)
+                || messageCreater.IsPlaceholedApplied)
             {
                 IsButtonEnabled = false;
             }

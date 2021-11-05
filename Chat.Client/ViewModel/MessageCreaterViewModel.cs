@@ -14,6 +14,7 @@ namespace Chat.Client.ViewModel
 
         private string _textMessage;
         private byte[] _fileMessage;
+        private bool _isPlaceholedApplied;
         private bool _doesHideCreater;
         private bool _doesShowCreater;
 
@@ -42,6 +43,17 @@ namespace Chat.Client.ViewModel
             set 
             {
                 _fileMessage = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        public bool IsPlaceholedApplied 
+        {
+            get => _isPlaceholedApplied;
+            set 
+            {
+                _isPlaceholedApplied = value;
 
                 OnPropertyChanged();
             }

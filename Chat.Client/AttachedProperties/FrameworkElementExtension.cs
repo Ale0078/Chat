@@ -1,4 +1,6 @@
-﻿using System.Windows;
+﻿using System;
+using System.Collections.Generic;
+using System.Windows;
 using System.Windows.Input;
 
 using Chat.Client.ViewDatas;
@@ -7,6 +9,7 @@ namespace Chat.Client.AttachedProperties
 {
     public static class FrameworkElementExtension
     {
+        private static readonly List<Type> _opacityMetadataWasOverridedTo;
         private static readonly DependencyProperty ActualWidthInitializedProperty;
 
         public static readonly DependencyProperty ActualWidthProperty;
@@ -18,6 +21,8 @@ namespace Chat.Client.AttachedProperties
 
         static FrameworkElementExtension()
         {
+            _opacityMetadataWasOverridedTo = new List<Type>();
+
             ActualWidthInitializedProperty = DependencyProperty.RegisterAttached(
                 name: "ActualWidthInitialized",
                 propertyType: typeof(bool),
@@ -97,10 +102,17 @@ namespace Chat.Client.AttachedProperties
 
             if ((bool)e.NewValue)
             {
+                if (_opacityMetadataWasOverridedTo.Contains(control.GetType()))
+                {
+                    return;
+                }
+
                 FrameworkElement.OpacityProperty.OverrideMetadata(
                     forType: control.GetType(),
                     typeMetadata: new FrameworkPropertyMetadata(
                         propertyChangedCallback: OnOpacityChanged));
+
+                _opacityMetadataWasOverridedTo.Add(control.GetType());
             }
             else 
             {

@@ -6,7 +6,6 @@ using static System.Console;
 using Chat.Server.Services.Interfaces;
 using Chat.Models;
 using Chat.Interfaces;
-using System;
 
 namespace Chat.Server.Hubs
 {
@@ -19,7 +18,7 @@ namespace Chat.Server.Hubs
             _userService = userService;
         }
 
-        public async Task<bool> Register(RegisterUserModel model)//ToDo: drag to one hub
+        public async Task<bool> Register(RegisterUserModel model)
         {
             if (!await _userService.AddUserAsync(model))
             {

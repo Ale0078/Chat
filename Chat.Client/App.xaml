@@ -19,6 +19,7 @@
                 <ResourceDictionary Source="Resources/PathStyles.xaml"/>
                 <ResourceDictionary Source="Resources/GridStyles.xaml"/>
                 <ResourceDictionary Source="Resources/TextBlockStyles.xaml"/>
+                <ResourceDictionary Source="Resources/RichTextBox.xaml"/>
                 <ResourceDictionary Source="Resources/ButtonStyles.xaml"/>
                 <ResourceDictionary Source="Resources/RectangleStyles.xaml"/>
                 <ResourceDictionary Source="Resources/TextBoxStyles.xaml"/>

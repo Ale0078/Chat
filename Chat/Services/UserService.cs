@@ -13,7 +13,7 @@ using Chat.Entities;
 using Chat.Entities.Contexts;
 using Chat.Server.Services.Interfaces;
 
-namespace Chat.Server.Services//ToDo: use include to all entities
+namespace Chat.Server.Services
 {
     internal class UserService : IUserService
     {

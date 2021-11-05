@@ -306,7 +306,8 @@ namespace Chat.Client.ViewModel
                 connectionId: currentUser.ConnectionId,
                 typingUserId: User.Id);
             
-            if (string.IsNullOrEmpty(User.MessageCreater.TextMessage))
+            if (string.IsNullOrEmpty(User.MessageCreater.TextMessage)
+                || User.MessageCreater.IsPlaceholedApplied)
             {
                 await _chatService.SendUserTypingStatusToUserAsync(
                     isTyping: false,
@@ -508,7 +509,7 @@ namespace Chat.Client.ViewModel
 
             User.MessageCreater.TextMessage = string.Empty;
 
-            foreach (ChatMemberViewModel user in Users)
+            foreach (MemberViewModelBase user in Users)
             {
                 user.Draft.Message = null;
             }
@@ -650,8 +651,6 @@ namespace Chat.Client.ViewModel
                             if (groupUser.Id == member.Id)
                             {
                                 groupUser.User = member;
-                                //groupUser.User.PropertyChanged -= group.OnUserOnlineStatusChanged;
-                                //groupUser.User.PropertyChanged += group.OnUserOnlineStatusChanged;
                             }
                             else if (groupUser.Id == User.Id) 
                             {
@@ -854,7 +853,8 @@ namespace Chat.Client.ViewModel
 
             MessageCreaterViewModel messageCreater = sender as MessageCreaterViewModel;
 
-            if (string.IsNullOrEmpty(messageCreater.TextMessage))
+            if (string.IsNullOrEmpty(messageCreater.TextMessage)
+                || messageCreater.IsPlaceholedApplied)
             {
                 CurrentUser.Draft.Message = null;
             }
