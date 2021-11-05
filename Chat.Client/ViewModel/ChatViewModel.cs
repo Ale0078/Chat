@@ -739,6 +739,11 @@ namespace Chat.Client.ViewModel
                 {
                     ChatMemberViewModel member = user as ChatMemberViewModel;
 
+                    if (member is null)
+                    {
+                        return false;
+                    }
+
                     return member.Id == block.UserId;
                 }) as ChatMemberViewModel;
 

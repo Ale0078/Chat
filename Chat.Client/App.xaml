@@ -11,6 +11,7 @@
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Accent/MaterialDesignColor.Lime.xaml" />
 
                 <ResourceDictionary Source="pack://application:,,,/ReactiveValidation;component/WPF/Themes/Generic.xaml"/>
+                <ResourceDictionary Source="pack://application:,,,/Chat.Controls;component/Themes/Picker.xaml"/>
 
                 <ResourceDictionary Source="Resources/Colors.xaml"/>
                 <ResourceDictionary Source="Resources/Datas.xaml"/>
@@ -18,6 +19,8 @@
                 <ResourceDictionary Source="Resources/BorderStyles.xaml"/>
                 <ResourceDictionary Source="Resources/PathStyles.xaml"/>
                 <ResourceDictionary Source="Resources/GridStyles.xaml"/>
+                <ResourceDictionary Source="Resources/PickerStyles.xaml"/>
+                <ResourceDictionary Source="Resources/ToggleButtonStyles.xaml"/>
                 <ResourceDictionary Source="Resources/TextBlockStyles.xaml"/>
                 <ResourceDictionary Source="Resources/RichTextBox.xaml"/>
                 <ResourceDictionary Source="Resources/ButtonStyles.xaml"/>

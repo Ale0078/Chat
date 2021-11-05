@@ -20,6 +20,7 @@ namespace Chat.Client.ViewModel
 
         private ICommand _setFileMessage;
         private ICommand _cancel;
+        private ICommand _pickEmoji;
         
         public MessageCreaterViewModel(IDialogService dialog)
         {
@@ -110,6 +111,23 @@ namespace Chat.Client.ViewModel
             FileMessage = null;
             DoesHideCreater = true;
             DoesHideCreater = false;
+        }
+
+        public ICommand PickEmoji => _pickEmoji ??= new RelayCommand(
+            execute: ExecutePickEmoji);
+
+        private void ExecutePickEmoji(object emoji) 
+        {
+            if (IsPlaceholedApplied)
+            {
+                IsPlaceholedApplied = false;
+
+                TextMessage = (string)emoji;
+            }
+            else 
+            {
+                TextMessage += (string)emoji;
+            }
         }
     }
 }

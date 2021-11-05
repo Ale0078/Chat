@@ -6,7 +6,8 @@
                     xmlns:selectors="clr-namespace:Chat.Client.TemplateSelectors"
                     xmlns:controls="clr-namespace:Chat.Controls;assembly=Chat.Controls"
                     xmlns:extensions="clr-namespace:Chat.Client.AttachedProperties"
-                    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes">
+                    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+                    xmlns:emoji="clr-namespace:Emoji.Wpf;assembly=Emoji.Wpf">
     <DataTemplate x:Key="ChatLastMessageTemplate" DataType="{x:Type viewModels:ChatMemberViewModel}">
         <ContentControl Content="{Binding}">
             <ContentControl.Style>
@@ -31,10 +32,10 @@
                                                        Grid.Column="0"
                                                        Style="{StaticResource TextBlockCuttableNameUser}"/>
 
-                                            <TextBlock Text="{Binding LastMessage.Message}"
-                                                       Width="{Binding RelativeSource={RelativeSource AncestorType=Grid, AncestorLevel=1}, Path=(extensions:FrameworkElementExtension.ActualWidth)}"
-                                                       Grid.Column="1"
-                                                       Style="{StaticResource TextBlockCuttableLightText}"/>
+                                            <emoji:TextBlock Text="{Binding LastMessage.Message}"
+                                                             Width="{Binding RelativeSource={RelativeSource AncestorType=Grid, AncestorLevel=1}, Path=(extensions:FrameworkElementExtension.ActualWidth)}"
+                                                             Grid.Column="1"
+                                                             Style="{StaticResource TextBlockCuttableLightText}"/>
                                         </Grid>
                                     </DataTemplate>
                                 </Setter.Value>
@@ -56,10 +57,10 @@
                                                 <ColumnDefinition Width="Auto"/>
                                             </Grid.ColumnDefinitions>
 
-                                            <TextBlock Text="{Binding LastMessage.Message}"
-                                                       Grid.Column="0"
-                                                       Width="{Binding RelativeSource={RelativeSource AncestorType=Grid, AncestorLevel=1}, Path=(extensions:FrameworkElementExtension.ActualWidth)}"
-                                                       Style="{StaticResource TextBlockCuttableLightText}"/>
+                                            <emoji:TextBlock Text="{Binding LastMessage.Message}"
+                                                             Grid.Column="0"
+                                                             Width="{Binding RelativeSource={RelativeSource AncestorType=Grid, AncestorLevel=1}, Path=(extensions:FrameworkElementExtension.ActualWidth)}"
+                                                             Style="{StaticResource TextBlockCuttableLightText}"/>
                                         </Grid>
                                     </DataTemplate>
                                 </Setter.Value>
@@ -86,10 +87,10 @@
                                                        Grid.Column="0"
                                                        Style="{StaticResource TextBlockCuttableNameUser}"/>
 
-                                            <TextBlock Text="{Binding LastMessage.Message}"
-                                                       Width="{Binding RelativeSource={RelativeSource AncestorType=Grid, AncestorLevel=1}, Path=(extensions:FrameworkElementExtension.ActualWidth)}"
-                                                       Grid.Column="1"
-                                                       Style="{StaticResource TextBlockCuttableLightText}"/>
+                                            <emoji:TextBlock Text="{Binding LastMessage.Message}"
+                                                             Width="{Binding RelativeSource={RelativeSource AncestorType=Grid, AncestorLevel=1}, Path=(extensions:FrameworkElementExtension.ActualWidth)}"
+                                                             Grid.Column="1"
+                                                             Style="{StaticResource TextBlockCuttableLightText}"/>
                                         </Grid>
                                     </DataTemplate>
                                 </Setter.Value>
@@ -116,10 +117,10 @@
                                                        Grid.Column="0"
                                                        Style="{StaticResource TextBlockCuttableNameUser}"/>
 
-                                            <TextBlock Text="{Binding LastMessage.Message}"
-                                                       Width="{Binding RelativeSource={RelativeSource AncestorType=Grid, AncestorLevel=1}, Path=(extensions:FrameworkElementExtension.ActualWidth)}"
-                                                       Grid.Column="1"
-                                                       Style="{StaticResource TextBlockCuttableLightText}"/>
+                                            <emoji:TextBlock Text="{Binding LastMessage.Message}"
+                                                             Width="{Binding RelativeSource={RelativeSource AncestorType=Grid, AncestorLevel=1}, Path=(extensions:FrameworkElementExtension.ActualWidth)}"
+                                                             Grid.Column="1"
+                                                             Style="{StaticResource TextBlockCuttableLightText}"/>
                                         </Grid>
                                     </DataTemplate>
                                 </Setter.Value>
@@ -140,10 +141,10 @@
                                                        Grid.Column="0"
                                                        Style="{StaticResource TextBlockCuttableDraft}"/>
 
-                                            <TextBlock Text="{Binding Draft.Message}"
-                                                       Width="{Binding RelativeSource={RelativeSource AncestorType=Grid, AncestorLevel=1}, Path=(extensions:FrameworkElementExtension.ActualWidth)}"
-                                                       Grid.Column="1"
-                                                       Style="{StaticResource TextBlockCuttableLightText}"/>
+                                            <emoji:TextBlock Text="{Binding Draft.Message}"
+                                                             Width="{Binding RelativeSource={RelativeSource AncestorType=Grid, AncestorLevel=1}, Path=(extensions:FrameworkElementExtension.ActualWidth)}"
+                                                             Grid.Column="1"
+                                                             Style="{StaticResource TextBlockCuttableLightText}"/>
                                         </Grid>
                                     </DataTemplate>
                                 </Setter.Value>
@@ -209,10 +210,10 @@
                                                        Grid.Column="0"
                                                        Style="{StaticResource TextBlockCuttableNameUser}"/>
 
-                                            <TextBlock Text="{Binding LastMessage.Message}"
-                                                       Width="{Binding RelativeSource={RelativeSource AncestorType=Grid, AncestorLevel=1}, Path=(extensions:FrameworkElementExtension.ActualWidth)}"
-                                                       Grid.Column="1"
-                                                       Style="{StaticResource TextBlockCuttableLightText}"/>
+                                            <emoji:TextBlock Text="{Binding LastMessage.Message}"
+                                                             Width="{Binding RelativeSource={RelativeSource AncestorType=Grid, AncestorLevel=1}, Path=(extensions:FrameworkElementExtension.ActualWidth)}"
+                                                             Grid.Column="1"
+                                                             Style="{StaticResource TextBlockCuttableLightText}"/>
                                         </Grid>
                                     </DataTemplate>
                                 </Setter.Value>
@@ -242,10 +243,10 @@
                                             <TextBlock Text=" "
                                                        Grid.Column="1"/>
 
-                                            <TextBlock Text="{Binding LastMessage.Message}"
-                                                       Grid.Column="2"
-                                                       Width="{Binding RelativeSource={RelativeSource AncestorType=Grid, AncestorLevel=1}, Path=(extensions:FrameworkElementExtension.ActualWidth)}"
-                                                       Style="{StaticResource TextBlockCuttableLightText}"/>
+                                            <emoji:TextBlock Text="{Binding LastMessage.Message}"
+                                                             Grid.Column="2"
+                                                             Width="{Binding RelativeSource={RelativeSource AncestorType=Grid, AncestorLevel=1}, Path=(extensions:FrameworkElementExtension.ActualWidth)}"
+                                                             Style="{StaticResource TextBlockCuttableLightText}"/>
                                         </Grid>
                                     </DataTemplate>
                                 </Setter.Value>
@@ -272,10 +273,10 @@
                                                        Grid.Column="0"
                                                        Style="{StaticResource TextBlockCuttableNameUser}"/>
 
-                                            <TextBlock Text="{Binding LastMessage.Message}"
-                                                       Width="{Binding RelativeSource={RelativeSource AncestorType=Grid, AncestorLevel=1}, Path=(extensions:FrameworkElementExtension.ActualWidth)}"
-                                                       Grid.Column="1"
-                                                       Style="{StaticResource TextBlockCuttableLightText}"/>
+                                            <emoji:TextBlock Text="{Binding LastMessage.Message}"
+                                                             Width="{Binding RelativeSource={RelativeSource AncestorType=Grid, AncestorLevel=1}, Path=(extensions:FrameworkElementExtension.ActualWidth)}"
+                                                             Grid.Column="1"
+                                                             Style="{StaticResource TextBlockCuttableLightText}"/>
                                         </Grid>
                                     </DataTemplate>
                                 </Setter.Value>
@@ -306,10 +307,10 @@
                                             <TextBlock Text=" "
                                                        Grid.Column="1"/>
 
-                                            <TextBlock Text="{Binding LastMessage.Message}"
-                                                       Width="{Binding RelativeSource={RelativeSource AncestorType=Grid, AncestorLevel=1}, Path=(extensions:FrameworkElementExtension.ActualWidth)}"
-                                                       Grid.Column="2"
-                                                       Style="{StaticResource TextBlockCuttableLightText}"/>
+                                            <emoji:TextBlock Text="{Binding LastMessage.Message}"
+                                                             Width="{Binding RelativeSource={RelativeSource AncestorType=Grid, AncestorLevel=1}, Path=(extensions:FrameworkElementExtension.ActualWidth)}"
+                                                             Grid.Column="2"
+                                                             Style="{StaticResource TextBlockCuttableLightText}"/>
                                         </Grid>
                                     </DataTemplate>
                                 </Setter.Value>
@@ -330,10 +331,10 @@
                                                        Grid.Column="0"
                                                        Style="{StaticResource TextBlockCuttableDraft}"/>
 
-                                            <TextBlock Text="{Binding Draft.Message}"
-                                                       Width="{Binding RelativeSource={RelativeSource AncestorType=Grid, AncestorLevel=1}, Path=(extensions:FrameworkElementExtension.ActualWidth)}"
-                                                       Grid.Column="1"
-                                                       Style="{StaticResource TextBlockCuttableLightText}"/>
+                                            <emoji:TextBlock Text="{Binding Draft.Message}"
+                                                             Width="{Binding RelativeSource={RelativeSource AncestorType=Grid, AncestorLevel=1}, Path=(extensions:FrameworkElementExtension.ActualWidth)}"
+                                                             Grid.Column="1"
+                                                             Style="{StaticResource TextBlockCuttableLightText}"/>
                                         </Grid>
                                     </DataTemplate>
                                 </Setter.Value>
@@ -709,12 +710,12 @@
                            MaxHeight="200"
                            MaxWidth="300"/>
 
-                    <TextBlock Grid.Row="0"
-                               TextWrapping="Wrap"
-                               FontWeight="Light"
-                               FontSize="16"
-                               Height="Auto"
-                               Text="{Binding Message}"/>
+                    <emoji:TextBlock Grid.Row="0"
+                                     TextWrapping="Wrap"
+                                     FontWeight="Light"
+                                     FontSize="16"
+                                     Height="Auto"
+                                     Text="{Binding Message}"/>
                 </StackPanel>
 
                 <StackPanel Orientation="Horizontal"
@@ -730,7 +731,7 @@
             </Grid>
         </Border>
     </DataTemplate>
-
+    
     <DataTemplate x:Key="DefaultGroupMessageTemplate" DataType="{x:Type viewModels:GroupMessageViewModel}">
         <Border Style="{StaticResource BorderGroupMessageTemplate}"
                 Focusable="False"
@@ -757,12 +758,12 @@
                            MaxHeight="200"
                            MaxWidth="300"/>
 
-                    <TextBlock Grid.Row="0"
-                               TextWrapping="Wrap"
-                               FontWeight="Light"
-                               FontSize="16"
-                               Height="Auto"
-                               Text="{Binding Message}"/>
+                    <emoji:TextBlock Grid.Row="0"
+                                     TextWrapping="Wrap"
+                                     FontWeight="Light"
+                                     FontSize="16"
+                                     Height="Auto"
+                                     Text="{Binding Message}"/>
                 </StackPanel>
 
                 <StackPanel Orientation="Horizontal"
@@ -813,12 +814,12 @@
                                MaxHeight="200"
                                MaxWidth="300"/>
 
-                        <TextBlock Grid.Row="0"
-                                   TextWrapping="Wrap"
-                                   FontWeight="Light"
-                                   FontSize="16"
-                                   Height="Auto"
-                                   Text="{Binding Message}"/>
+                        <emoji:TextBlock Grid.Row="0"
+                                         TextWrapping="Wrap"
+                                         FontWeight="Light"
+                                         FontSize="16"
+                                         Height="Auto"
+                                         Text="{Binding Message}"/>
                     </StackPanel>
 
                     <StackPanel Orientation="Horizontal"
@@ -894,12 +895,12 @@
                                MaxHeight="200"
                                MaxWidth="300"/>
 
-                        <TextBlock Grid.Row="0"
-                                   TextWrapping="Wrap"
-                                   FontWeight="Light"
-                                   FontSize="16"
-                                   Height="Auto"
-                                   Text="{Binding Message}"/>
+                        <emoji:TextBlock Grid.Row="0"
+                                         TextWrapping="Wrap"
+                                         FontWeight="Light"
+                                         FontSize="16"
+                                         Height="Auto"
+                                         Text="{Binding Message}"/>
                     </StackPanel>
 
                     <StackPanel Orientation="Horizontal"
