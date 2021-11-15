@@ -16,7 +16,17 @@
                             Padding="{TemplateBinding Padding}"
                             Effect="{TemplateBinding Effect}"
                             CornerRadius="{TemplateBinding CornerRadius}">
-                        <ItemsControl ItemsSource="{TemplateBinding EmojiGroups}">
+                        <ItemsControl ItemsSource="{TemplateBinding EmojiGroups}"
+                                      VirtualizingPanel.IsVirtualizing="True"
+                                      VirtualizingPanel.ScrollUnit="Pixel"
+                                      VirtualizingPanel.CacheLengthUnit="Pixel"
+                                      VirtualizingPanel.CacheLength="1">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <VirtualizingStackPanel Orientation="Vertical"/>
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
                                     <StackPanel Orientation="Vertical">
@@ -102,7 +112,8 @@
 
                             <ItemsControl.Template>
                                 <ControlTemplate TargetType="{x:Type ItemsControl}">
-                                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                                    <ScrollViewer VerticalScrollBarVisibility="Auto"
+                                                  CanContentScroll="True">
                                         <ItemsPresenter/>
                                     </ScrollViewer>
                                 </ControlTemplate>

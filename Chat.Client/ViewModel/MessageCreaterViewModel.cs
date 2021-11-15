@@ -12,6 +12,7 @@ namespace Chat.Client.ViewModel
     {
         private readonly IDialogService _dialog;
 
+        private string _placeholder;
         private string _textMessage;
         private byte[] _fileMessage;
         private bool _isPlaceholedApplied;
@@ -27,12 +28,32 @@ namespace Chat.Client.ViewModel
             _dialog = dialog;
         }
 
+        public string Placeholder
+        {
+            get => _placeholder;
+            set 
+            {
+                _placeholder = value;
+
+                OnPropertyChanged();
+            }
+        }
+
         public string TextMessage 
         {
             get => _textMessage;
             set 
             {
                 _textMessage = value;
+
+                if (string.IsNullOrEmpty(value))
+                {
+                    IsPlaceholedApplied = true;
+                }
+                else 
+                {
+                    IsPlaceholedApplied = false;
+                }
 
                 OnPropertyChanged();
             }
@@ -116,7 +137,7 @@ namespace Chat.Client.ViewModel
         public ICommand PickEmoji => _pickEmoji ??= new RelayCommand(
             execute: ExecutePickEmoji);
 
-        private void ExecutePickEmoji(object emoji) 
+        private void ExecutePickEmoji(object emoji)
         {
             if (IsPlaceholedApplied)
             {

@@ -397,6 +397,11 @@ namespace Chat.Client.ViewModel
         {
             ChatMemberViewModel connectedUser = Users.FirstOrDefault(user =>
             {
+                if (user is GroupViewModel)
+                {
+                    return false;
+                }
+
                 return user.Name == userName;
             }) as ChatMemberViewModel;
 
@@ -408,6 +413,11 @@ namespace Chat.Client.ViewModel
         {
             ChatMemberViewModel logoutedUser = Users.FirstOrDefault(user =>
             {
+                if (user is GroupViewModel)
+                {
+                    return false;
+                }
+
                 return user.Name == userName;
             }) as ChatMemberViewModel;
 
@@ -449,6 +459,11 @@ namespace Chat.Client.ViewModel
             {
                 ChatMemberViewModel user = Users.FirstOrDefault(model =>
                 {
+                    if (model is GroupViewModel)
+                    {
+                        return false;
+                    }
+
                     return model.Name == connection.UserName;
                 }) as ChatMemberViewModel;
 
@@ -521,6 +536,11 @@ namespace Chat.Client.ViewModel
             {
                 ChatMemberViewModel member = user as ChatMemberViewModel;
 
+                if (member is null)
+                {
+                    return false;
+                }
+
                 return member.Id == userId;
             }) as ChatMemberViewModel;
 
@@ -540,6 +560,11 @@ namespace Chat.Client.ViewModel
             ChatMemberViewModel member = Users.First(user =>
             {
                 ChatMemberViewModel member = user as ChatMemberViewModel;
+
+                if (member is null)
+                {
+                    return false;
+                }
 
                 return member.Id == block.UserId;
             }) as ChatMemberViewModel;
@@ -858,8 +883,7 @@ namespace Chat.Client.ViewModel
 
             MessageCreaterViewModel messageCreater = sender as MessageCreaterViewModel;
 
-            if (string.IsNullOrEmpty(messageCreater.TextMessage)
-                || messageCreater.IsPlaceholedApplied)
+            if (string.IsNullOrEmpty(messageCreater.TextMessage))
             {
                 CurrentUser.Draft.Message = null;
             }

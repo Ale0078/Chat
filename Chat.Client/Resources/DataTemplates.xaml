@@ -364,7 +364,7 @@
     <selectors:ListOfUsersSelector x:Key="LastMessageUserGroupSelector"
                                    UserTemplate="{StaticResource ChatLastMessageTemplate}"
                                    GroupTemplate="{StaticResource GroupLastMessageTemplate}"/>
-    
+
     <DataTemplate x:Key="UsersTemplate" DataType="{x:Type viewModels:ChatMemberViewModel}">
         <Grid Style="{StaticResource GridToMembersFromList}"
               x:Name="Field">
@@ -399,7 +399,7 @@
                     <ColumnDefinition/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
-                
+
                 <TextBlock Style="{StaticResource TextBlockMemberNameFromList}"
                            Grid.Column="0"
                            Grid.Row="0"
@@ -470,7 +470,7 @@
                                                   HorizontalAlignment="Right"
                                                   Margin="0, 0, 5, 0"/>
             </Grid>
-            
+
             <ContentControl Content="{Binding}"
                             ContentTemplateSelector="{StaticResource LastMessageUserGroupSelector}"
                             Grid.Column="1"
@@ -731,7 +731,7 @@
             </Grid>
         </Border>
     </DataTemplate>
-    
+
     <DataTemplate x:Key="DefaultGroupMessageTemplate" DataType="{x:Type viewModels:GroupMessageViewModel}">
         <Border Style="{StaticResource BorderGroupMessageTemplate}"
                 Focusable="False"
@@ -953,4 +953,74 @@
     <selectors:MessageTemplateSelector MessageTemplate="{StaticResource MessagesTemplate}"
                                        GroupMessageTemplate="{StaticResource GroupMessagesTemplate}"
                                        x:Key="MessageTemplateSelector"/>
+
+    <DataTemplate x:Key="GroupMessageCreaterWithPlaceholder" DataType="{x:Type viewModels:ChatViewModel}">
+        <StackPanel Orientation="Vertical">
+            <Border Height="11"/>
+
+            <Grid>
+                <TextBlock Text="{Binding User.MessageCreater.Placeholder, UpdateSourceTrigger=PropertyChanged}"
+                           Visibility="{Binding User.MessageCreater.IsPlaceholedApplied, Converter={StaticResource BooleanToVisibilityConverter}, UpdateSourceTrigger=PropertyChanged}"
+                           Style="{StaticResource TextBlockPlaceholder}"/>
+
+                <emoji:RichTextBox Text="{Binding User.MessageCreater.TextMessage, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                   extensions:RichTextBoxExtension.IsPlaceholderApplied="{Binding User.MessageCreater.IsPlaceholedApplied, Mode=TwoWay}"
+                                   Name="Message"
+                                   Style="{StaticResource RichTextBoxFieldToWriteMessage}">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="TextChanged">
+                            <i:InvokeCommandAction Command="{Binding Typing}"/>
+                        </i:EventTrigger>
+
+                        <i:EventTrigger EventName="KeyUp">
+                            <i:InvokeCommandAction Command="{Binding StopTyping}"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </emoji:RichTextBox>
+            </Grid>
+
+            <Border Height="11"/>
+        </StackPanel>
+    </DataTemplate>
+
+    <DataTemplate x:Key="UserMessageCreaterWithPlaceholder" DataType="{x:Type viewModels:ChatViewModel}">
+        <StackPanel Orientation="Vertical">
+            <Border Height="11"/>
+
+            <Grid>
+                <TextBlock Text="{Binding User.MessageCreater.Placeholder, UpdateSourceTrigger=PropertyChanged}"
+                           Visibility="{Binding User.MessageCreater.IsPlaceholedApplied, Converter={StaticResource BooleanToVisibilityConverter}, UpdateSourceTrigger=PropertyChanged}"
+                           Style="{StaticResource TextBlockPlaceholder}"/>
+
+                <emoji:RichTextBox Text="{Binding User.MessageCreater.TextMessage, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                   extensions:RichTextBoxExtension.IsPlaceholderApplied="{Binding User.MessageCreater.IsPlaceholedApplied, Mode=TwoWay}"
+                                   Name="Message"
+                                   Style="{StaticResource RichTextBoxFieldToWriteUserMessage}">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="TextChanged">
+                            <i:InvokeCommandAction Command="{Binding Typing}"/>
+                        </i:EventTrigger>
+
+                        <i:EventTrigger EventName="KeyUp">
+                            <i:InvokeCommandAction Command="{Binding StopTyping}"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </emoji:RichTextBox>
+            </Grid>
+
+            <Border Height="11"/>
+        </StackPanel>
+    </DataTemplate>
+
+    <Style x:Key="TextBoxToGroupOrUserMessage" TargetType="{x:Type ContentControl}">
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding CurrentUser.IsGroup}" Value="{StaticResource True}">
+                <Setter Property="ContentTemplate" Value="{StaticResource GroupMessageCreaterWithPlaceholder}"/>
+            </DataTrigger>
+
+            <DataTrigger Binding="{Binding CurrentUser.IsGroup}" Value="{StaticResource False}">
+                <Setter Property="ContentTemplate" Value="{StaticResource UserMessageCreaterWithPlaceholder}"/>
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
 </ResourceDictionary>

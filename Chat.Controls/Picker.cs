@@ -7,6 +7,8 @@ namespace Chat.Controls
 {
     public class Picker : Control
     {
+        private bool _isLoaded;
+
         public static readonly RoutedEvent PickEvent;
         public static readonly DependencyProperty EmojiGroupsProperty;
         public static readonly DependencyProperty PickedEmojiProperty;

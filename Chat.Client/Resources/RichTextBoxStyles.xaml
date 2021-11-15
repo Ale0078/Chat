@@ -14,6 +14,7 @@
         <Setter Property="FontSize" Value="14"/>
         <Setter Property="FontWeight" Value="Light"/>
         <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Background" Value="Transparent"/>
     </Style>
 
     <Style x:Key="RichTextBoxFieldToWriteUserMessage" TargetType="{x:Type RichTextBox}" BasedOn="{StaticResource RichTextBoxFieldToWriteMessage}">

@@ -158,80 +158,14 @@
             <Button Grid.Column="0"
                     x:Name="FileMessageButton"
                     Style="{StaticResource ButtonFileMessage}"
-                    IsEnabled="{Binding User.IsButtonEnabled}"
                     Command="{Binding User.MessageCreater.SetFileMessage}"
                     extensions:FrameworkElementExtension.AnimationStoryboard="{StaticResource Animation}"
                     extensions:FrameworkElementExtension.ControlToFindParentToAnimationStoryboard="{Binding ElementName=FileMessageButton}"
                     extensions:FrameworkElementExtension.DoesAnimationStartToAnimationStoryboard="{Binding User.MessageCreater.DoesShowCreater}"/>
 
-            <!-- Заглушка, нужно будет изменить !!! -->
             <ContentControl Content="{Binding}"
-                            Grid.Column="1">
-                <ContentControl.Style>
-                    <Style TargetType="{x:Type ContentControl}">
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding CurrentUser.IsGroup}" Value="False">
-                                <Setter Property="ContentTemplate">
-                                    <Setter.Value>
-                                        <DataTemplate>
-                                            <StackPanel Orientation="Vertical">
-                                                <Border Height="11"/>
-
-                                                <emoji:RichTextBox Text="{Binding User.MessageCreater.TextMessage, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                                                   extensions:RichTextBoxExtension.IsPlaceholderApplied="{Binding User.MessageCreater.IsPlaceholedApplied, Mode=TwoWay}"
-                                                                   Name="Message"
-                                                                   Style="{StaticResource RichTextBoxFieldToWriteUserMessage}">
-                                                    <i:Interaction.Triggers>
-                                                        <i:EventTrigger EventName="TextChanged">
-                                                            <i:InvokeCommandAction Command="{Binding Typing}"/>
-                                                        </i:EventTrigger>
-
-                                                        <i:EventTrigger EventName="KeyUp">
-                                                            <i:InvokeCommandAction Command="{Binding StopTyping}"/>
-                                                        </i:EventTrigger>
-                                                    </i:Interaction.Triggers>
-                                                </emoji:RichTextBox>
-
-                                                <Border Height="11"/>
-                                            </StackPanel>
-                                        </DataTemplate>
-                                    </Setter.Value>
-                                </Setter>
-                            </DataTrigger>
-
-                            <DataTrigger Binding="{Binding CurrentUser.IsGroup}" Value="True">
-                                <Setter Property="ContentTemplate">
-                                    <Setter.Value>
-                                        <DataTemplate>
-                                            <StackPanel Orientation="Vertical">
-                                                <Border Height="11"/>
-
-                                                <emoji:RichTextBox Text="{Binding User.MessageCreater.TextMessage, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                                                   extensions:RichTextBoxExtension.IsPlaceholderApplied="{Binding User.MessageCreater.IsPlaceholedApplied, Mode=TwoWay}"
-                                                                   Name="Message"
-                                                                   Style="{StaticResource RichTextBoxFieldToWriteMessage}">
-                                                    <i:Interaction.Triggers>
-                                                        <i:EventTrigger EventName="TextChanged">
-                                                            <i:InvokeCommandAction Command="{Binding Typing}"/>
-                                                        </i:EventTrigger>
-
-                                                        <i:EventTrigger EventName="KeyUp">
-                                                            <i:InvokeCommandAction Command="{Binding StopTyping}"/>
-                                                        </i:EventTrigger>
-                                                    </i:Interaction.Triggers>
-                                                </emoji:RichTextBox>
-
-                                                <Border Height="11"/>
-                                            </StackPanel>
-                                        </DataTemplate>
-                                    </Setter.Value>
-                                </Setter>
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </ContentControl.Style>
-            </ContentControl>
-            <!-- Конец заглушки -->
+                            Grid.Column="1"
+                            Style="{StaticResource TextBoxToGroupOrUserMessage}"/>
 
             <ToggleButton Grid.Column="2"
                           Focusable="False"

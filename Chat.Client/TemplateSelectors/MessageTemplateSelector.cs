@@ -10,14 +10,8 @@ namespace Chat.Client.TemplateSelectors
         public DataTemplate MessageTemplate { get; set; }
         public DataTemplate GroupMessageTemplate { get; set; }
 
-        public override DataTemplate SelectTemplate(object item, DependencyObject container)
-        {
-            if (item is ChatMessageViewModel)
-            {
-                return MessageTemplate;
-            }
-
-            return GroupMessageTemplate;
-        }
+        public override DataTemplate SelectTemplate(object item, DependencyObject container) => item is ChatMessageViewModel
+            ? MessageTemplate
+            : GroupMessageTemplate;
     }
 }
