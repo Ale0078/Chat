@@ -7,4 +7,6 @@
     <converters:BoolToVisibilityCollapsed x:Key="ConverterBoolToVisibilityCollapsed"/>
     <converters:ArrayNullOrEmtyToBoolean x:Key="IsArrayNullOrEmpty"/>
     <converters:IntToBooleanMoreThanOne x:Key="IntMoreThanOne"/>
+    <converters:IsIntEqualsToZero x:Key="IsIntZero"/>
+    <converters:ConvertIntZeroToVisibilityCollapsed x:Key="IntZeroToVisibility"/>
 </ResourceDictionary>

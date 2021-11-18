@@ -14,6 +14,12 @@
              d:DesignHeight="450" 
              d:DesignWidth="800"
              x:Name="Messages">
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Loaded">
+            <i:InvokeCommandAction Command="{Binding LoadFirstChosenUser}"/>
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
+    
     <UserControl.Resources>
         <viewDatas:AnimationSource x:Key="Animation"
                                    ControlTypeNameScope="{x:Type views:ChatUserControl}">
@@ -96,7 +102,7 @@
                 </Menu>
             </Grid>
         </Border>
-        
+
         <ItemsControl Grid.Row="1"
                       BorderThickness="0, 0, 0, 1"
                       BorderBrush="LightGray"

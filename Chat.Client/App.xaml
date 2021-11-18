@@ -33,6 +33,7 @@
                 <ResourceDictionary Source="Resources/ChatStyles.xaml"/>
                 <ResourceDictionary Source="Resources/DataTemplates.xaml"/>
                 <ResourceDictionary Source="Resources/ListBoxItemTemplates.xaml"/>
+                <ResourceDictionary Source="Resources/ControlTemplates.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>

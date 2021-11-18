@@ -34,5 +34,7 @@ namespace Chat.Interfaces
         Task ChangeUserPhotoToAllExceptChanged(string userName, byte[] photo);
 
         Task ChangeMessageToUserAsync(string userId, Guid messageId, string message);
+
+        Task ReadMessageToUserAsync(string userId, Guid messageId);
     }
 }

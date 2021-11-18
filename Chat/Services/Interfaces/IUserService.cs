@@ -12,7 +12,7 @@ namespace Chat.Server.Services.Interfaces
 
         Task<bool> CanLoginUserAsync(string userName, string password);
 
-        Task<bool> AddChatMessageAsync(ChatMessageModel message);
+        Task<ChatMessageModel> AddChatMessageAsync(ChatMessageModel message);
 
         Task<IEnumerable<UserModel>> GetUsersAsync(string userName);
 
@@ -27,5 +27,7 @@ namespace Chat.Server.Services.Interfaces
         Task<bool> SetNewPhotoAsync(string userName, byte[] photo);
 
         Task<bool> ChangeUserMessageAsync(Guid messageId, string message);
+
+        Task ReadMessageAsync(Guid messageId);
     }
 }

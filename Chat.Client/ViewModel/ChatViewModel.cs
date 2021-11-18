@@ -13,6 +13,7 @@ using Chat.Client.Commands;
 using Chat.Models;
 using Chat.Client.Extensions;
 using Chat.Client.ViewModel.Base;
+using Chat.Client.Services.Interfaces;
 
 namespace Chat.Client.ViewModel
 {
@@ -30,6 +31,7 @@ namespace Chat.Client.ViewModel
         private ObservableCollection<MemberViewModelBase> _users;
         private ObservableCollection<MemberViewModelBase> _usersBackup;
         private bool _isBackupDoan;
+        private MemberViewModelBase _bufferReferenceToCurrentUser;
 
         private ICommand _connect;
         private ICommand _sendMessage;
@@ -40,15 +42,19 @@ namespace Chat.Client.ViewModel
         private ICommand _typing;
         private ICommand _stopTyping;
         private ICommand _createGroup;
+        private ICommand _loadFirstChosenUser;
 
         public ChatViewModel(ChatService chatService, ChatGroupService chatGroupService,
-            RegistrationChatService registrationChatService, UserViewModel user, IMapper mapper)
+            RegistrationChatService registrationChatService, UserViewModel user, 
+            IMapper mapper, IScrollController scrollController)
         {
             _mapper = mapper;
             _chatService = chatService;
             _chatGroupService = chatGroupService;
             _registrationChatService = registrationChatService;
+
             User = user;
+            ScrollController = scrollController;
 
             Users = new ObservableCollection<MemberViewModelBase>();
             _blockedUsers = new List<ChatMemberViewModel>();
@@ -62,6 +68,8 @@ namespace Chat.Client.ViewModel
         }
 
         public UserViewModel User { get; }
+
+        public IScrollController ScrollController { get; }
 
         public ObservableCollection<MemberViewModelBase> Users 
         {
@@ -79,7 +87,19 @@ namespace Chat.Client.ViewModel
             get => _currentUser;
             set 
             {
+                if (_currentUser is not null)
+                {
+                    _currentUser.LastVerticalOffsetToMessages = ScrollController.GetVerticalOffset();
+                }
+
+                if (_currentUser is not null && !_currentUser.WasSelected)
+                {
+                    _currentUser.WasSelected = true;
+                }
+
                 _currentUser = value;
+
+                ScrollController.SetVerticalOffset(0);
 
                 OnPropertyChanged();
             }
@@ -124,6 +144,8 @@ namespace Chat.Client.ViewModel
             }
 
             User.MessageCreater.TextMessage = string.Empty;
+
+            ScrollController.ScrollToEnd();
         }
 
         private async Task ExecuteSendMessage() 
@@ -147,7 +169,7 @@ namespace Chat.Client.ViewModel
 
             CurrentUser.Messages.AddViewModel(
                 item: _mapper.Map<ChatMessageViewModel>(sendingMessage),
-                handlers: OnMessageChanged);
+                OnMessageChanged, OnMessageIsReadChanged);
 
             CurrentUser.LastMessage = _mapper.Map<ChatMessageViewModel>(sendingMessage);
 
@@ -176,7 +198,7 @@ namespace Chat.Client.ViewModel
 
             CurrentUser.Messages.AddViewModel(
                 item: sendingMessage,
-                handlers: OnMessageChanged);
+                OnMessageChanged, OnMessageIsReadChanged);
 
             if (CurrentUser.LastMessage.FromUserId == sendingMessage.FromUserId)
             {
@@ -357,6 +379,28 @@ namespace Chat.Client.ViewModel
             User.GroupCreater.DoesCloseWindow = false;
         }
 
+        public ICommand LoadFirstChosenUser => _loadFirstChosenUser ??= new RelayCommand(
+            execute: ExecuteLoadFirstChosenUser);
+
+        private void ExecuteLoadFirstChosenUser(object parametr) 
+        {
+            if (CurrentUser.Equals(_bufferReferenceToCurrentUser))
+            {
+                return;
+            }
+
+            if (!_currentUser.WasSelected)
+            {
+                ScrollMessages();
+            }
+            else if (_currentUser.LastVerticalOffsetToMessages is not double.NaN)
+            {
+                ScrollController.SetVerticalOffset(CurrentUser.LastVerticalOffsetToMessages);
+            }
+
+            _bufferReferenceToCurrentUser = CurrentUser;
+        }
+
         #endregion 
 
         private void SetEvents()
@@ -373,6 +417,7 @@ namespace Chat.Client.ViewModel
             _chatService.SetNewPhotoToUserServerHandler += SetNewPhotoToUserServerEventHandler;
             _chatService.ChangeMessageToUserServerHandler += ChangeMessageToUserServerEventHandler;
             _chatService.SendConnectionIdToCallerServerHandler += OnSendConnectionIdToCallerServerEventHandler;
+            _chatService.SetReadStatusToMessageToUserServerHandler += OnSetReadStatusToMessageToUserServerEventHandler;
 
             _registrationChatService.RegisterUserToOthersServerHandler += RegisterUserToOthersServerEventHandler;
             _registrationChatService.SendUsersToCallerServerHandler += SendUsersToCallerServerEventHandler;
@@ -441,16 +486,23 @@ namespace Chat.Client.ViewModel
             {
                 ChatMemberViewModel member = user as ChatMemberViewModel;
 
+                if (member is null)
+                {
+                    return false;
+                }
+
                 return member.ChatId.Equals(message.ChatId);
             }) as ChatMemberViewModel;
 
             userSender.Messages.AddViewModel(
                 item: _mapper.Map<ChatMessageViewModel>(message),
-                handlers: OnMessageChanged);
+                OnMessageChanged, OnMessageIsReadChanged);
 
             userSender.LastMessage = _mapper.Map<ChatMessageViewModel>(message);
 
             Users = Users.GetSortedCollectionByLastMessage();
+
+            ScrollToEndIfStentInTheEnd();
         }
 
         private void SendConnectionsIdToCallerEventHandler(IEnumerable<UserConnection> connections) 
@@ -628,6 +680,28 @@ namespace Chat.Client.ViewModel
             User.ConnectionId = connectionId;
         }
 
+        private void OnSetReadStatusToMessageToUserServerEventHandler(string userId, Guid messageId) 
+        {
+            ChatMemberViewModel user = Users.First(userModel =>
+            {
+                ChatMemberViewModel member = userModel as ChatMemberViewModel;
+
+                if (member is null)
+                {
+                    return false;
+                }
+
+                return member.Id == userId;
+            }) as ChatMemberViewModel;
+
+            MessageViewModelBase message = user.Messages.First(message =>
+            {
+                return message.Id == messageId;
+            });
+
+            message.IsRead = true;
+        }
+
         #endregion
 
         #region RegistrationChatService EventHandlers
@@ -648,6 +722,7 @@ namespace Chat.Client.ViewModel
                     : _mapper.Map<ChatMessageViewModel>(chat.Messages.Last());
 
             user.Messages.SetPropertyChangedEventHandler(OnMessageChanged);
+            user.Messages.SetPropertyChangedEventHandler(OnMessageIsReadChanged);
 
             if (_isBackupDoan)
             {
@@ -666,6 +741,7 @@ namespace Chat.Client.ViewModel
                 ChatMemberViewModel member = _mapper.Map<ChatMemberViewModel>(user);
 
                 member.Messages.SetPropertyChangedEventHandler(OnMessageChanged);
+                member.Messages.SetPropertyChangedEventHandler(OnMessageIsReadChanged);
 
                 foreach (MemberViewModelBase memberGroup in Users)
                 {
@@ -734,7 +810,7 @@ namespace Chat.Client.ViewModel
 
                     groupViewModel.Messages.AddViewModel(
                         item: groupMessage,
-                        handlers: OnMessageChanged);
+                        OnMessageChanged, OnMessageIsReadChanged);
 
                     buffer = groupMessage;
                 }
@@ -829,6 +905,8 @@ namespace Chat.Client.ViewModel
             ((GroupMessageViewModel)group.LastMessage).LastMessageSender = GetLastMessageSenderToGroup(group);
 
             Users = Users.GetSortedCollectionByLastMessage();
+
+            ScrollToEndIfStentInTheEnd();
         }
 
         private void OnSendNewGroupMemberToGroupMembersAsyncServerEventHandler(GroupUser user, string groupName) 
@@ -947,6 +1025,35 @@ namespace Chat.Client.ViewModel
             }
         }
 
+        private async void OnMessageIsReadChanged(object sender, PropertyChangedEventArgs e) 
+        {
+            if (CurrentUser is null || e.PropertyName != nameof(MessageViewModelBase.IsRead))
+            {
+                return;
+            }
+
+            MessageViewModelBase message = sender as MessageViewModelBase;
+            
+            if (!message.IsRead || message.IsFromCurrentUser)
+            {
+                return;
+            }
+
+            if (CurrentUser.IsGroup)
+            {
+                //throw new NotImplementedException();
+            }
+            else 
+            {
+                ChatMemberViewModel user = CurrentUser as ChatMemberViewModel;
+
+                await _chatService.ReadMessageToUserAsync(
+                    userIdToSendReadStatus: User.Id,
+                    connectionId: user.ConnectionId,
+                    messageId: message.Id);
+            }
+        }
+
         #endregion
 
         #region Halper Functions
@@ -1001,6 +1108,26 @@ namespace Chat.Client.ViewModel
             }
 
             return null;
+        }
+
+        private void ScrollMessages()
+        {
+            if (CurrentUser.CountUnreadMessages != 0)
+            {
+                ScrollController.ScrollToFirstUnreadMessage();
+            }
+            else
+            {
+                ScrollController.ScrollToEnd();
+            }
+        }
+
+        private void ScrollToEndIfStentInTheEnd() 
+        {
+            if (ScrollController.IsScrollToEnd())
+            {
+                ScrollController.ScrollToEnd();
+            }
         }
 
         #endregion

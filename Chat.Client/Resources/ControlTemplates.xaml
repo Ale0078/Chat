@@ -1,0 +1,23 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:extensions="clr-namespace:Chat.Client.AttachedProperties"
+                    xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity">
+    <ControlTemplate x:Key="MessagesScrolViewer" TargetType="ItemsControl">
+        <Border BorderBrush="{TemplateBinding BorderBrush}"
+                BorderThickness="{TemplateBinding BorderThickness}"
+                Background="{TemplateBinding Background}">
+            <ScrollViewer HorizontalScrollBarVisibility="Disabled"
+                          VerticalScrollBarVisibility="Auto"
+                          extensions:ScrollViewerExtension.IsSrollSetterToScrollController="True"
+                          extensions:ScrollViewerExtension.IsCheckUnreadMessages="True">
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="ScrollChanged">
+                        <i:InvokeCommandAction Command="{Binding LoadFirstChosenUser}"/>
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+                
+                <ItemsPresenter Focusable="False"/>
+            </ScrollViewer>
+        </Border>
+    </ControlTemplate>
+</ResourceDictionary>

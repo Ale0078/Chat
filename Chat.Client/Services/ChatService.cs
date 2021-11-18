@@ -26,6 +26,7 @@ namespace Chat.Client.Services
         public event Action<string, byte[]> SetNewPhotoToUserServerHandler;
         public event Action<string, Guid, string> ChangeMessageToUserServerHandler;
         public event Action<string> SendConnectionIdToCallerServerHandler;
+        public event Action<string, Guid> SetReadStatusToMessageToUserServerHandler;
 
         public ChatService(IChutConnection connection)
         {
@@ -82,6 +83,10 @@ namespace Chat.Client.Services
             _connection.Connection.On<string>(
                 methodName: nameof(IChat.SendConnectionIdToCaller),
                 handler: connectionId => SendConnectionIdToCallerServerHandler?.Invoke(connectionId));
+
+            _connection.Connection.On<string, Guid>(
+                methodName: nameof(IChat.ReadMessageToUserAsync),
+                handler: (userId, messageId) => SetReadStatusToMessageToUserServerHandler?.Invoke(userId, messageId));
         }
 
         public void SetToken(string token) 
@@ -132,6 +137,11 @@ namespace Chat.Client.Services
         public async Task SetMessageToChatMessageAsync(string connectionId, string userId, Guid messageId, string message) 
         {
             await _connection.Connection.InvokeAsync("ChangeMessageAsync", connectionId, userId, messageId, message);
+        }
+
+        public async Task ReadMessageToUserAsync(string userIdToSendReadStatus, string connectionId, Guid messageId) 
+        {
+            await _connection.Connection.InvokeAsync("ReadMessageAsync", userIdToSendReadStatus, connectionId, messageId);
         }
     }
 }

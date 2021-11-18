@@ -72,14 +72,14 @@ namespace Chat.Server.Hubs
 
         public async Task<ChatMessageModel> ReciveMessage(string connectionId, ChatMessageModel chatMessage) 
         {
-            await _userService.AddChatMessageAsync(chatMessage);
+            ChatMessageModel message = await _userService.AddChatMessageAsync(chatMessage);
 
             if (IsValidConnectionId(connectionId))
             {
-                await Clients.Client(connectionId).ReciveMessage(chatMessage);
+                await Clients.Client(connectionId).ReciveMessage(message);
             }
 
-            return chatMessage;
+            return message;
         }
 
         public async Task SetUserBlackListState(string userId, string connectionId, string blockedUserid, bool doesBlock) 
@@ -120,6 +120,16 @@ namespace Chat.Server.Hubs
             }
 
             await _userService.ChangeUserMessageAsync(messageId, message);
+        }
+
+        public async Task ReadMessageAsync(string userIdToSendReadStatus, string connectionId, Guid messageId) 
+        {
+            if (IsValidConnectionId(connectionId))
+            {
+                await Clients.Client(connectionId).ReadMessageToUserAsync(userIdToSendReadStatus, messageId);
+            }
+
+            await _userService.ReadMessageAsync(messageId);
         }
 
         [Authorize(Roles = ADMIN_ROLE)]

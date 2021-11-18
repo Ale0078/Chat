@@ -15,6 +15,9 @@ namespace Chat.Entities
         [Required]
         public bool IsEdit { get; set; }
 
+        [Required]
+        public bool IsRead { get; set; }
+
         public byte[] ByteFile { get; set; }
 
         public Guid ChatId { get; set; }

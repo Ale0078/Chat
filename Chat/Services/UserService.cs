@@ -28,13 +28,13 @@ namespace Chat.Server.Services
             _mapper = mapper;
         }
 
-        public async Task<bool> AddChatMessageAsync(ChatMessageModel message)
+        public async Task<ChatMessageModel> AddChatMessageAsync(ChatMessageModel message)
         {
-            await _dbContext.ChatMessages.AddAsync(_mapper.Map<ChatMessage>(message));
+            EntityEntry<ChatMessage> newMessage = await _dbContext.ChatMessages.AddAsync(_mapper.Map<ChatMessage>(message));
 
             await _dbContext.SaveChangesAsync();
 
-            return true;
+            return _mapper.Map<ChatMessageModel>(newMessage.Entity);
         }
 
         public async Task<bool> AddUserAsync(RegisterUserModel userModel)//ToDo: change chat generation
@@ -257,6 +257,19 @@ namespace Chat.Server.Services
             await _dbContext.SaveChangesAsync();
 
             return true;
+        }
+
+        public async Task ReadMessageAsync(Guid messageId) 
+        {
+            //IQueryable<ChatMessage> messages = _dbContext.ChatMessages.Where(message => message.Id == messageId);
+
+            ChatMessage message = await _dbContext.ChatMessages.FindAsync(messageId);
+
+            message.IsRead = true;
+
+            _dbContext.ChatMessages.Update(message);
+
+            await _dbContext.SaveChangesAsync();
         }
 
         private async Task<BlockedUser> AddBlockedUserAsync(string userId, string blockedUserId, bool doesBlock) 

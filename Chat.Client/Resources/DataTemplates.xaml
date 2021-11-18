@@ -413,11 +413,32 @@
                                                   Margin="0, 0, 5, 0"/>
             </Grid>
 
-            <ContentControl Content="{Binding}"
-                            ContentTemplateSelector="{StaticResource LastMessageUserGroupSelector}"
-                            Grid.Column="1"
-                            Grid.Row="1"
-                            HorizontalAlignment="Left"/>
+            <Grid Grid.Column="1"
+                  Grid.Row="1"
+                  Margin="0, 0, 5, 0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                
+                <ContentControl Content="{Binding}"
+                                ContentTemplateSelector="{StaticResource LastMessageUserGroupSelector}"
+                                HorizontalAlignment="Left"
+                                Grid.Column="0"/>
+
+                <Border Grid.Column="1" 
+                        Background="#7099DA00"
+                        Width="20"
+                        Height="20"
+                        CornerRadius="10"
+                        VerticalAlignment="Top"
+                        Visibility="{Binding CountUnreadMessages, Converter={StaticResource IntZeroToVisibility}}">
+                    <TextBlock Text="{Binding CountUnreadMessages}"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center"
+                               Foreground="Gray"/>
+                </Border>
+            </Grid>
         </Grid>
     </DataTemplate>
 

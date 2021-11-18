@@ -32,14 +32,17 @@ namespace Chat.Client
             services.AddSingleton<IDialogService, DialogService>();
             services.AddSingleton<IChutConnection, ChutConnection>();
 
+            services.AddTransient<IScrollController, ScrollController>();
+
             services.AddSingleton<MainWindowViewModel>();
             services.AddSingleton<LoginViewModel>();
             services.AddSingleton<RegistarationViewModel>();
             services.AddSingleton<ChatViewModel>();
-            services.AddSingleton<MainWindow>();
             services.AddSingleton<UserViewModel>();
             services.AddSingleton<MessageCreaterViewModel>();
             services.AddSingleton<GroupCreaterViewModel>();
+
+            services.AddSingleton<MainWindow>();
 
             services.AddAutoMapper(typeof(ChatGroupProfile), typeof(ChatMessageProfile), typeof(ChatMemberProfile));
         }

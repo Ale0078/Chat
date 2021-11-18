@@ -15,6 +15,7 @@ namespace Chat.Client.ViewModel.Base
         private DateTime _sendingTime;
         private bool _isEditing;
         private bool _isEdit;
+        private bool _isRead;
 
         private ICommand _editMessage;
 
@@ -101,6 +102,17 @@ namespace Chat.Client.ViewModel.Base
             set
             {
                 _isEdit = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        public bool IsRead 
+        {
+            get => _isRead;
+            set 
+            {
+                _isRead = value;
 
                 OnPropertyChanged();
             }

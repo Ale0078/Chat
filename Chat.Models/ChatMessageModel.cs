@@ -12,6 +12,7 @@ namespace Chat.Models
         public bool IsFromCurrentUser { get; set; }
         public DateTime SendingTime { get; set; }
         public bool IsEdit { get; set; }
+        public bool IsRead { get; set; }
         public byte[] ByteFile { get; set; }
     }
 }
