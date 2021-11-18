@@ -3,11 +3,56 @@
                     xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
                     xmlns:views="clr-namespace:Chat.Client.View"
                     xmlns:viewModels="clr-namespace:Chat.Client.ViewModel"
+                    xmlns:viewModelsBase="clr-namespace:Chat.Client.ViewModel.Base"
                     xmlns:selectors="clr-namespace:Chat.Client.TemplateSelectors"
                     xmlns:controls="clr-namespace:Chat.Controls;assembly=Chat.Controls"
                     xmlns:extensions="clr-namespace:Chat.Client.AttachedProperties"
                     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
                     xmlns:emoji="clr-namespace:Emoji.Wpf;assembly=Emoji.Wpf">
+    <DataTemplate x:Key="UnreadLastMessageWithGreenColor">
+        <materialDesign:PackIcon Kind="Check"
+                                 Style="{StaticResource IconMessageReadStatusWithGreenColor}"/>
+    </DataTemplate>
+
+    <DataTemplate x:Key="ReadLastMessageWithGreenColor">
+        <materialDesign:PackIcon Kind="CheckAll"
+                                 Style="{StaticResource IconMessageReadStatusWithGreenColor}"/>
+    </DataTemplate>
+
+    <Style x:Key="LastMessageReadStatus" TargetType="{x:Type ContentControl}" BasedOn="{StaticResource ContentControlLastMessageUnreadStatusBase}">
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding LastMessage.IsRead}" Value="{StaticResource True}">
+                <Setter Property="ContentTemplate" Value="{StaticResource ReadLastMessageWithGreenColor}"/>
+            </DataTrigger>
+
+            <DataTrigger Binding="{Binding LastMessage.IsRead}" Value="{StaticResource False}">
+                <Setter Property="ContentTemplate" Value="{StaticResource UnreadLastMessageWithGreenColor}"/>
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
+
+    <DataTemplate x:Key="UnreadLastMessageWithWhiteColor">
+        <materialDesign:PackIcon Kind="Check"
+                                 Style="{StaticResource IconMessageReadStatusWithWhiteColor}"/>
+    </DataTemplate>
+
+    <DataTemplate x:Key="ReadLastMessageWithWhiteColor">
+        <materialDesign:PackIcon Kind="CheckAll"
+                                 Style="{StaticResource IconMessageReadStatusWithWhiteColor}"/>
+    </DataTemplate>
+
+    <Style x:Key="MessageUnreadStatus" TargetType="{x:Type ContentControl}" BasedOn="{StaticResource ContentControlMessageUnreadStatusBase}">
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding IsRead}" Value="{StaticResource True}">
+                <Setter Property="ContentTemplate" Value="{StaticResource ReadLastMessageWithWhiteColor}"/>
+            </DataTrigger>
+
+            <DataTrigger Binding="{Binding IsRead}" Value="{StaticResource False}">
+                <Setter Property="ContentTemplate" Value="{StaticResource UnreadLastMessageWithWhiteColor}"/>
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
+    
     <DataTemplate x:Key="ChatLastMessageTemplate" DataType="{x:Type viewModels:ChatMemberViewModel}">
         <ContentControl Content="{Binding}">
             <ContentControl.Style>
@@ -398,16 +443,20 @@
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition/>
                     <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
 
                 <TextBlock Style="{StaticResource TextBlockMemberNameFromList}"
                            Grid.Column="0"
-                           Grid.Row="0"
                            Text="{Binding Name}"/>
 
+                <ContentControl Grid.Column="1"
+                                Content="{Binding}"
+                                Visibility="{Binding LastMessage.IsFromCurrentUser, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                Style="{StaticResource LastMessageReadStatus}"/>
+
                 <views:LastMessageTimeUserControl DataContext="{Binding}"
-                                                  Grid.Row="0"
-                                                  Grid.Column="1"
+                                                  Grid.Column="2"
                                                   VerticalAlignment="Center"
                                                   HorizontalAlignment="Right"
                                                   Margin="0, 0, 5, 0"/>
@@ -426,17 +475,11 @@
                                 HorizontalAlignment="Left"
                                 Grid.Column="0"/>
 
-                <Border Grid.Column="1" 
-                        Background="#7099DA00"
-                        Width="20"
-                        Height="20"
-                        CornerRadius="10"
-                        VerticalAlignment="Top"
-                        Visibility="{Binding CountUnreadMessages, Converter={StaticResource IntZeroToVisibility}}">
+                <Border Grid.Column="1"
+                        Visibility="{Binding CountUnreadMessages, Converter={StaticResource IntZeroToVisibility}}"
+                        Style="{StaticResource BorderCountOfUnreadMessages}">
                     <TextBlock Text="{Binding CountUnreadMessages}"
-                               HorizontalAlignment="Center"
-                               VerticalAlignment="Center"
-                               Foreground="Gray"/>
+                               Style="{StaticResource TextBlockCountOfUnreadMessages}"/>
                 </Border>
             </Grid>
         </Grid>
@@ -744,10 +787,15 @@
                             Width="Auto">
                     <TextBlock Text="edited "
                                Style="{StaticResource TextBlockSendingtimeMessageWhite}"
-                               Visibility="{Binding IsEdit, Converter={StaticResource ConverterBoolToVisibilityCollapsed}}"/>
+                               Visibility="{Binding IsEdit, Converter={StaticResource ConverterBoolToVisibilityCollapsed}}"
+                               VerticalAlignment="Center"/>
+
+                    <ContentControl Visibility="{Binding IsFromCurrentUser, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                    Style="{StaticResource MessageUnreadStatus}"/>
 
                     <TextBlock Text="{Binding SendingTime, StringFormat={}{0:t}}"
-                               Style="{StaticResource TextBlockSendingtimeMessageWhite}"/>
+                               Style="{StaticResource TextBlockSendingtimeMessageWhite}"
+                               VerticalAlignment="Center"/>
                 </StackPanel>
             </Grid>
         </Border>

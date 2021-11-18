@@ -167,11 +167,13 @@ namespace Chat.Client.ViewModel
 
             sendingMessage.IsFromCurrentUser = true;
 
+            ChatMessageViewModel message = _mapper.Map<ChatMessageViewModel>(sendingMessage);
+
             CurrentUser.Messages.AddViewModel(
-                item: _mapper.Map<ChatMessageViewModel>(sendingMessage),
+                item: message,
                 OnMessageChanged, OnMessageIsReadChanged);
 
-            CurrentUser.LastMessage = _mapper.Map<ChatMessageViewModel>(sendingMessage);
+            CurrentUser.LastMessage = message;
 
             Users = Users.GetSortedCollectionByLastMessage();
         }
@@ -494,11 +496,13 @@ namespace Chat.Client.ViewModel
                 return member.ChatId.Equals(message.ChatId);
             }) as ChatMemberViewModel;
 
+            ChatMessageViewModel chatMessage = _mapper.Map<ChatMessageViewModel>(message);
+
             userSender.Messages.AddViewModel(
-                item: _mapper.Map<ChatMessageViewModel>(message),
+                item: chatMessage,
                 OnMessageChanged, OnMessageIsReadChanged);
 
-            userSender.LastMessage = _mapper.Map<ChatMessageViewModel>(message);
+            userSender.LastMessage = chatMessage;
 
             Users = Users.GetSortedCollectionByLastMessage();
 
@@ -719,7 +723,7 @@ namespace Chat.Client.ViewModel
             user.Messages = _mapper.Map<ObservableCollection<MessageViewModelBase>>(chat.Messages);
             user.LastMessage = chat.Messages.Count == 0
                     ? new ChatMessageViewModel()
-                    : _mapper.Map<ChatMessageViewModel>(chat.Messages.Last());
+                    : user.Messages.Last();
 
             user.Messages.SetPropertyChangedEventHandler(OnMessageChanged);
             user.Messages.SetPropertyChangedEventHandler(OnMessageIsReadChanged);

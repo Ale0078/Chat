@@ -64,4 +64,12 @@
             </DataTrigger>
         </Style.Triggers>
     </Style>
+
+    <Style x:Key="BorderCountOfUnreadMessages" TargetType="{x:Type Border}">
+        <Setter Property="Width" Value="20"/>
+        <Setter Property="Height" Value="20"/>
+        <Setter Property="CornerRadius" Value="10"/>
+        <Setter Property="VerticalAlignment" Value="Top"/>
+        <Setter Property="Background" Value="#7099DA00"/>
+    </Style>
 </ResourceDictionary>

@@ -19,6 +19,7 @@
                 <ResourceDictionary Source="Resources/BorderStyles.xaml"/>
                 <ResourceDictionary Source="Resources/PathStyles.xaml"/>
                 <ResourceDictionary Source="Resources/GridStyles.xaml"/>
+                <ResourceDictionary Source="Resources/ContentControlStyles.xaml"/>
                 <ResourceDictionary Source="Resources/PickerStyles.xaml"/>
                 <ResourceDictionary Source="Resources/ToggleButtonStyles.xaml"/>
                 <ResourceDictionary Source="Resources/TextBlockStyles.xaml"/>
