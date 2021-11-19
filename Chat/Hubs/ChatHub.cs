@@ -234,6 +234,16 @@ namespace Chat.Server.Hubs
             await _groupService.ChangeMessageAsync(messageId, message);
         }
 
+        public async Task ReadGroupMessage(string senderConnectionId, string readerId, Guid groupId, Guid messageId) 
+        {
+            if (IsValidConnectionId(senderConnectionId))
+            {
+                await Clients.Client(senderConnectionId).SendGroupMessageReadStatusAsync(groupId, messageId);
+            }
+
+            await _groupService.ReadGroupMessageAsync(readerId, messageId);
+        }
+
         private bool IsValidConnectionId(string connectionId) =>
             connectionId is not null && !connectionId.IsConnectionIdEmpty();
 

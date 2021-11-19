@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using AutoMapper;
 
@@ -76,9 +77,30 @@ namespace Chat.Server.Services
         {
             EntityEntry<GroupMessage> groupMessage = await _dbContext.GroupMessages.AddAsync(_mapper.Map<GroupMessage>(message));
 
+            GroupMessage newGroupMessage = groupMessage.Entity;
+
+            List<User> groupMembers = _userManager.Users
+                .AsEnumerable()
+                .ToList();
+
+            foreach (User groupMember in groupMembers)
+            {
+                if (groupMember.Groups.Exists(group => group.Id == newGroupMessage.GroupId)
+                    && groupMember.Id != newGroupMessage.SenderId)
+                {
+                    await _dbContext.GroupMessageReadStatus.AddAsync(new GroupMessageReadStatus
+                    {
+                        Id = new Guid(),
+                        IsRead = false,
+                        UserId = groupMember.Id,
+                        GroupMessageId = newGroupMessage.Id
+                    });
+                }
+            }
+
             await _dbContext.SaveChangesAsync();
 
-            return _mapper.Map<GroupMessageModel>(groupMessage.Entity);
+            return _mapper.Map<GroupMessageModel>(newGroupMessage);
         }
 
         public async Task<bool> AddGroupUserToGroupAsync(GroupUser user, string groupName)
@@ -126,6 +148,22 @@ namespace Chat.Server.Services
             groupMessage.IsEdit = true;
 
             _dbContext.GroupMessages.Update(groupMessage);
+
+            await _dbContext.SaveChangesAsync();
+        }
+
+        public async Task ReadGroupMessageAsync(string readerId, Guid messageId) 
+        {
+            List<GroupMessageReadStatus> readStatuses = await _dbContext.GroupMessageReadStatus.ToListAsync();
+
+            GroupMessageReadStatus readStatus = readStatuses.Find(status =>
+            {
+                return status.UserId == readerId && status.GroupMessageId == messageId;
+            });
+
+            readStatus.IsRead = true;
+
+            _dbContext.GroupMessageReadStatus.Update(readStatus);
 
             await _dbContext.SaveChangesAsync();
         }

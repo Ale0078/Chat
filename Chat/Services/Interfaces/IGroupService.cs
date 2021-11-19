@@ -19,5 +19,7 @@ namespace Chat.Server.Services.Interfaces
         Task<bool> RemoveGroupUserFromGroupAsync(GroupUser user, string groupName);
 
         Task ChangeMessageAsync(Guid id, string message);
+
+        Task ReadGroupMessageAsync(string readerId, Guid messageId);
     }
 }

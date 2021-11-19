@@ -16,5 +16,7 @@ namespace Chat.Interfaces.BaseInterfaces
         Task RemoveGroupMembertToGroupMembersAsync(GroupUser user, string groupName);
 
         Task ChangeGroupMessageAsync(string groupName, Guid messageId, string message);
+
+        Task SendGroupMessageReadStatusAsync(Guid groupId, Guid messageId);
     }
 }

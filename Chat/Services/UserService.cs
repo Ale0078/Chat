@@ -117,6 +117,8 @@ namespace Chat.Server.Services
                 userModel.Chats.Add(chat);
             }
 
+            CheckReadStatusToGroupMessages(userModel, dbUser);
+
             return userModel;
         }
 
@@ -261,8 +263,6 @@ namespace Chat.Server.Services
 
         public async Task ReadMessageAsync(Guid messageId) 
         {
-            //IQueryable<ChatMessage> messages = _dbContext.ChatMessages.Where(message => message.Id == messageId);
-
             ChatMessage message = await _dbContext.ChatMessages.FindAsync(messageId);
 
             message.IsRead = true;
@@ -289,6 +289,47 @@ namespace Chat.Server.Services
             await _dbContext.SaveChangesAsync();
 
             return addedBlockedUser.Entity;
+        }
+
+        private void CheckReadStatusToGroupMessages(FullUserModel userModel, User dbUser) 
+        {
+            for (int i = 0; i < dbUser.Groups.Count; i++)
+            {
+                for (int j = 0; j < dbUser.Groups[i].GroupMessages.Count; j++)
+                {
+                    GroupMessageReadStatus readStatus;
+
+                    if (dbUser.Groups[i].GroupMessages[j].SenderId == userModel.Id)
+                    {
+                        readStatus = dbUser.Groups[i]
+                            .GroupMessages[j]
+                            .GroupMessageReadStatuses
+                            .FirstOrDefault(readStatus =>
+                            {
+                                return readStatus.IsRead;
+                            });
+
+                        if (readStatus is null)
+                        {
+                            readStatus = new GroupMessageReadStatus { IsRead = false };
+                        }
+                    }
+                    else
+                    {
+                        readStatus = dbUser
+                            .Groups[i]
+                            .GroupMessages[j]
+                            .GroupMessageReadStatuses
+                            .Find(status =>
+                            {
+                                return status.GroupMessageId == dbUser.Groups[i].GroupMessages[j].Id
+                                    && status.UserId == dbUser.Id;
+                            });
+                    }
+
+                    userModel.Groups[i].GroupMessages[j].IsRead = readStatus.IsRead;
+                }
+            }
         }
     }
 }

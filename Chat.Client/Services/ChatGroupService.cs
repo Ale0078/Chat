@@ -18,6 +18,7 @@ namespace Chat.Client.Services
         public event Action<GroupUser, string> SendNewGroupMemberToGroupMembersAsyncServerHandler;
         public event Action<GroupUser, string> RemoveGroupMembertToGroupMembersAsyncServerHandler;
         public event Action<string, Guid, string> ChangedGrouMessageToGroupMembersAsyncServerHanler;
+        public event Action<Guid, Guid> SendGroupMessageReadStatusToGroupMemberAsyncServerHandler;
 
         public ChatGroupService(IChutConnection connection)
         {
@@ -42,6 +43,10 @@ namespace Chat.Client.Services
             _connection.Connection.On<string, Guid, string>(
                 methodName: nameof(IGroupChat.ChangeGroupMessageAsync),
                 handler: (groupName, messageId, message) => ChangedGrouMessageToGroupMembersAsyncServerHanler?.Invoke(groupName, messageId, message));
+
+            _connection.Connection.On<Guid, Guid>(
+                methodName: nameof(IGroupChat.SendGroupMessageReadStatusAsync),
+                handler: (grouId, messageId) => SendGroupMessageReadStatusToGroupMemberAsyncServerHandler?.Invoke(grouId, messageId));
         }
 
         public async Task AddUserToGroupAsync(GroupUser user, string groupName) 
@@ -67,6 +72,11 @@ namespace Chat.Client.Services
         public async Task ChangeMessageAsync(string groupName, Guid messageId, string message) 
         {
             await _connection.Connection.InvokeAsync("ChangeGroupMessage", groupName, messageId, message);
+        }
+
+        public async Task ReadGroupMessageAsync(string senderConnectionId, string readerId, Guid groupId, Guid messageId) 
+        {
+            await _connection.Connection.InvokeAsync("ReadGroupMessage", senderConnectionId, readerId, groupId, messageId);
         }
     }
 }

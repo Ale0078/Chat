@@ -517,6 +517,7 @@
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition/>
                     <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
 
                 <materialDesign:PackIcon Kind="AccountGroup" 
@@ -528,18 +529,38 @@
                            Text="{Binding Name}"
                            Grid.Column="1"/>
 
+                <ContentControl Grid.Column="2"
+                                Content="{Binding}"
+                                Visibility="{Binding LastMessage.IsFromCurrentUser, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                Style="{StaticResource LastMessageReadStatus}"/>
+
                 <views:LastMessageTimeUserControl DataContext="{Binding}"
-                                                  Grid.Column="2"
+                                                  Grid.Column="3"
                                                   VerticalAlignment="Center"
                                                   HorizontalAlignment="Right"
                                                   Margin="0, 0, 5, 0"/>
             </Grid>
 
-            <ContentControl Content="{Binding}"
-                            ContentTemplateSelector="{StaticResource LastMessageUserGroupSelector}"
-                            Grid.Column="1"
-                            Grid.Row="1"
-                            HorizontalAlignment="Left"/>
+            <Grid Grid.Column="1"
+                  Grid.Row="1"
+                  Margin="0, 0, 5, 0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <ContentControl Content="{Binding}"
+                                ContentTemplateSelector="{StaticResource LastMessageUserGroupSelector}"
+                                HorizontalAlignment="Left"
+                                Grid.Column="0"/>
+
+                <Border Grid.Column="1"
+                        Visibility="{Binding CountUnreadMessages, Converter={StaticResource IntZeroToVisibility}}"
+                        Style="{StaticResource BorderCountOfUnreadMessages}">
+                    <TextBlock Text="{Binding CountUnreadMessages}"
+                               Style="{StaticResource TextBlockCountOfUnreadMessages}"/>
+                </Border>
+            </Grid>
         </Grid>
     </DataTemplate>
 
@@ -839,11 +860,16 @@
                             Grid.Row="1"
                             Width="Auto">
                     <TextBlock Text="edited "
-                               Style="{StaticResource TextBlockSendingtimeMessageGroupMessage}"
-                               Visibility="{Binding IsEdit, Converter={StaticResource ConverterBoolToVisibilityCollapsed}}"/>
+                               Style="{StaticResource TextBlockSendingtimeMessageWhite}"
+                               Visibility="{Binding IsEdit, Converter={StaticResource ConverterBoolToVisibilityCollapsed}}"
+                               VerticalAlignment="Center"/>
+
+                    <ContentControl Visibility="{Binding IsFromCurrentUser, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                    Style="{StaticResource MessageUnreadStatus}"/>
 
                     <TextBlock Text="{Binding SendingTime, StringFormat={}{0:t}}"
-                               Style="{StaticResource TextBlockSendingtimeMessageGroupMessage}"/>
+                               Style="{StaticResource TextBlockSendingtimeMessageWhite}"
+                               VerticalAlignment="Center"/>
                 </StackPanel>
             </Grid>
         </Border>
@@ -896,10 +922,15 @@
                                 Width="Auto">
                         <TextBlock Text="edited "
                                    Style="{StaticResource TextBlockSendingtimeMessageWhite}"
-                                   Visibility="{Binding IsEdit, Converter={StaticResource ConverterBoolToVisibilityCollapsed}}"/>
+                                   Visibility="{Binding IsEdit, Converter={StaticResource ConverterBoolToVisibilityCollapsed}}"
+                                   VerticalAlignment="Center"/>
+
+                        <ContentControl Visibility="{Binding IsFromCurrentUser, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                        Style="{StaticResource MessageUnreadStatus}"/>
 
                         <TextBlock Text="{Binding SendingTime, StringFormat={}{0:t}}"
-                                   Style="{StaticResource TextBlockSendingtimeMessageWhite}"/>
+                                   Style="{StaticResource TextBlockSendingtimeMessageWhite}"
+                                   VerticalAlignment="Center"/>
                     </StackPanel>
                 </Grid>
             </Border>
@@ -976,11 +1007,16 @@
                                 Grid.Row="1"
                                 Width="Auto">
                         <TextBlock Text="edited "
-                                   Style="{StaticResource TextBlockSendingtimeMessageGray}"
-                                   Visibility="{Binding IsEdit, Converter={StaticResource ConverterBoolToVisibilityCollapsed}}"/>
+                                    Style="{StaticResource TextBlockSendingtimeMessageWhite}"
+                                    Visibility="{Binding IsEdit, Converter={StaticResource ConverterBoolToVisibilityCollapsed}}"
+                                    VerticalAlignment="Center"/>
+
+                        <ContentControl Visibility="{Binding IsFromCurrentUser, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                        Style="{StaticResource MessageUnreadStatus}"/>
 
                         <TextBlock Text="{Binding SendingTime, StringFormat={}{0:t}}"
-                                   Style="{StaticResource TextBlockSendingtimeMessageGray}"/>
+                                   Style="{StaticResource TextBlockSendingtimeMessageWhite}"
+                                   VerticalAlignment="Center"/>
                     </StackPanel>
                 </Grid>
             </Border>

@@ -431,6 +431,7 @@ namespace Chat.Client.ViewModel
             _chatGroupService.SendNewGroupMemberToGroupMembersAsyncServerHandler += OnSendNewGroupMemberToGroupMembersAsyncServerEventHandler;
             _chatGroupService.RemoveGroupMembertToGroupMembersAsyncServerHandler += OnRemoveGroupMembertToGroupMembersAsyncServerEventHandler;
             _chatGroupService.ChangedGrouMessageToGroupMembersAsyncServerHanler += ChangedGrouMessageToGroupMembersAsyncServerEventHanler;
+            _chatGroupService.SendGroupMessageReadStatusToGroupMemberAsyncServerHandler += SendGroupMessageReadStatusToGroupMemberAsyncServerEventHandler;
 
             _timer.Tick += OnTick;
 
@@ -895,7 +896,9 @@ namespace Chat.Client.ViewModel
 
             message.IsFromCurrentUser = User.Id == messageModel.SenderId;
 
-            group.Messages.Add(message);
+            group.Messages.AddViewModel(
+                item: message,
+                OnMessageChanged, OnMessageIsReadChanged);
 
             if (group.LastMessage.FromUserId == message.FromUserId)
             {
@@ -938,6 +941,20 @@ namespace Chat.Client.ViewModel
 
             groupMessage.Message = message;
             groupMessage.IsEdit = true;
+        }
+
+        private void SendGroupMessageReadStatusToGroupMemberAsyncServerEventHandler(Guid groupId, Guid messageId) 
+        {
+            GroupMessageViewModel message = GetMessageFromGroupById(
+                group: GetGroupViewModelById(groupId),
+                messageId: messageId);
+
+            if (message.IsRead)
+            {
+                return;
+            }
+
+            message.IsRead = true;
         }
 
         #endregion
@@ -1045,7 +1062,17 @@ namespace Chat.Client.ViewModel
 
             if (CurrentUser.IsGroup)
             {
-                //throw new NotImplementedException();
+                GroupViewModel group = CurrentUser as GroupViewModel;
+
+                GroupUserViewModel groupSender = GetGroupUser(group, message.FromUserId);
+
+                ChatMemberViewModel userSender = groupSender.User as ChatMemberViewModel;
+
+                await _chatGroupService.ReadGroupMessageAsync(
+                    senderConnectionId: userSender.ConnectionId,
+                    readerId: User.Id,
+                    groupId: group.Id,
+                    messageId: message.Id);
             }
             else 
             {
@@ -1108,6 +1135,19 @@ namespace Chat.Client.ViewModel
                 if (user.Id == userId)
                 {
                     return user;
+                }
+            }
+
+            return null;
+        }
+
+        private GroupMessageViewModel GetMessageFromGroupById(GroupViewModel group, Guid messageId) 
+        {
+            foreach (GroupMessageViewModel groupMessage in group.Messages)
+            {
+                if (groupMessage.Id == messageId)
+                {
+                    return groupMessage;
                 }
             }
 

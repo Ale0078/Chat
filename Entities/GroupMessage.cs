@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -28,5 +29,7 @@ namespace Chat.Entities
 
         [ForeignKey(nameof(GroupId))]
         public virtual Group Group { get; set; }
+
+        public virtual List<GroupMessageReadStatus> GroupMessageReadStatuses { get; set; }
     }
 }
