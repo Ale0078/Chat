@@ -3,7 +3,6 @@
                     xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
                     xmlns:views="clr-namespace:Chat.Client.View"
                     xmlns:viewModels="clr-namespace:Chat.Client.ViewModel"
-                    xmlns:viewModelsBase="clr-namespace:Chat.Client.ViewModel.Base"
                     xmlns:selectors="clr-namespace:Chat.Client.TemplateSelectors"
                     xmlns:controls="clr-namespace:Chat.Controls;assembly=Chat.Controls"
                     xmlns:extensions="clr-namespace:Chat.Client.AttachedProperties"
@@ -860,7 +859,7 @@
                             Grid.Row="1"
                             Width="Auto">
                     <TextBlock Text="edited "
-                               Style="{StaticResource TextBlockSendingtimeMessageWhite}"
+                               Style="{StaticResource TextBlockSendingtimeMessageGrayOrWhite}"
                                Visibility="{Binding IsEdit, Converter={StaticResource ConverterBoolToVisibilityCollapsed}}"
                                VerticalAlignment="Center"/>
 
@@ -868,7 +867,7 @@
                                     Style="{StaticResource MessageUnreadStatus}"/>
 
                     <TextBlock Text="{Binding SendingTime, StringFormat={}{0:t}}"
-                               Style="{StaticResource TextBlockSendingtimeMessageWhite}"
+                               Style="{StaticResource TextBlockSendingtimeMessageGrayOrWhite}"
                                VerticalAlignment="Center"/>
                 </StackPanel>
             </Grid>
@@ -921,7 +920,7 @@
                                 Grid.Row="1"
                                 Width="Auto">
                         <TextBlock Text="edited "
-                                   Style="{StaticResource TextBlockSendingtimeMessageWhite}"
+                                   Style="{StaticResource TextBlockSendingtimeMessageGrayOrWhite}"
                                    Visibility="{Binding IsEdit, Converter={StaticResource ConverterBoolToVisibilityCollapsed}}"
                                    VerticalAlignment="Center"/>
 
@@ -929,7 +928,7 @@
                                         Style="{StaticResource MessageUnreadStatus}"/>
 
                         <TextBlock Text="{Binding SendingTime, StringFormat={}{0:t}}"
-                                   Style="{StaticResource TextBlockSendingtimeMessageWhite}"
+                                   Style="{StaticResource TextBlockSendingtimeMessageGrayOrWhite}"
                                    VerticalAlignment="Center"/>
                     </StackPanel>
                 </Grid>
@@ -1007,7 +1006,7 @@
                                 Grid.Row="1"
                                 Width="Auto">
                         <TextBlock Text="edited "
-                                    Style="{StaticResource TextBlockSendingtimeMessageWhite}"
+                                    Style="{StaticResource TextBlockSendingtimeMessageGrayOrWhite}"
                                     Visibility="{Binding IsEdit, Converter={StaticResource ConverterBoolToVisibilityCollapsed}}"
                                     VerticalAlignment="Center"/>
 
@@ -1015,7 +1014,7 @@
                                         Style="{StaticResource MessageUnreadStatus}"/>
 
                         <TextBlock Text="{Binding SendingTime, StringFormat={}{0:t}}"
-                                   Style="{StaticResource TextBlockSendingtimeMessageWhite}"
+                                   Style="{StaticResource TextBlockSendingtimeMessageGrayOrWhite}"
                                    VerticalAlignment="Center"/>
                     </StackPanel>
                 </Grid>

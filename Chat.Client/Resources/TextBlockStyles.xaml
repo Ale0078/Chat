@@ -72,6 +72,18 @@
         <Setter Property="Foreground" Value="Gray"/>
     </Style>
 
+    <Style x:Key="TextBlockSendingtimeMessageGrayOrWhite" TargetType="{x:Type TextBlock}" BasedOn="{StaticResource TextBlockSendingTimeMessageBase}">
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding IsFromCurrentUser}" Value="{StaticResource True}">
+                <Setter Property="Foreground" Value="White"/>
+            </DataTrigger>
+
+            <DataTrigger Binding="{Binding IsFromCurrentUser}" Value="{StaticResource False}">
+                <Setter Property="Foreground" Value="Gray"/>
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
+
     <Style x:Key="TextBlockSendingtimeMessageGroupMessage" TargetType="{x:Type TextBlock}" BasedOn="{StaticResource TextBlockSendingTimeMessageBase}">
         <Style.Triggers>
             <DataTrigger Binding="{Binding IsFromCurrentUser}" Value="True">
